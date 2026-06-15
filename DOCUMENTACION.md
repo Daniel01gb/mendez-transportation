@@ -387,17 +387,25 @@ Esto evita arranques silenciosos con valores vacíos que dejarían el sistema in
 | `SMTP_PASS` | Password SMTP | No |
 | `SMTP_FROM` | From address del email | No |
 
-### Pasos para subir
+### Deploy en producción (v2mn.netlify.app)
+
+El auto-deploy desde GitHub **no funciona** en este sitio. Usar siempre el CLI:
+```bash
+npx netlify deploy --prod
+```
+El proyecto ya está vinculado al sitio `v2mn` (ID: `bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae`).
+Si se desvincula: `npx netlify link --id bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae`
+
+### Pasos para subir por primera vez (nuevo entorno)
 ```bash
 git init
 git add .
 git commit -m "Mendez Transportation MVP2"
-# crear repo en GitHub, luego:
-git remote add origin https://github.com/usuario/mendez-transportation.git
-git push -u origin main
+git remote add origin https://github.com/Daniel01gb/mendez-transportation.git
+git push -u origin master
+npx netlify link --id bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae
+npx netlify deploy --prod
 ```
-En **app.netlify.com** → New site → Import from Git → seleccionar repo.
-El `netlify.toml` configura todo automáticamente.
 
 ### Cómo funciona el redirect
 ```
@@ -430,6 +438,11 @@ node server.js
 - [ ] Historial de viajes pasados (tabla)
 - [ ] Notificaciones push ("Tu conductor llega en 5 min")
 
+### Fixes mobile aplicados
+- **iOS Safari `position:fixed`** — `html { overflow-x: hidden }` agregado a `base.css`. Sin esto, el `overflow-x: hidden` solo en `body` hace que iOS Safari rompa `position: fixed`.
+- **FAB "Book Your Ride" eliminado** — el botón flotante causaba problemas de posicionamiento en iOS. Reemplazado por efecto de bounce en el botón `btn-primary` del hero.
+- **`btn-primary` bounce** — animación `btnBounce` en `hero.css`: sube 7px y baja en loop de 2s. Se pausa al hover.
+
 ### WordPress (propuesta original)
 - [ ] Migrar el sitio público a WordPress + tema custom
 - [ ] Booking form conectado a Square Payments
@@ -460,4 +473,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Precios oficiales definidos: Phase 1 $500 · Phase 2 $750 · Bundle $1,100 · Mantenimiento $150/$250 mes. Tres propuestas HTML generadas en Desktop. Confirmation Code implementado (no PHI). Guard de producción activo.*
+*Documentación actualizada el 15 de Junio 2026 — Fix iOS Safari position:fixed, FAB eliminado, bounce en btn-primary. Deploy manual via CLI (`npx netlify deploy --prod`) — auto-deploy de GitHub deshabilitado.*

@@ -44,16 +44,29 @@ Sitio web profesional para **Mendez Transportation LLC**, una empresa de transpo
 ### Estructura de `mendes website v2/` (post-refactorización)
 ```
 mendes website v2/
-├── css/                    — Todos los estilos del sitio
-├── js/                     — Scripts del frontend (auth, portal, booking, etc.)
+├── css/
+│   ├── base.css / navbar.css / hero.css / ...  — Sitio público
+│   ├── login.css / portal.css                  — Portal paciente
+│   ├── dispatcher.css                          — Panel dispatcher
+│   └── driver.css                             — Driver PWA (dark theme)
+├── js/
+│   ├── auth.js / portal.js / booking.js        — Portal paciente
+│   ├── dispatcher.js                          — Panel dispatcher
+│   └── driver.js                             — Driver PWA
 ├── middleware/             — auth.js, rateLimit.js, validate.js
 ├── netlify/functions/      — api.js (handler serverless)
-├── routes/                 — auth.js, trip.js, dispatcher.js
+├── routes/
+│   ├── auth.js            — Autenticación (3 roles)
+│   ├── trip.js            — Datos del viaje (paciente)
+│   ├── dispatcher.js      — Trips, stats, locations, snapshots
+│   └── driver.js          — Trips del conductor, location, snapshot
 ├── utils/                  — email.js
-├── index.html              — Home
-├── about.html / services.html / areas.html / faq.html / contact.html
+├── index.html / about.html / services.html / areas.html / faq.html / contact.html
 ├── login.html / portal.html
 ├── dispatcher.html         — Panel del dispatcher (rol: dispatcher)
+├── driver.html            — App del conductor PWA (rol: driver)
+├── manifest.json          — PWA manifest (instalación desde Chrome)
+├── sw.js                  — Service Worker (cache offline)
 ├── app.js                  — Express app (importable por server y Netlify)
 ├── server.js               — Arranque local
 ├── DOCUMENTACION.md
@@ -350,14 +363,23 @@ Base URL local: `http://localhost:3000/api`
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | GET | `/health` | — | Health check |
-| GET | `/auth/me` | Cookie | Retorna usuario si la sesión es válida |
+| GET | `/auth/me` | Cookie | Retorna usuario y `role` si la sesión es válida |
 | POST | `/auth/login` | — | Valida email+pass, emite cookie 2FA pending |
-| POST | `/auth/verify-2fa` | Cookie 2FA | Valida código, emite cookie de sesión |
+| POST | `/auth/verify-2fa` | Cookie 2FA | Valida código, emite cookie de sesión con rol |
 | POST | `/auth/resend-2fa` | Cookie 2FA | Reenvía código 2FA |
 | POST | `/auth/verify-trip` | Cookie sesión | Valida trip number + Confirmation Code |
 | POST | `/auth/logout` | — | Limpia cookies |
-| GET | `/trip/current` | Cookie sesión | Retorna datos del viaje activo |
+| GET | `/trip/current` | Cookie sesión | Retorna datos del viaje activo (paciente) |
 | GET | `/tracking/location` | Cookie sesión | Posición actual del conductor (polling) |
+| GET | `/dispatcher/trips` | Dispatcher | 6 viajes demo + 4 conductores |
+| GET | `/dispatcher/stats` | Dispatcher | Conteo por status |
+| PATCH | `/dispatcher/trips/:id/status` | Dispatcher | Actualiza status/driver/notas (demo — sin persistencia) |
+| GET | `/dispatcher/locations` | Dispatcher | Posiciones GPS reales desde Netlify Blobs |
+| GET | `/dispatcher/snapshot/:driverId` | Dispatcher | Último snapshot de la cabina del conductor |
+| GET | `/driver/trips` | Driver | Viajes del día asignados al conductor |
+| PATCH | `/driver/trips/:id/status` | Driver | Actualiza status del viaje (en_route / completed) |
+| POST | `/driver/location` | Driver | Envía coordenadas GPS + peerId (WebRTC) a Netlify Blobs |
+| POST | `/driver/snapshot` | Driver | Sube snapshot JPEG de la cabina a Netlify Blobs |
 
 ### Arquitectura stateless
 - Sin base de datos — todo se valida contra variables de entorno o constantes
@@ -427,7 +449,7 @@ Usa `express-validator`. Aplica antes de que el handler de la ruta procese nada:
 | `POST /auth/verify-trip` | tripNumber y confirmCode strings no vacíos, max 32/16 chars |
 
 ### Body limit
-`express.json({ limit: '16kb' })` — previene ataques de payload gigante (body bomb).
+`express.json({ limit: '200kb' })` — subido de 16kb a 200kb para soportar los snapshots JPEG de la cabina (base64 ~40-80KB). El resto de los requests son minúsculos.
 
 ### Error handler global
 El último middleware de `app.js` captura cualquier error no manejado y responde con `{ error: 'Internal server error' }` — nunca expone stack traces en producción.
@@ -489,9 +511,20 @@ routes/dispatcher.js   — GET /api/dispatcher/trips, GET /stats, PATCH /trips/:
 ### Funcionalidades del panel
 - Stats bar: Total / En Route / Pending / Confirmed / Completed
 - Tabla de viajes con filtros por status
-- Mapa Leaflet con posiciones de conductores activos (en_route)
+- Mapa Leaflet con posiciones GPS reales de conductores (en_route) — se actualiza cada **5 segundos**
 - Modal de edición: cambiar status, asignar conductor, agregar notas
 - Cambios actualizan el estado en memoria del frontend (demo — sin persistencia en BD)
+- **Botón 🔴 Live** (pulsante, rojo) en filas En Route → driver tiene cámara activa → video WebRTC en tiempo real
+- **Botón 📷 Cabin** (verde) → driver no transmite en vivo pero tiene snapshot disponible
+- Modal Cabin View: video live stream O último snapshot con timestamp; botón Reconnect y mute de audio
+
+### Netlify Blobs — stores utilizados
+| Store | Clave | Contenido |
+|-------|-------|-----------|
+| `driver-locations` | `driver-{id}` | `{ driverId, name, plate, lat, lng, accuracy, peerId, updatedAt }` |
+| `driver-snapshots` | `snapshot-{id}` | `{ driverId, name, dataUrl, capturedAt }` |
+
+`peerId` es el ID de PeerJS del driver cuando tiene la cámara activa — el dispatcher lo usa para conectarse directamente.
 
 ### Nota importante para backend real
 Al conectar Supabase en Phase 3, `routes/dispatcher.js` reemplaza las constantes `DEMO_TRIPS`
@@ -499,40 +532,74 @@ y `DRIVERS` por queries a la base de datos. El frontend (`dispatcher.js`) no cam
 
 ---
 
-## 8d. Driver PWA — App del Conductor (en construcción)
+## 8d. Driver PWA — App del Conductor ✅ Completa
 
 ### Concepto
 PWA (Progressive Web App) — página web móvil que el conductor instala desde Chrome en su teléfono
-sin pasar por Play Store ni App Store. Abre como app nativa con ícono en pantalla de inicio.
+sin pasar por Play Store ni App Store. Abre como app nativa fullscreen con ícono en pantalla de inicio.
 
 ### Instalación por el conductor (una sola vez)
 ```
-1. Dispatcher envía link por WhatsApp
+1. Dispatcher envía link por WhatsApp: https://dreamy-travesseiro-61a309.netlify.app/driver.html
 2. Conductor abre en Chrome
 3. Chrome muestra: "Agregar Mendez Driver a pantalla de inicio"
 4. Toca "Agregar" → ícono en el teléfono
 5. Abre como app fullscreen sin barra del navegador
 ```
 
-### Archivos necesarios
+### Archivos del conductor
 ```
-driver.html      — Pantalla del conductor (viajes del día, cambio de status, link a Waze)
-css/driver.css   — Estilos mobile-first
-js/driver.js     — Lógica: carga viajes asignados, actualiza status, abre mapas
-manifest.json    — Nombre, ícono, color de la app (hace posible "instalar" la PWA)
-sw.js            — Service Worker (cache offline básico)
-routes/driver.js — GET /api/driver/trips, PATCH /api/driver/trips/:id/status
+driver.html        — App PWA del conductor (dark theme, mobile-first)
+css/driver.css     — Estilos: dark bg, tarjetas de viaje, location bar, camera bar, botones 48px
+js/driver.js       — Lógica completa: viajes, mapas, GPS, cámara, WebRTC, mic
+manifest.json      — Nombre "Mendez Driver", tema oscuro, standalone
+sw.js              — Service Worker: cache-first shell, network-first /api/
+routes/driver.js   — API: trips, location, snapshot, status
 ```
 
 ### Rol en el sistema de auth
-Nuevo rol `role: 'driver'` en el JWT — mismo login.html, `requireDriver` middleware.
-Conductor solo ve sus propios viajes (filtrado por `driver_id`).
+Rol `role: 'driver'` en el JWT — mismo `login.html`, `requireDriver` middleware.
+Al verificar 2FA con credenciales de driver, redirige a `driver.html`.
 
-### Funcionalidades del conductor
-- Ver viajes del día asignados a él
-- Cambiar status: `Confirmed → En Route → Arrived → Completed`
-- Botón "Waze" / "Google Maps" con la dirección de pickup pre-cargada
-- Dispatcher ve el cambio de status en tiempo real en su panel
+### Viajes demo de Carlos Rivera (driver_id: 1)
+| Trip # | Paciente | Status | Hora | Nota |
+|--------|----------|--------|------|------|
+| MT-2026-4891 | Maria Garcia | en_route | 8:30 AM | Silla de ruedas — necesita rampa |
+| MT-2026-4897 | Susan Williams | confirmed | 11:00 AM | — |
+| MT-2026-4898 | Thomas Baker | confirmed | 3:00 PM | Tiempo extra para abordar |
+
+### Funcionalidades implementadas
+
+**Viajes y navegación:**
+- Tarjetas de viaje con status, paciente, pickup/destino, hora, notas
+- Botón **Navigate** → Apple Maps en iOS (`maps://?daddr=`), Google Maps en Android
+- Botón **Waze** → `https://waze.com/ul?q=...&navigate=yes`
+- Botón **Start** (confirmed → en_route) / **Complete** (en_route → completed)
+- Badge "All done for today!" cuando todos los viajes están completados
+
+**GPS en tiempo real:**
+- Solicita permiso de ubicación al cargar
+- Barra de estado: 🔵 Requesting → 🟢 Active → 🟡 Signal lost → 🔴 Denied
+- Tap en la barra para reintentar si se deniega
+- Envía coordenadas al backend (Netlify Blobs) **cada 5 segundos**
+- El dispatcher ve la posición en el mapa actualizándose cada 5s
+
+**Cámara de cabina:**
+- Barra de cámara con 3 controles (cuando activa): **🎤 Mic** · **↺ Flip** · **Disable**
+- Botón **Enable** → solicita permisos de cámara + micrófono
+- Cámara frontal por defecto (`facingMode: 'user'` → apunta a la cabina desde el tablero)
+- **↺ Flip** → alterna cámara frontal/trasera SIN cortar el stream WebRTC (`replaceTrack()`)
+  - Frontal (`user`): vista de la cabina / pasajero
+  - Trasera (`environment`): vista de la carretera
+- **🎤 Mic** → mute/unmute del micrófono (se pone rojo cuando muteado)
+- Preview del video en la barra de cámara
+- Auto-captura snapshot JPEG 320×240 cada 60s → sube a Netlify Blobs (`driver-snapshots`)
+- Al activar la cámara, genera un **Peer ID** aleatorio (`mz-drv-XXXXXXXX`) y lo incluye en cada ping de GPS
+
+**WebRTC (PeerJS):**
+- Driver crea un `Peer` con ID aleatorio al activar la cámara
+- Responde llamadas entrantes del dispatcher con el stream completo (video + audio)
+- Al cerrar sesión: detiene cámara, micrófono, GPS y destruye el peer
 
 ### Integración con brokers (roadmap)
 | Opción | Descripción | Costo estimado |
@@ -562,7 +629,15 @@ Conductor solo ve sus propios viajes (filtrado por `driver_id`).
 | 2FA | Código | `654321` |
 | Panel | — | Acceso directo a `dispatcher.html` (sin verificación de trip) |
 
-> Todas las credenciales son configurables vía variables de entorno (`DEMO_*`, `DISPATCHER_*`).
+### Driver (Conductor)
+| Paso | Campo | Valor |
+|------|-------|-------|
+| Sign In | Email | `driver@mendeztransport.com` |
+| Sign In | Password | `Driver2026!` |
+| 2FA | Código | `789012` |
+| App | — | Acceso directo a `driver.html` (sin verificación de trip) |
+
+> Todas las credenciales son configurables vía variables de entorno (`DEMO_*`, `DISPATCHER_*`, `DRIVER_*`).
 > El código 2FA usa el valor fijo de env var mientras no haya SMTP configurado.
 
 ### Datos del viaje demo
@@ -594,6 +669,9 @@ Conductor solo ve sus propios viajes (filtrado por `driver_id`).
 | `DISPATCHER_EMAIL` | Email del dispatcher (default: dispatcher@mendeztransport.com) | No |
 | `DISPATCHER_PASS` | Password del dispatcher (default: Dispatch2026!) | No |
 | `DISPATCHER_CODE` | Código 2FA del dispatcher (default: 654321) | No |
+| `DRIVER_EMAIL` | Email del conductor (default: driver@mendeztransport.com) | No |
+| `DRIVER_PASS` | Password del conductor (default: Driver2026!) | No |
+| `DRIVER_CODE` | Código 2FA del conductor (default: 789012) | No |
 | `SMTP_HOST` | Servidor SMTP para email real | No |
 | `SMTP_PORT` | Puerto SMTP (default: 587) | No |
 | `SMTP_USER` | Usuario SMTP | No |
@@ -649,15 +727,17 @@ node server.js
 ### MVP actual — lo que ya está demo-listo ✅
 - [x] Sitio público (6 páginas)
 - [x] Portal del paciente (login + 2FA + tracking)
-- [x] Panel del dispatcher (viajes, mapa, edit modal, filtros)
-- [x] Sistema de roles JWT (patient / dispatcher)
+- [x] Panel del dispatcher (viajes, mapa Leaflet live, filtros, edit modal, cabin view)
+- [x] Sistema de roles JWT (patient / dispatcher / driver)
 - [x] Seguridad: helmet, CORS, express-validator, rate limiting
-
-### Driver PWA — en construcción 🔧
-- [ ] `driver.html` — pantalla del conductor (viajes asignados, cambio de status)
-- [ ] `manifest.json` + `sw.js` — hace la PWA instalable desde Chrome
-- [ ] `routes/driver.js` — endpoint de viajes del conductor + patch status
-- [ ] Rol `driver` en el sistema de auth
+- [x] Driver PWA — app del conductor completa:
+  - [x] Viajes del día, navegación (Apple Maps / Google Maps / Waze)
+  - [x] GPS en tiempo real (5s) → mapa del dispatcher se actualiza en vivo
+  - [x] Cámara de cabina con flip frontal/trasera
+  - [x] Micrófono — audio en el stream
+  - [x] Video WebRTC en vivo (~1s delay) vía PeerJS → dispatcher ve **🔴 Live**
+  - [x] Snapshot automático cada 60s → fallback cuando no hay stream en vivo
+  - [x] Instalable como PWA (manifest.json + service worker)
 
 ### Phase 3 — Backend real (post-aprobación)
 - [ ] Base de datos real (Supabase PostgreSQL)
@@ -705,4 +785,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Panel dispatcher completo (roles JWT, 6 viajes demo, 4 conductores, mapa, filtros, modal de edición). Driver PWA en construcción. Seguridad: helmet, CORS, express-validator, nodemailer v9. Deploy en nueva cuenta Netlify (`dreamy-travesseiro-61a309`, danielguilln666@gmail.com) con auto-deploy desde GitHub activo.*
+*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa: viajes, GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s, instalable como PWA. Panel dispatcher: botón 🔴 Live / 📷 Cabin, mapa actualiza cada 5s, modal Cabin View con video+audio+speaker toggle. 3 roles JWT (patient / dispatcher / driver). Deploy activo en Netlify `dreamy-travesseiro-61a309` (danielguilln666@gmail.com).*

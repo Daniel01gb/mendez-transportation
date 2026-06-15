@@ -1,0 +1,11 @@
+node_modules/
+db/
+routes/
+middleware/
+utils/
+server.js
+app.js
+railway.toml
+.env
+.env.example
+package-lock.json

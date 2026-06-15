@@ -1,0 +1,144 @@
+/* ── ABOUT WRAPPER ── */
+.about-wrapper { padding: 6rem 2.5rem; background: var(--white); }
+
+/* ── WHY CHOOSE US / TRUST SECTION ── */
+.trust-section {
+  padding: 6rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.trust-visual {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  text-align: center;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.trust-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(138,164,200,.2) 0%, transparent 60%);
+}
+.trust-big-number {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: .5rem;
+  position: relative;
+}
+.trust-big-label {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  opacity: .7;
+  position: relative;
+}
+.trust-divider {
+  width: 40px; height: 1px;
+  background: rgba(255,255,255,.3);
+  margin: 1.5rem auto;
+}
+.trust-badge-list {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  position: relative;
+}
+.trust-badge-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: .85rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  opacity: .85;
+}
+.trust-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trust-content h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  font-weight: 200;
+  color: var(--navy);
+  margin-bottom: 1.25rem;
+  letter-spacing: .02em;
+}
+.trust-content h2 strong { font-weight: 700; }
+.trust-content p {
+  font-size: .95rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.trust-items { display: flex; flex-direction: column; gap: 1.25rem; }
+.trust-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.trust-item-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--radius-sm);
+  background: var(--off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy);
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.trust-item:hover .trust-item-icon { background: var(--blue-pale); }
+.trust-item-text h4 {
+  font-family: var(--font-display);
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: .25rem;
+  letter-spacing: .02em;
+}
+.trust-item-text p {
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── CTA BOOK BTN (about section variant) ── */
+.cta-book-btn {
+  display: block;
+  margin-top: 1.25rem;
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .85rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: all .22s;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0,0,0,.2);
+}
+.cta-book-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.28); }

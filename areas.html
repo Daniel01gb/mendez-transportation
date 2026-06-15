@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Areas — Mendez Transportation LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/areas-page.css">
+</head>
+<body class="page-areas">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="tb-badge"><span class="badge-dot"></span>Accepting Bookings</span>
+      <span class="top-bar-sep"></span>
+      <span>Non-Emergency Medical Transportation &middot; Central Florida</span>
+    </div>
+    <div class="top-bar-right">
+      <a class="top-bar-item" href="tel:+14075695275"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>(407) 569-5275</a>
+      <a class="top-bar-item" href="mailto:info@mendeztransport.com"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>info@mendeztransport.com</a>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <div class="mobile-nav-drawer">
+      <div class="drawer-header">
+        <div class="logo-wrap"><svg class="logo-mark" width="28" height="28" viewBox="0 0 34 34" fill="none"><path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/><path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg><div class="logo-wordmark" style="font-size:1rem;">mendez<span>transportation llc</span></div></div>
+        <button class="drawer-close" id="drawerClose">&#x2715;</button>
+      </div>
+      <div class="drawer-links">
+        <a href="index.html">Home</a><a href="about.html">About Us</a>
+        <a href="services.html">Our Services</a><a href="areas.html" class="active">Service Areas</a>
+        <a href="faq.html">FAQ</a><a href="contact.html">Contact Us</a>
+        <a href="login.html" class="drawer-portal-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Login
+        </a>
+      </div>
+      <div class="drawer-contact">
+        <a class="drawer-contact-item" href="tel:+14075695275"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>(407) 569-5275</a>
+        <a class="drawer-contact-item" href="mailto:info@mendeztransport.com"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>info@mendeztransport.com</a>
+      </div>
+      <div class="drawer-cta-wrap"><a href="index.html#booking" class="mobile-nav-cta">Book Your Ride</a></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="logo-wrap">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/><path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div class="logo-wordmark">mendez<span>transportation llc</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="services.html">Our Services</a></li>
+      <li><a href="areas.html" class="active">Service Areas</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+    </ul>
+    <a href="login.html" class="btn-portal-nav">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Login
+    </a>
+    <a href="index.html#booking" class="btn-book-nav"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book Your Ride</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- BANNER -->
+  <section class="page-banner">
+    <div class="areas-banner-carousel">
+      <div class="areas-banner-slide active" style="background-image:url('https://images.unsplash.com/photo-1619719341796-44c4d2e0eb5a?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="areas-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="areas-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="areas-banner-overlay"></div>
+    <div id="bannerParticles"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="page-banner-content">
+      <nav class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><span>Service Areas</span></nav>
+      <h1 class="banner-title">Service <strong>Areas</strong></h1>
+      <p class="banner-sub">We serve patients across six counties in Central Florida. Find your county below and see which cities we cover.</p>
+    </div>
+    <div class="areas-banner-dots">
+      <button class="carousel-dot active"></button>
+      <button class="carousel-dot"></button>
+      <button class="carousel-dot"></button>
+    </div>
+  </section>
+
+  <!-- COVERAGE INTRO -->
+  <section class="coverage-intro-section">
+    <div class="coverage-intro-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Our Coverage</span>
+        <h2 class="section-title">Serving <strong>Central Florida</strong></h2>
+      </div>
+      <p>Mendez Transportation operates across a broad area of Central Florida, reaching patients in urban, suburban, and rural communities. Our primary service zone covers Orange, Osceola, and Seminole counties with same-day availability. Extended coverage to Polk, Lake, and Brevard counties is also available with advance scheduling.</p>
+      <div class="coverage-badges">
+        <span class="coverage-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Same-day available (primary zones)</span>
+        <span class="coverage-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Extended coverage with 24hr notice</span>
+        <span class="coverage-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Airport & inter-county trips available</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTIES -->
+  <section class="counties-section">
+    <div class="counties-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Coverage Map</span>
+        <h2 class="section-title">Counties <strong>We Serve</strong></h2>
+      </div>
+      <div class="counties-grid">
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Orange County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Orlando</span><span class="city-chip">Winter Park</span><span class="city-chip">Apopka</span><span class="city-chip">Ocoee</span><span class="city-chip">Winter Garden</span><span class="city-chip">Windermere</span><span class="city-chip">Maitland</span><span class="city-chip">Edgewood</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Same-day service available</div>
+        </div>
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Osceola County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Kissimmee</span><span class="city-chip">St. Cloud</span><span class="city-chip">Celebration</span><span class="city-chip">Poinciana</span><span class="city-chip">Buenaventura Lakes</span><span class="city-chip">Narcoossee</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Same-day service available</div>
+        </div>
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Seminole County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Sanford</span><span class="city-chip">Altamonte Springs</span><span class="city-chip">Casselberry</span><span class="city-chip">Longwood</span><span class="city-chip">Oviedo</span><span class="city-chip">Winter Springs</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Same-day service available</div>
+        </div>
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Polk County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Lakeland</span><span class="city-chip">Winter Haven</span><span class="city-chip">Haines City</span><span class="city-chip">Bartow</span><span class="city-chip">Auburndale</span><span class="city-chip">Davenport</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>24hr advance notice required</div>
+        </div>
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Lake County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Leesburg</span><span class="city-chip">Clermont</span><span class="city-chip">Tavares</span><span class="city-chip">Mount Dora</span><span class="city-chip">Eustis</span><span class="city-chip">Lady Lake</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>24hr advance notice required</div>
+        </div>
+        <div class="county-card reveal">
+          <div class="county-header">
+            <div class="county-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="county-name">Brevard County</div>
+          </div>
+          <div class="county-cities-label">Cities Served</div>
+          <div class="county-cities-list">
+            <span class="city-chip">Melbourne</span><span class="city-chip">Cocoa</span><span class="city-chip">Palm Bay</span><span class="city-chip">Titusville</span><span class="city-chip">Rockledge</span><span class="city-chip">Merritt Island</span>
+          </div>
+          <div class="county-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>24hr advance notice required</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COVERAGE NOTES -->
+  <section class="coverage-notes-section">
+    <div class="covnotes-carousel">
+      <div class="covnotes-slide active" style="background-image:url('https://images.unsplash.com/photo-1619719341796-44c4d2e0eb5a?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="covnotes-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="covnotes-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="covnotes-overlay"></div>
+    <div id="covnotesParticles"></div>
+    <div class="covnotes-bg-circle"></div>
+    <div class="covnotes-bg-circle"></div>
+    <div class="covnotes-shimmer"></div>
+    <div class="coverage-notes-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow" style="color:var(--blue-light);">Good to Know</span>
+        <h2 class="section-title" style="color:#fff;">Coverage <strong>Details</strong></h2>
+      </div>
+      <div class="coverage-notes-grid">
+        <div class="coverage-note-card reveal">
+          <div class="coverage-note-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="coverage-note-title">Same-Day Availability</div>
+          <div class="coverage-note-text">Orange, Osceola, and Seminole counties have same-day service based on driver availability. Call by 8 AM for best same-day scheduling.</div>
+        </div>
+        <div class="coverage-note-card reveal">
+          <div class="coverage-note-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div class="coverage-note-title">Don't See Your City?</div>
+          <div class="coverage-note-text">If your city isn't listed, contact us — we may still be able to accommodate your trip. We evaluate requests outside our standard zone on a case-by-case basis.</div>
+        </div>
+        <div class="coverage-note-card reveal">
+          <div class="coverage-note-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+          <div class="coverage-note-title">Inter-County Trips</div>
+          <div class="coverage-note-text">We regularly transport patients from one county to another — for example, from Kissimmee to a specialist in Orlando or from Lakeland to a hospital in Tampa.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="page-cta-section">
+    <div class="page-cta-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Ready to Book?</span>
+        <h2>Schedule Your <strong>Ride</strong></h2>
+      </div>
+      <p>Enter your pickup and drop-off addresses and we'll confirm availability in your area right away.</p>
+      <div class="page-cta-btns">
+        <a href="index.html#booking" class="btn-cta-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book Online</a>
+        <a href="contact.html" class="btn-cta-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div id="footerParticles"></div><div class="footer-bg-circle"></div><div class="footer-bg-circle"></div>
+    <div class="footer-certs-wrap"><div class="footer-certs">
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>HIPAA Compliant</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Licensed &amp; Insured</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Certified Drivers</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>24/7 Availability</span></div>
+    </div></div>
+    <div class="footer-main">
+      <div class="footer-brand"><div class="logo-wordmark">mendez<span>transportation llc</span></div><p class="footer-brand-desc">Professional non-emergency medical transportation serving Central Florida.</p></div>
+      <div><div class="footer-heading">Navigation</div><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="services.html">Our Services</a></li><li><a href="areas.html">Service Areas</a></li><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div><div class="footer-heading">Contact</div><div class="footer-contact-item"><div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg></div><a href="tel:+14075695275">(407) 569-5275</a></div><div class="footer-contact-item"><div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><a href="mailto:info@mendeztransport.com">info@mendeztransport.com</a></div></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-bottom-left"><span class="footer-copy">© 2026 Mendez Transportation LLC. All rights reserved.</span></div><div class="footer-bottom-links"><a href="#">Privacy Policy</a><span>·</span><a href="#">Terms of Service</a></div></div>
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    initParticles('bannerParticles', 20);
+    initParticles('covnotesParticles', 22);
+    initParticles('footerParticles', 18);
+    (function() {
+      const slides = document.querySelectorAll('.areas-banner-slide');
+      const dots   = document.querySelectorAll('.areas-banner-dots .carousel-dot');
+      let cur = 0, timer;
+      function goTo(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      timer = setInterval(() => goTo(cur + 1), 5500);
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); clearInterval(timer); timer = setInterval(() => goTo(cur + 1), 5500); }));
+    })();
+    (function() {
+      const slides = document.querySelectorAll('.covnotes-slide');
+      let cur = 0;
+      setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }, 6000);
+    })();
+  </script>
+</body>
+</html>

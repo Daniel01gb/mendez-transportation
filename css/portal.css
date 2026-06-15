@@ -1,0 +1,673 @@
+/* ── PATIENT PORTAL DASHBOARD ── */
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+@keyframes overlayFadeIn { from{opacity:0} to{opacity:1} }
+
+/* Trip verification overlay */
+.trip-verify-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #060b20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  animation: overlayFadeIn .3s ease both;
+  overflow-y: auto;
+}
+.trip-verify-overlay::before {
+  content: '';
+  position: fixed;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30,42,110,.32) 0%, transparent 70%);
+  top: -250px; left: -200px;
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+}
+.trip-verify-overlay::after {
+  content: '';
+  position: fixed;
+  width: 450px; height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,165,233,.1) 0%, transparent 70%);
+  bottom: -120px; right: -100px;
+  pointer-events: none;
+  animation: float 10s ease-in-out infinite reverse;
+}
+.trip-overlay-out {
+  animation: overlayFadeIn .42s ease reverse both !important;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+@keyframes etaRing { 0%{box-shadow:0 0 0 0 rgba(14,165,233,.45)} 100%{box-shadow:0 0 0 9px rgba(14,165,233,0)} }
+@keyframes driverPing { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(2.6);opacity:0} }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* Body */
+.portal-body {
+  min-height: 100vh;
+  background: #090e28;
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* ── PORTAL NAVBAR ── */
+.portal-nav {
+  background: rgba(6,10,34,.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  padding: 0 2rem;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  flex-shrink: 0;
+}
+.portal-nav-left { display: flex; align-items: center; gap: 1.25rem; }
+.portal-nav-logo { display: flex; align-items: center; gap: .6rem; }
+.portal-nav-logo .logo-wordmark {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: .92rem;
+  color: var(--white);
+  letter-spacing: .12em;
+  text-transform: lowercase;
+  line-height: 1.15;
+}
+.portal-nav-logo .logo-wordmark span {
+  display: block;
+  font-size: .5em;
+  letter-spacing: .24em;
+  font-weight: 400;
+  opacity: .48;
+}
+.portal-divider { width: 1px; height: 18px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+.portal-badge {
+  font-family: var(--font-display);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(14,165,233,.1);
+  border: 1px solid rgba(14,165,233,.2);
+  border-radius: var(--radius-pill);
+  padding: .28rem .72rem;
+}
+.portal-nav-right { display: flex; align-items: center; gap: 1rem; }
+.portal-back-site {
+  display: flex;
+  align-items: center;
+  gap: .38rem;
+  font-family: var(--font-display);
+  font-size: .61rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.32);
+  transition: color .2s;
+  text-decoration: none;
+}
+.portal-back-site:hover { color: rgba(255,255,255,.62); }
+.portal-patient-chip { display: flex; align-items: center; gap: .58rem; }
+.portal-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1E2A6E, #4A6FA5);
+  border: 1.5px solid rgba(56,189,248,.35);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: .62rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.portal-patient-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .76rem;
+  color: rgba(255,255,255,.75);
+  letter-spacing: .03em;
+}
+.portal-logout-btn {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: var(--radius-pill);
+  color: rgba(255,255,255,.42);
+  font-family: var(--font-display);
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: .4rem .85rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: .4rem;
+  transition: all .2s;
+}
+.portal-logout-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.72); }
+
+/* ── TRIP BANNER ── */
+.trip-banner {
+  background: rgba(14,165,233,.07);
+  border-bottom: 1px solid rgba(14,165,233,.13);
+  padding: .7rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.trip-banner-item {
+  display: flex; align-items: center; gap: .45rem;
+  font-size: .77rem;
+  color: rgba(255,255,255,.5);
+}
+.trip-banner-item svg { color: #38bdf8; flex-shrink: 0; }
+.trip-banner-item strong { color: rgba(255,255,255,.82); font-weight: 500; }
+.trip-banner-sep { width: 1px; height: 14px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+.trip-banner-right { margin-left: auto; display: flex; align-items: center; gap: .85rem; flex-shrink: 0; }
+.secure-session-badge {
+  display: flex; align-items: center; gap: .38rem;
+  font-family: var(--font-display);
+  font-size: .56rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(74,222,128,.45);
+}
+.live-badge {
+  display: flex; align-items: center; gap: .38rem;
+  font-family: var(--font-display);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #4ade80;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ── MAIN GRID ── */
+.portal-main {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  height: calc(100vh - 58px - 43px);
+}
+
+/* ── SIDEBAR ── */
+.portal-sidebar {
+  background: rgba(7,11,36,.95);
+  border-right: 1px solid rgba(255,255,255,.055);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.portal-sidebar::-webkit-scrollbar { width: 3px; }
+.portal-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 3px; }
+
+.sidebar-section {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid rgba(255,255,255,.045);
+}
+.sidebar-section:last-child { border-bottom: none; }
+
+.sidebar-label {
+  font-family: var(--font-display);
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  margin-bottom: .85rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.sidebar-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.04); }
+
+/* ETA card */
+.eta-card {
+  background: rgba(14,165,233,.09);
+  border: 1px solid rgba(14,165,233,.18);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .62rem;
+  transition: background .6s ease, border-color .6s ease;
+}
+/* ETA color states */
+.eta-card.eta-amber {
+  background: rgba(251,191,36,.08);
+  border-color: rgba(251,191,36,.22);
+}
+.eta-card.eta-orange {
+  background: rgba(249,115,22,.09);
+  border-color: rgba(249,115,22,.25);
+}
+.eta-card.eta-green {
+  background: rgba(34,197,94,.09);
+  border-color: rgba(34,197,94,.22);
+}
+/* ETA chip */
+.eta-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-family: var(--font-display);
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  transition: color .6s ease;
+}
+.eta-card.eta-amber .eta-status-chip { color: #fbbf24; }
+.eta-card.eta-orange .eta-status-chip { color: #fb923c; }
+.eta-card.eta-green  .eta-status-chip { color: #4ade80; }
+.eta-chip-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: pulse 1.6s ease-in-out infinite;
+  transition: background .6s ease;
+  flex-shrink: 0;
+}
+.eta-card.eta-amber .eta-chip-dot { background: #fbbf24; }
+.eta-card.eta-orange .eta-chip-dot { background: #fb923c; }
+.eta-card.eta-green  .eta-chip-dot { background: #4ade80; animation: none; }
+.eta-number { display: flex; align-items: baseline; gap: .28rem; }
+.big-num {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: #38bdf8;
+  line-height: 1;
+  letter-spacing: -.03em;
+  transition: color .6s ease;
+}
+.eta-card.eta-amber .big-num { color: #fbbf24; }
+.eta-card.eta-orange .big-num { color: #fb923c; }
+.eta-card.eta-green  .big-num { color: #4ade80; }
+.eta-unit {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  font-weight: 600;
+  color: rgba(56,189,248,.55);
+  letter-spacing: .06em;
+  transition: color .6s ease;
+}
+.eta-card.eta-amber .eta-unit { color: rgba(251,191,36,.55); }
+.eta-card.eta-orange .eta-unit { color: rgba(249,115,22,.55); }
+.eta-card.eta-green  .eta-unit { color: rgba(74,222,128,.55); }
+.eta-sub {
+  font-size: .79rem;
+  color: rgba(255,255,255,.42);
+  transition: color .5s;
+}
+.eta-progress {
+  height: 3px;
+  background: rgba(255,255,255,.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.eta-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 3px;
+  transition: width 10s linear, background .6s ease;
+}
+.eta-card.eta-amber .eta-progress-bar { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.eta-card.eta-orange .eta-progress-bar { background: linear-gradient(90deg, #ea580c, #fb923c); }
+.eta-card.eta-green  .eta-progress-bar { background: linear-gradient(90deg, #16a34a, #4ade80); }
+
+/* Driver card */
+.driver-card {
+  display: flex; align-items: center; gap: .9rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--radius-md);
+  padding: .95rem 1rem;
+}
+.driver-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1E2A6E, #4A6FA5);
+  border: 2px solid rgba(56,189,248,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .85rem;
+  color: white;
+  flex-shrink: 0;
+}
+.driver-info { flex: 1; min-width: 0; }
+.driver-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .88rem;
+  color: var(--white);
+  margin-bottom: .12rem;
+}
+.driver-vehicle { font-size: .73rem; color: rgba(255,255,255,.4); }
+.driver-rating {
+  display: flex; align-items: center; gap: .22rem;
+  font-family: var(--font-display);
+  font-size: .7rem;
+  font-weight: 600;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+/* Status timeline */
+.status-timeline { display: flex; flex-direction: column; }
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+.timeline-step:last-child { padding-bottom: 0; }
+.step-icon-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.step-icon {
+  width: 27px; height: 27px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.13);
+  background: rgba(255,255,255,.035);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.25);
+  transition: all .35s;
+  z-index: 1;
+  flex-shrink: 0;
+}
+.timeline-step.done .step-icon {
+  background: rgba(34,197,94,.13);
+  border-color: rgba(34,197,94,.38);
+  color: #4ade80;
+}
+.timeline-step.active .step-icon {
+  background: rgba(14,165,233,.18);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  animation: etaRing 2.2s ease-in-out infinite;
+}
+.step-line {
+  width: 1.5px;
+  flex: 1;
+  min-height: 18px;
+  background: rgba(255,255,255,.05);
+  margin-top: 3px;
+}
+.timeline-step.done .step-line { background: rgba(34,197,94,.18); }
+.step-content { padding-top: 2px; }
+.step-title {
+  font-family: var(--font-display);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  color: rgba(255,255,255,.3);
+  margin-bottom: .08rem;
+}
+.timeline-step.done .step-title { color: rgba(255,255,255,.58); }
+.timeline-step.active .step-title { color: #38bdf8; }
+.step-time { font-size: .68rem; color: rgba(255,255,255,.2); }
+.timeline-step.done .step-time { color: rgba(255,255,255,.28); }
+.timeline-step.active .step-time { color: rgba(56,189,248,.45); }
+
+/* Route info */
+.route-info { display: flex; flex-direction: column; gap: .5rem; }
+.route-point { display: flex; align-items: flex-start; gap: .7rem; }
+.route-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.route-dot.pickup { background: #38bdf8; box-shadow: 0 0 6px rgba(56,189,248,.4); }
+.route-dot.destination { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.4); }
+.route-connector {
+  width: 1.5px;
+  height: 16px;
+  background: rgba(255,255,255,.07);
+  margin-left: 4px;
+}
+.route-label {
+  font-family: var(--font-display);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+  margin-bottom: .14rem;
+}
+.route-address { font-size: .79rem; color: rgba(255,255,255,.6); line-height: 1.45; }
+
+/* Upcoming rides */
+.upcoming-ride {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .72rem .85rem;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.055);
+  margin-bottom: .45rem;
+  transition: background .2s, border-color .2s;
+  cursor: default;
+}
+.upcoming-ride:hover { background: rgba(255,255,255,.055); border-color: rgba(255,255,255,.1); }
+.upcoming-ride:last-child { margin-bottom: 0; }
+.upcoming-date-badge {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 36px; height: 40px;
+  background: rgba(255,255,255,.055);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.upcoming-month {
+  font-family: var(--font-display);
+  font-size: .48rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.38);
+}
+.upcoming-day {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .98rem;
+  color: var(--white);
+  line-height: 1;
+}
+.upcoming-details { flex: 1; min-width: 0; }
+.upcoming-time {
+  font-family: var(--font-display);
+  font-size: .7rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.68);
+  letter-spacing: .04em;
+  margin-bottom: .08rem;
+}
+.upcoming-dest { font-size: .72rem; color: rgba(255,255,255,.32); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── MAP PANEL ── */
+.portal-map-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+#trackingMap {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+/* Leaflet overrides */
+.leaflet-container { background: #0a0f26 !important; }
+.leaflet-tile-pane { opacity: .92; }
+
+/* Custom map markers */
+.map-pickup-pin {
+  width: 38px; height: 44px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.map-pickup-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #0ea5e9;
+}
+.map-pickup-circle {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  box-shadow: 0 4px 14px rgba(14,165,233,.55);
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+}
+
+.map-car-wrap {
+  position: relative;
+  width: 40px; height: 40px;
+}
+.map-car-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #1E2A6E;
+  border: 2.5px solid #38bdf8;
+  box-shadow: 0 0 0 0 rgba(56,189,248,.5);
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+  animation: etaRing 2s ease-in-out infinite;
+}
+.map-car-ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: rgba(56,189,248,.22);
+  animation: driverPing 2.2s ease-out infinite;
+}
+.map-car-ping2 {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: rgba(56,189,248,.12);
+  animation: driverPing 2.2s ease-out infinite .8s;
+}
+
+/* Map status bar */
+.map-status-bar {
+  background: rgba(6,10,34,.93);
+  border-top: 1px solid rgba(255,255,255,.055);
+  padding: .68rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.status-pill {
+  display: flex; align-items: center; gap: .45rem;
+  font-family: var(--font-display);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(14,165,233,.1);
+  border: 1px solid rgba(14,165,233,.2);
+  border-radius: var(--radius-pill);
+  padding: .38rem .85rem;
+  transition: all .4s;
+}
+.status-pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.status-pill.arrived {
+  color: #4ade80;
+  background: rgba(34,197,94,.1);
+  border-color: rgba(34,197,94,.2);
+}
+.status-pill.arrived .status-pill-dot { background: #4ade80; }
+.map-meta { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.map-meta-item {
+  display: flex; align-items: center; gap: .38rem;
+  font-size: .74rem;
+  color: rgba(255,255,255,.38);
+}
+.map-meta-item svg { color: rgba(255,255,255,.28); flex-shrink: 0; }
+.map-meta-item strong { color: rgba(255,255,255,.65); font-weight: 500; }
+.call-driver-btn {
+  margin-left: auto;
+  background: rgba(74,222,128,.08);
+  border: 1px solid rgba(74,222,128,.22);
+  border-radius: var(--radius-pill);
+  color: #4ade80;
+  font-family: var(--font-display);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .42rem .88rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: .38rem;
+  transition: all .22s;
+  text-decoration: none;
+}
+.call-driver-btn:hover {
+  background: rgba(74,222,128,.15);
+  border-color: rgba(74,222,128,.38);
+  transform: translateY(-1px);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .portal-body { overflow: auto; }
+  .portal-main { grid-template-columns: 1fr; height: auto; }
+  .portal-map-panel { height: 55vh; min-height: 380px; }
+  .portal-sidebar { overflow-y: visible; }
+  .eta-card { padding: 1rem; }
+  .big-num { font-size: 2.6rem; }
+}
+@media (max-width: 640px) {
+  .portal-nav { padding: 0 1rem; gap: .6rem; }
+  .portal-back-site { display: none; }
+  .portal-patient-name { display: none; }
+  .portal-badge { display: none; }
+  .portal-divider { display: none; }
+
+  .trip-banner { padding: .55rem 1rem; gap: .55rem; font-size: .72rem; }
+  .trip-banner-sep { display: none; }
+  .trip-banner-item { font-size: .72rem; }
+  .secure-session-badge { display: none; }
+
+  .sidebar-section { padding: 1rem; }
+  .big-num { font-size: 2.4rem; }
+  .driver-card { padding: .8rem; gap: .7rem; }
+  .driver-avatar { width: 38px; height: 38px; font-size: .75rem; }
+
+  .map-status-bar { padding: .55rem 1rem; gap: .65rem; flex-wrap: wrap; }
+  .map-meta { gap: .75rem; flex-wrap: wrap; }
+  .portal-map-panel { height: 48vh; min-height: 300px; }
+
+  .upcoming-ride { padding: .6rem .75rem; }
+  .step-title { font-size: .72rem; }
+}

@@ -1,0 +1,256 @@
+/* ── HERO CAROUSEL ── */
+.hero-carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+  will-change: transform, opacity;
+}
+.hero-slide.active {
+  opacity: 1;
+  animation: kenBurns 8s ease-in-out forwards;
+}
+@keyframes kenBurns {
+  from { transform: scale(1.1); }
+  to   { transform: scale(1.0); }
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(13,18,64,.78) 0%,
+    rgba(30,42,110,.62) 60%,
+    rgba(13,18,64,.72) 100%
+  );
+  pointer-events: none;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: .55rem;
+  z-index: 10;
+}
+.carousel-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  border: 1.5px solid rgba(255,255,255,.5);
+  cursor: pointer;
+  transition: all .35s ease;
+  padding: 0;
+}
+.carousel-dot.active {
+  background: var(--white);
+  width: 26px;
+  border-radius: 4px;
+  border-color: var(--white);
+}
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: var(--white);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, box-shadow .2s, transform .3s cubic-bezier(.34,1.56,.64,1);
+  backdrop-filter: blur(6px);
+}
+.carousel-arrow:hover {
+  background: rgba(255,255,255,.25);
+  border-color: rgba(255,255,255,.6);
+  box-shadow: 0 0 22px rgba(255,255,255,.18), 0 4px 16px rgba(0,0,0,.25);
+  transform: translateY(-50%) scale(1.12);
+}
+.carousel-arrow:active { transform: translateY(-50%) scale(.94); transition: transform .1s; }
+.carousel-arrow.prev { left: 1.5rem; }
+.carousel-arrow.next { right: 1.5rem; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--navy-dark);
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-bg-circle:nth-child(1) {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(74,111,165,.18) 0%, transparent 70%);
+  top: -150px; left: -100px;
+  animation: float 8s ease-in-out infinite;
+}
+.hero-bg-circle:nth-child(2) {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(138,164,200,.12) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+.hero-bg-circle:nth-child(3) {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(200,216,236,.08) 0%, transparent 70%);
+  top: 40%; right: 15%;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-20px); }
+}
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 820px;
+  animation: fadeUp .9s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-family: var(--font-display);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  padding: .4rem 1.1rem;
+  border: 1px solid rgba(138,164,200,.35);
+  border-radius: var(--radius-pill);
+  margin-bottom: 2rem;
+}
+.eyebrow-dot {
+  width: 6px; height: 6px;
+  background: var(--blue-light);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .5; transform: scale(.7); }
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight: 200;
+  color: var(--white);
+  line-height: 1.15;
+  letter-spacing: .02em;
+  margin-bottom: 1.5rem;
+}
+.hero h1 strong { font-weight: 700; color: var(--blue-pale); }
+.hero-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,.65);
+  max-width: 540px;
+  margin: 0 auto 2.8rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3.5rem;
+}
+
+/* ── PRIMARY & SECONDARY BUTTONS ── */
+.btn-primary {
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 1rem 2.4rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: all .22s;
+  box-shadow: var(--shadow-btn);
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(30,42,110,.35); }
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform .55s ease;
+}
+.btn-primary:hover::after { transform: translateX(100%); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 1rem 2.4rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(255,255,255,.35);
+  cursor: pointer;
+  transition: all .22s;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+.btn-secondary:hover { border-color: #fff; background: rgba(255,255,255,.08); }
+
+/* ── TRUST BADGES ── */
+.trust-badges {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: rgba(255,255,255,.6);
+  font-size: .78rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: .05em;
+}

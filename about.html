@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us — Mendez Transportation LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/stats.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/about-page.css">
+</head>
+<body class="page-about">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="tb-badge"><span class="badge-dot"></span>Accepting Bookings</span>
+      <span class="top-bar-sep"></span>
+      <span>Non-Emergency Medical Transportation &middot; Central Florida</span>
+    </div>
+    <div class="top-bar-right">
+      <a class="top-bar-item" href="tel:+14075695275">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+        (407) 569-5275
+      </a>
+      <a class="top-bar-item" href="mailto:info@mendeztransport.com">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        info@mendeztransport.com
+      </a>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <div class="mobile-nav-drawer">
+      <div class="drawer-header">
+        <div class="logo-wrap">
+          <svg class="logo-mark" width="28" height="28" viewBox="0 0 34 34" fill="none">
+            <path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <div class="logo-wordmark" style="font-size:1rem;">mendez<span>transportation llc</span></div>
+        </div>
+        <button class="drawer-close" id="drawerClose">&#x2715;</button>
+      </div>
+      <div class="drawer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html" class="active">About Us</a>
+        <a href="services.html">Our Services</a>
+        <a href="areas.html">Service Areas</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="login.html" class="drawer-portal-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Login
+        </a>
+      </div>
+      <div class="drawer-contact">
+        <a class="drawer-contact-item" href="tel:+14075695275">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+          (407) 569-5275
+        </a>
+        <a class="drawer-contact-item" href="mailto:info@mendeztransport.com">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          info@mendeztransport.com
+        </a>
+      </div>
+      <div class="drawer-cta-wrap">
+        <a href="index.html#booking" class="mobile-nav-cta">Book Your Ride</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="logo-wrap">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div class="logo-wordmark">
+        mendez
+        <span>transportation llc</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html" class="active">About Us</a></li>
+      <li><a href="services.html">Our Services</a></li>
+      <li><a href="areas.html">Service Areas</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+    </ul>
+    <a href="login.html" class="btn-portal-nav">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Login
+    </a>
+    <a href="index.html#booking" class="btn-book-nav">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Book Your Ride
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- PAGE HERO BANNER -->
+  <section class="page-banner">
+    <!-- Ken Burns carousel background -->
+    <div class="about-banner-carousel">
+      <div class="about-banner-slide active" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="about-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="about-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="about-banner-overlay"></div>
+    <div id="bannerParticles"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="page-banner-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>About Us</span>
+      </nav>
+      <h1 class="banner-title">About <strong>Mendez Transportation</strong></h1>
+      <p class="banner-sub">Compassionate, reliable non-emergency medical transportation serving Central Florida families since 2018.</p>
+    </div>
+    <div class="about-banner-dots">
+      <button class="carousel-dot active" aria-label="Slide 1"></button>
+      <button class="carousel-dot" aria-label="Slide 2"></button>
+      <button class="carousel-dot" aria-label="Slide 3"></button>
+    </div>
+  </section>
+
+  <!-- OUR STORY -->
+  <section class="story-section">
+    <div class="story-inner">
+      <div class="story-text reveal-left">
+        <span class="section-eyebrow">Our Story</span>
+        <h2 class="section-title">Built on <strong>Care &amp; Community</strong></h2>
+        <p>Mendez Transportation LLC was founded with a simple but powerful belief: every patient deserves a safe, dignified, and reliable ride to their medical appointments — regardless of their mobility or financial situation.</p>
+        <p>What started as a single vehicle serving Osceola County has grown into a fleet covering six counties across Central Florida. We have completed thousands of trips for dialysis patients, chemotherapy recipients, physical therapy clients, and countless specialist visits.</p>
+        <p>Our drivers are not just drivers — they are trained caregivers who understand the vulnerability of medical travel. Every trip we make is a commitment to the patients and families who trust us with their most important journeys.</p>
+        <a href="index.html#booking" class="story-cta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book Your Ride
+        </a>
+      </div>
+      <div class="story-visual reveal-right">
+        <div class="story-carousel-wrap">
+          <!-- Ken Burns image carousel -->
+          <div class="story-carousel">
+            <div class="story-slide active" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="story-slide" style="background-image:url('https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="story-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=900&q=85')"></div>
+          </div>
+          <!-- Gradient overlay -->
+          <div class="story-carousel-overlay"></div>
+          <!-- Shimmer / destello -->
+          <div class="story-shimmer"></div>
+          <!-- Stats overlaid at top -->
+          <div class="story-stat-pills">
+            <div class="story-stat-pill"><strong>2018</strong><span>Founded</span></div>
+            <div class="story-stat-pill"><strong>5K+</strong><span>Trips</span></div>
+            <div class="story-stat-pill"><strong>6</strong><span>Counties</span></div>
+            <div class="story-stat-pill"><strong>98%</strong><span>On-Time</span></div>
+          </div>
+          <!-- Navigation dots -->
+          <div class="story-dots">
+            <button class="carousel-dot active" aria-label="Slide 1"></button>
+            <button class="carousel-dot" aria-label="Slide 2"></button>
+            <button class="carousel-dot" aria-label="Slide 3"></button>
+          </div>
+        </div>
+        <div class="story-badge-strip">
+          <div class="story-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            HIPAA Compliant
+          </div>
+          <div class="story-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Licensed &amp; Insured
+          </div>
+          <div class="story-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            CPR-Certified Drivers
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION / VISION / VALUES -->
+  <section class="mvv-section">
+    <div class="mvv-inner">
+      <div class="mvv-card reveal">
+        <div class="mvv-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3>Our Mission</h3>
+        <p>To provide safe, compassionate, and reliable non-emergency medical transportation that empowers patients to access the care they need — with dignity and on time, every time.</p>
+      </div>
+      <div class="mvv-card reveal">
+        <div class="mvv-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>Our Vision</h3>
+        <p>To be Central Florida's most trusted NEMT provider — recognized not just for our reliability, but for the genuine care and respect we bring to every single patient interaction.</p>
+      </div>
+      <div class="mvv-card reveal">
+        <div class="mvv-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <h3>Our Values</h3>
+        <p>Safety first, always. Compassion in every interaction. Reliability patients and families can count on. Professionalism that reflects the trust placed in us with each ride.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE VALUES -->
+  <section class="values-section">
+    <!-- Ken Burns carousel background -->
+    <div class="values-carousel">
+      <div class="values-slide active" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="values-slide" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="values-slide" style="background-image:url('https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="values-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="values-carousel-overlay"></div>
+    <div id="valuesParticles"></div>
+    <div class="values-bg-circle"></div>
+    <div class="values-bg-circle"></div>
+    <div class="values-shimmer"></div>
+    <div class="values-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">What Drives Us</span>
+        <h2 class="section-title">Our Core <strong>Values</strong></h2>
+      </div>
+      <div class="values-grid">
+        <div class="value-card reveal">
+          <div class="value-number">01</div>
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h4>Safety First</h4>
+          <p>Every vehicle is inspected daily. Every driver is background-checked, CPR-certified, and trained in passenger assistance. There are no shortcuts when it comes to patient safety.</p>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-number">02</div>
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+          <h4>Compassion</h4>
+          <p>We understand our passengers are often facing difficult health journeys. Our drivers are trained to be patient, kind, and sensitive to each individual's needs and comfort.</p>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-number">03</div>
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h4>Reliability</h4>
+          <p>A 98% on-time rate is not an accident — it's the result of careful scheduling, real-time route planning, and a team that takes every appointment seriously.</p>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-number">04</div>
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <h4>Professionalism</h4>
+          <p>From clean, maintained vehicles to clear communication with patients and healthcare providers, we hold ourselves to a professional standard in everything we do.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM SECTION -->
+  <section class="team-section">
+    <div class="team-inner">
+      <div class="team-header reveal">
+        <span class="section-eyebrow">The People Behind Every Ride</span>
+        <h2 class="section-title">Meet Our <strong>Team</strong></h2>
+        <p class="team-intro">A small but dedicated team committed to making every trip safe, on time, and compassionate.</p>
+      </div>
+      <div class="team-grid">
+
+        <!-- CEO -->
+        <div class="team-card reveal">
+          <div class="team-photo-wrap">
+            <div class="team-photo-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <!-- Replace placeholder with: <img src="img/team/ceo.jpg" alt="CEO"> -->
+            <div class="team-role-badge">CEO &amp; Founder</div>
+          </div>
+          <div class="team-info">
+            <h3 class="team-name">Your Name Here</h3>
+            <p class="team-bio">Visionary leader and founder of Mendez Transportation LLC. With a background in healthcare logistics, they built the company from a single vehicle into a multi-county NEMT provider dedicated to patient dignity and reliable service.</p>
+            <div class="team-tags">
+              <span class="team-tag">Leadership</span>
+              <span class="team-tag">Strategy</span>
+              <span class="team-tag">Operations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANAGER -->
+        <div class="team-card reveal">
+          <div class="team-photo-wrap">
+            <div class="team-photo-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <!-- Replace placeholder with: <img src="img/team/manager.jpg" alt="Manager"> -->
+            <div class="team-role-badge">Operations Manager</div>
+          </div>
+          <div class="team-info">
+            <h3 class="team-name">Your Name Here</h3>
+            <p class="team-bio">Oversees day-to-day operations, driver scheduling, and route coordination. Ensures every trip runs on time and every patient receives the care and attention they deserve from the moment of booking to drop-off.</p>
+            <div class="team-tags">
+              <span class="team-tag">Scheduling</span>
+              <span class="team-tag">Fleet Mgmt</span>
+              <span class="team-tag">Coordination</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYROLL -->
+        <div class="team-card reveal">
+          <div class="team-photo-wrap">
+            <div class="team-photo-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <!-- Replace placeholder with: <img src="img/team/payroll.jpg" alt="Payroll"> -->
+            <div class="team-role-badge">Payroll &amp; Finance</div>
+          </div>
+          <div class="team-info">
+            <h3 class="team-name">Your Name Here</h3>
+            <p class="team-bio">Manages payroll, billing, and financial compliance for the company. Works closely with insurance providers to ensure seamless processing and keeps the business running smoothly behind the scenes.</p>
+            <div class="team-tags">
+              <span class="team-tag">Payroll</span>
+              <span class="team-tag">Billing</span>
+              <span class="team-tag">Compliance</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="about-cta-section">
+    <div class="about-cta-inner">
+      <div class="about-cta-text reveal-left">
+        <span class="section-eyebrow" style="color:var(--blue-light);">Ready to Ride?</span>
+        <h2>Schedule Your <strong>Next Appointment</strong></h2>
+        <p>Booking takes less than 3 minutes. Tell us where you need to go and we'll take care of the rest — safely and on time.</p>
+      </div>
+      <div class="about-cta-actions reveal-right">
+        <a href="index.html#booking" class="cta-btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book Your Ride
+        </a>
+        <a href="tel:+14075695275" class="cta-btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+          (407) 569-5275
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+
+    <div id="footerParticles"></div>
+    <div class="footer-bg-circle"></div>
+    <div class="footer-bg-circle"></div>
+
+    <div class="footer-certs-wrap">
+      <div class="footer-certs">
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>HIPAA Compliant</span></div>
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Licensed &amp; Insured</span></div>
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Certified Drivers</span></div>
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>24/7 Availability</span></div>
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Grade A Safety</span></div>
+        <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>NEMT Provider</span></div>
+      </div>
+    </div>
+
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="logo-wordmark">mendez<span>transportation llc</span></div>
+        <p class="footer-brand-desc">Professional non-emergency medical transportation serving Central Florida. Certified drivers, accessible vehicles, and a commitment to compassionate care — every trip.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Facebook"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="#" class="social-link" aria-label="Instagram"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+          <a href="#" class="social-link" aria-label="Google Reviews"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10H12v4h5.2A5 5 0 117 12a5 5 0 013.5-4.6"/><path d="M15 7l2-2-2-2"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Navigation</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="index.html#services">Our Services</a></li>
+          <li><a href="index.html#areas">Service Areas</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <ul class="footer-links">
+          <li><a href="index.html#services">Ambulatory Transport</a></li>
+          <li><a href="index.html#services">Wheelchair Accessible</a></li>
+          <li><a href="index.html#services">Stretcher Transport</a></li>
+          <li><a href="index.html#services">Medicaid / Insurance</a></li>
+          <li><a href="index.html#booking">Book a Ride</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <div class="footer-contact-item">
+          <div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <span>3400 10th St<br>Saint Cloud, FL 34769</span>
+        </div>
+        <div class="footer-contact-item">
+          <div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg></div>
+          <div><a href="tel:+14075695275">(407) 569-5275</a><br><a href="tel:+13216960482">(321) 696-0482</a></div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <a href="mailto:info@mendeztransport.com">info@mendeztransport.com</a>
+        </div>
+        <div class="footer-heading" style="margin-top:1.4rem;margin-bottom:.8rem;">Hours</div>
+        <div class="footer-hours">
+          <div class="footer-hours-row"><span>Mon – Fri</span><span>6:00 AM – 9:00 PM</span></div>
+          <div class="footer-hours-row"><span>Saturday</span><span>7:00 AM – 7:00 PM</span></div>
+          <div class="footer-hours-row"><span>Sunday</span><span>8:00 AM – 5:00 PM</span></div>
+          <div class="footer-hours-note">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            24/7 for urgent requests
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        <span class="footer-copy">© 2026 Mendez Transportation LLC. All rights reserved.</span>
+        <span class="footer-license">Licensed NEMT Provider — State of Florida &nbsp;·&nbsp; AHCA Compliant</span>
+      </div>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <span>·</span>
+        <a href="#">Terms of Service</a>
+        <span>·</span>
+        <a href="#">Accessibility</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    initParticles('bannerParticles', 20);
+    initParticles('valuesParticles', 22);
+    initParticles('footerParticles', 18);
+
+    /* ── Banner carousel ── */
+    (function() {
+      const slides = document.querySelectorAll('.about-banner-slide');
+      const dots   = document.querySelectorAll('.about-banner-dots .carousel-dot');
+      let cur = 0, timer;
+      function goTo(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      function tick() { goTo(cur + 1); }
+      timer = setInterval(tick, 5500);
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); clearInterval(timer); timer = setInterval(tick, 5500); }));
+    })();
+
+    /* ── Story carousel ── */
+    (function() {
+      const slides = document.querySelectorAll('.story-slide');
+      const dots   = document.querySelectorAll('.story-dots .carousel-dot');
+      let cur = 0, timer;
+      function goTo(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      function tick() { goTo(cur + 1); }
+      timer = setInterval(tick, 5500);
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); clearInterval(timer); timer = setInterval(tick, 5500); }));
+    })();
+
+    /* ── Values carousel ── */
+    (function() {
+      const slides = document.querySelectorAll('.values-slide');
+      if (!slides.length) return;
+      let cur = 0;
+      function goTo(n) {
+        slides[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      setInterval(() => goTo(cur + 1), 6000);
+    })();
+  </script>
+
+</body>
+</html>

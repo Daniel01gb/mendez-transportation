@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Services — Mendez Transportation LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/services-page.css">
+</head>
+<body class="page-services">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="tb-badge"><span class="badge-dot"></span>Accepting Bookings</span>
+      <span class="top-bar-sep"></span>
+      <span>Non-Emergency Medical Transportation &middot; Central Florida</span>
+    </div>
+    <div class="top-bar-right">
+      <a class="top-bar-item" href="tel:+14075695275"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>(407) 569-5275</a>
+      <a class="top-bar-item" href="mailto:info@mendeztransport.com"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>info@mendeztransport.com</a>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <div class="mobile-nav-drawer">
+      <div class="drawer-header">
+        <div class="logo-wrap">
+          <svg class="logo-mark" width="28" height="28" viewBox="0 0 34 34" fill="none"><path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/><path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <div class="logo-wordmark" style="font-size:1rem;">mendez<span>transportation llc</span></div>
+        </div>
+        <button class="drawer-close" id="drawerClose">&#x2715;</button>
+      </div>
+      <div class="drawer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="services.html" class="active">Our Services</a>
+        <a href="areas.html">Service Areas</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="login.html" class="drawer-portal-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Login
+        </a>
+      </div>
+      <div class="drawer-contact">
+        <a class="drawer-contact-item" href="tel:+14075695275"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>(407) 569-5275</a>
+        <a class="drawer-contact-item" href="mailto:info@mendeztransport.com"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>info@mendeztransport.com</a>
+      </div>
+      <div class="drawer-cta-wrap"><a href="index.html#booking" class="mobile-nav-cta">Book Your Ride</a></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="logo-wrap">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M17 4.5L29 10.5V22c0 5.8-5 9.8-12 12-7-2.2-12-6.2-12-12V10.5L17 4.5Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.45)" stroke-width="1.5" stroke-linejoin="round"/><path d="M17 13v8M13 17h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div class="logo-wordmark">mendez<span>transportation llc</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="services.html" class="active">Our Services</a></li>
+      <li><a href="areas.html">Service Areas</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+    </ul>
+    <a href="login.html" class="btn-portal-nav">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Login
+    </a>
+    <a href="index.html#booking" class="btn-book-nav">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Book Your Ride
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- PAGE BANNER -->
+  <section class="page-banner">
+    <div class="svc-banner-carousel">
+      <div class="svc-banner-slide active" style="background-image:url('https://images.unsplash.com/photo-1732194439331-08ec61c4df4f?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="svc-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="svc-banner-slide" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="svc-banner-overlay"></div>
+    <div id="bannerParticles"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="banner-bg-circle"></div>
+    <div class="page-banner-content">
+      <nav class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><span>Our Services</span></nav>
+      <h1 class="banner-title">Our <strong>Services</strong></h1>
+      <p class="banner-sub">Safe, dignified transportation for every mobility level — ambulatory, wheelchair, and stretcher transport across Central Florida.</p>
+    </div>
+    <div class="svc-banner-dots">
+      <button class="carousel-dot active"></button>
+      <button class="carousel-dot"></button>
+      <button class="carousel-dot"></button>
+    </div>
+  </section>
+
+  <!-- SERVICES DETAIL -->
+  <section class="services-detail-section">
+    <div class="services-detail-inner">
+
+      <!-- Ambulatory -->
+      <div class="service-detail-card reveal">
+        <div class="service-detail-text">
+          <span class="section-eyebrow">Service 01</span>
+          <h2>Ambulatory <strong>Transport</strong></h2>
+          <p>Door-to-door sedan or SUV service for patients who can walk independently or need minimal assistance. Clean, comfortable vehicles with a driver who stays with you from pickup to drop-off and waits during your appointment.</p>
+          <div class="service-includes">
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Door-to-door pickup and drop-off</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Driver waits up to 60 minutes at no extra charge</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Air-conditioned, sanitized vehicle</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Assistance with entering and exiting vehicle</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ideal for dialysis, chemotherapy, therapy visits</div>
+          </div>
+          <a href="index.html#booking" class="service-book-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Book This Service
+          </a>
+        </div>
+        <div class="service-detail-visual">
+          <div class="svc-carousel">
+            <div class="svc-slide active" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=900&q=85')"></div>
+          </div>
+          <div class="svc-overlay"></div>
+          <div class="svc-shimmer"></div>
+          <div class="svc-content">
+            <div class="service-visual-icon">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div class="service-visual-label">Ambulatory · Sedan / SUV</div>
+            <div class="service-tags">
+              <span class="service-tag-pill">1–3 Passengers</span>
+              <span class="service-tag-pill">Medical Bag OK</span>
+              <span class="service-tag-pill">Oxygen Tank OK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wheelchair -->
+      <div class="service-detail-card reverse reveal">
+        <div class="service-detail-text">
+          <span class="section-eyebrow">Service 02</span>
+          <h2>Wheelchair <strong>Accessible</strong></h2>
+          <p>Ramp and lift-equipped vans with certified wheelchair tie-down systems. Your chair stays secured for the entire journey — zero transfers needed. Our drivers are trained in proper securement and passenger assistance techniques.</p>
+          <div class="service-includes">
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Hydraulic ramp or lift-equipped van</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Certified 4-point tie-down wheelchair securement</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>No transfers — ride in your own chair</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Trained in power wheelchair and scooter transport</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Extra caregiver/companion seat available</div>
+          </div>
+          <a href="index.html#booking" class="service-book-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Book This Service
+          </a>
+        </div>
+        <div class="service-detail-visual">
+          <div class="svc-carousel">
+            <div class="svc-slide active" style="background-image:url('https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1619719341796-44c4d2e0eb5a?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=85')"></div>
+          </div>
+          <div class="svc-overlay"></div>
+          <div class="svc-shimmer"></div>
+          <div class="svc-content">
+            <div class="service-visual-icon">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M10 22v-6l-2-4h8l-2 4v6"/><path d="M8 12H6a2 2 0 01-2-2V8"/></svg>
+            </div>
+            <div class="service-visual-label">Wheelchair · Accessible Van</div>
+            <div class="service-tags">
+              <span class="service-tag-pill">Power & Manual</span>
+              <span class="service-tag-pill">Tie-Down Certified</span>
+              <span class="service-tag-pill">Lift Equipped</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stretcher -->
+      <div class="service-detail-card reveal">
+        <div class="service-detail-text">
+          <span class="section-eyebrow">Service 03</span>
+          <h2>Stretcher <strong>Transport</strong></h2>
+          <p>Specialty transport for patients who must remain in a lying-down position throughout the journey. Our padded stretcher vehicles are equipped with safety restraints and are staffed by a trained attendant for the entire trip.</p>
+          <div class="service-includes">
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Padded stretcher with full-body restraint system</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Trained attendant accompanies every trip</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Climate-controlled vehicle for patient comfort</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ideal for post-surgery, fracture, or bedridden patients</div>
+            <div class="service-include-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Coordination with nursing home / hospital staff</div>
+          </div>
+          <a href="index.html#booking" class="service-book-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Book This Service
+          </a>
+        </div>
+        <div class="service-detail-visual">
+          <div class="svc-carousel">
+            <div class="svc-slide active" style="background-image:url('https://images.unsplash.com/photo-1633466154054-399bf16156a2?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1732194439331-08ec61c4df4f?auto=format&fit=crop&w=900&q=85')"></div>
+            <div class="svc-slide" style="background-image:url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=900&q=85')"></div>
+          </div>
+          <div class="svc-overlay"></div>
+          <div class="svc-shimmer"></div>
+          <div class="svc-content">
+            <div class="service-visual-icon">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
+            </div>
+            <div class="service-visual-label">Stretcher · Specialty Van</div>
+            <div class="service-tags">
+              <span class="service-tag-pill">Lying Position</span>
+              <span class="service-tag-pill">Attendant Included</span>
+              <span class="service-tag-pill">Post-Surgery OK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INSURANCE -->
+  <section class="insurance-section">
+    <div class="insurance-carousel">
+      <div class="insurance-slide active" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="insurance-slide" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1920&q=85')"></div>
+      <div class="insurance-slide" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1920&q=85')"></div>
+    </div>
+    <div class="insurance-overlay"></div>
+    <div id="insuranceParticles"></div>
+    <div class="insurance-bg-circle"></div>
+    <div class="insurance-bg-circle"></div>
+    <div class="insurance-shimmer"></div>
+    <div class="insurance-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow" style="color:var(--blue-light);">Coverage</span>
+        <h2 class="section-title" style="color:#fff;">Insurance & <strong>Payment</strong></h2>
+      </div>
+      <p class="insurance-intro">We work with most major insurance providers and Medicaid plans in the state of Florida. Contact us to verify your coverage before your first ride.</p>
+      <div class="insurance-grid">
+        <div class="insurance-card reveal"><div class="insurance-card-name">Florida Medicaid</div><div class="insurance-card-note">We are a registered NEMT provider. Medicaid-eligible trips may be covered at no cost to the patient.</div></div>
+        <div class="insurance-card reveal"><div class="insurance-card-name">Medicare Advantage</div><div class="insurance-card-note">Many Medicare Advantage plans include transportation benefits. We'll verify your specific plan coverage.</div></div>
+        <div class="insurance-card reveal"><div class="insurance-card-name">Private Insurance</div><div class="insurance-card-note">We accept most major private insurance plans. Pre-authorization may be required — we handle the paperwork.</div></div>
+        <div class="insurance-card reveal"><div class="insurance-card-name">Managed Care Plans</div><div class="insurance-card-note">Enrolled in a managed care organization (MCO)? We work with most Florida MCOs that include NEMT benefits.</div></div>
+        <div class="insurance-card reveal"><div class="insurance-card-name">Workers' Compensation</div><div class="insurance-card-note">Transportation to and from treatment facilities may be covered under workers' comp. We handle billing directly.</div></div>
+        <div class="insurance-card reveal"><div class="insurance-card-name">Private Pay</div><div class="insurance-card-note">No insurance? No problem. We offer competitive private-pay rates. Contact us for a quote.</div></div>
+      </div>
+      <p class="insurance-note">Not sure if your plan covers NEMT? <a href="contact.html">Contact us</a> and we'll verify your coverage for free.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="page-cta-section">
+    <div class="page-cta-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Ready to Go?</span>
+        <h2>Book Your <strong>Ride Today</strong></h2>
+      </div>
+      <p>Scheduling takes less than 3 minutes. Choose your service type, tell us where you need to go, and we'll handle the rest.</p>
+      <div class="page-cta-btns">
+        <a href="index.html#booking" class="btn-cta-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book Online</a>
+        <a href="tel:+14075695275" class="btn-cta-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>Call (407) 569-5275</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div id="footerParticles"></div>
+    <div class="footer-bg-circle"></div>
+    <div class="footer-bg-circle"></div>
+    <div class="footer-certs-wrap"><div class="footer-certs">
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>HIPAA Compliant</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Licensed &amp; Insured</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Certified Drivers</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>24/7 Availability</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Grade A Safety</span></div>
+      <div class="footer-cert"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>NEMT Provider</span></div>
+    </div></div>
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="logo-wordmark">mendez<span>transportation llc</span></div>
+        <p class="footer-brand-desc">Professional non-emergency medical transportation serving Central Florida. Certified drivers, accessible vehicles, and a commitment to compassionate care — every trip.</p>
+        <div class="social-links">
+          <a href="#" class="social-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="#" class="social-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Navigation</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Our Services</a></li>
+          <li><a href="areas.html">Service Areas</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <ul class="footer-links">
+          <li><a href="services.html">Ambulatory Transport</a></li>
+          <li><a href="services.html">Wheelchair Accessible</a></li>
+          <li><a href="services.html">Stretcher Transport</a></li>
+          <li><a href="index.html#booking">Book a Ride</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <div class="footer-contact-item"><div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><span>3400 10th St<br>Saint Cloud, FL 34769</span></div>
+        <div class="footer-contact-item"><div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg></div><a href="tel:+14075695275">(407) 569-5275</a></div>
+        <div class="footer-contact-item"><div class="f-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><a href="mailto:info@mendeztransport.com">info@mendeztransport.com</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-left"><span class="footer-copy">© 2026 Mendez Transportation LLC. All rights reserved.</span></div>
+      <div class="footer-bottom-links"><a href="#">Privacy Policy</a><span>·</span><a href="#">Terms of Service</a></div>
+    </div>
+  </footer>
+
+  <script src="js/particles.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    initParticles('bannerParticles', 20);
+    initParticles('insuranceParticles', 22);
+    initParticles('footerParticles', 18);
+
+    /* Banner carousel */
+    (function() {
+      const slides = document.querySelectorAll('.svc-banner-slide');
+      const dots   = document.querySelectorAll('.svc-banner-dots .carousel-dot');
+      let cur = 0, timer;
+      function goTo(n) {
+        slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active'); dots[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      function tick() { goTo(cur + 1); }
+      timer = setInterval(tick, 5500);
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); clearInterval(timer); timer = setInterval(tick, 5500); }));
+    })();
+
+    /* Insurance carousel */
+    (function() {
+      const slides = document.querySelectorAll('.insurance-slide');
+      if (!slides.length) return;
+      let cur = 0;
+      function goTo(n) {
+        slides[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      setInterval(() => goTo(cur + 1), 6000);
+    })();
+
+    /* Service panel carousels (one per .service-detail-visual) */
+    document.querySelectorAll('.service-detail-visual').forEach(function(panel) {
+      const slides = panel.querySelectorAll('.svc-slide');
+      if (!slides.length) return;
+      let cur = 0;
+      function goTo(n) {
+        slides[cur].classList.remove('active');
+        cur = (n + slides.length) % slides.length;
+        slides[cur].classList.add('active');
+        slides[cur].style.animation = 'none'; void slides[cur].offsetWidth; slides[cur].style.animation = '';
+      }
+      setInterval(() => goTo(cur + 1), 5500);
+    });
+  </script>
+</body>
+</html>

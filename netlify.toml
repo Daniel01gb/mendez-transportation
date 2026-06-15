@@ -1,0 +1,14 @@
+[build]
+  publish   = "."
+  command   = "npm install --omit=dev"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NODE_ENV     = "production"
+
+# Todas las rutas /api/* van a la función serverless
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api"
+  status = 200

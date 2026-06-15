@@ -1,0 +1,441 @@
+# Documentación del Proyecto — Mendez Transportation LLC
+
+> Contexto completo del trabajo realizado para uso en futuras sesiones de desarrollo.
+
+---
+
+## 1. ¿Qué es este proyecto?
+
+Sitio web profesional para **Mendez Transportation LLC**, una empresa de transporte médico no emergente (NEMT) en Central Florida. El objetivo es reemplazar o complementar su presencia en línea actual con un sitio moderno que refleje la calidad del servicio.
+
+**Tipo de empresa:** NEMT (Non-Emergency Medical Transportation)  
+**Área de cobertura:** Orange, Osceola, Seminole, Polk, Lake, Brevard (Central Florida)  
+**Teléfonos:** (407) 569-5275 · (321) 696-0482  
+**Email:** info@mendeztransport.com  
+**Servicios:** Transporte ambulatorio, en silla de ruedas y en camilla
+
+---
+
+## 2. Estado del proyecto (Junio 2026)
+
+| Item | Estado |
+|------|--------|
+| Sitio v1 (6 páginas públicas) | ✅ Completo |
+| Propuesta v1 enviada al cliente | ✅ Enviada (PDF + Netlify preview) |
+| Sitio v2 — Frontend portal (demo) | ✅ Completo |
+| Sitio v2 — Backend API (MVP2) | ✅ Completo |
+| Deploy Netlify para demo al cliente | ✅ Listo para subir |
+| Aprobación del cliente | ⏳ Pendiente |
+
+**Modelo de cobro acordado:**
+- $250 al aprobar (50% upfront — Zelle o USDT)
+- $250 en entrega
+- $150/mes mantenimiento
+
+---
+
+## 3. Carpetas en el Desktop
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `mendes website/` | **Versión 1** — 6 páginas públicas, sin portal |
+| `mendes website v2/` | **Versión 2** — v1 + login + portal + backend API |
+
+---
+
+## 4. Versión 1 — Sitio Público (6 páginas)
+
+### Páginas
+| Archivo | Sección activa |
+|---------|----------------|
+| `index.html` | Home |
+| `about.html` | About Us |
+| `services.html` | Our Services |
+| `areas.html` | Service Areas |
+| `faq.html` | FAQ |
+| `contact.html` | Contact Us |
+
+### Stack
+- HTML / CSS / JS puro (sin frameworks)
+- Leaflet.js 1.9.4 (CDN) — mapa en sección de booking
+- Google Fonts: Raleway (display) + Inter (body)
+- Imágenes: Unsplash CDN
+
+### Sistema de Diseño
+```
+Colores:
+  --navy:        #1E2A6E   (primario)
+  --navy-dark:   #0D1240   (fondo oscuro)
+  --navy-light:  #2A3A8A
+  --blue-mid:    #4A6FA5
+  --blue-light:  #8AA4C8
+  --off-white:   #F5F6FA   (fondos claros)
+
+Tipografía:
+  --font-display: Raleway   (títulos, navbar, labels)
+  --font-body:    Inter     (párrafos, datos)
+
+Border radius:
+  --radius-sm:   6px
+  --radius-md:   12px
+  --radius-lg:   20px
+  --radius-pill: 100px
+```
+
+### Estructura CSS (index.html)
+```
+base.css          — variables, reset, body
+navbar.css        — top bar, navbar, hamburger, drawer, FAB
+hero.css          — carrusel Ken Burns, overlay, arrows, dots
+stats.css         — banda de estadísticas (98% on-time, etc.)
+services.css      — 3 cards de servicios
+how-it-works.css  — 4 pasos con carrusel de fondo
+booking.css       — stepper de 4 pasos + mapa Leaflet
+about.css         — sección Why Choose Us
+testimonials.css  — 3 tarjetas de testimonios
+cta.css           — banner de llamada a la acción
+footer.css        — footer completo con áreas, horarios, social
+animations.css    — reveal, ripple, pulse, shimmer
+responsive.css    — breakpoints móvil/tablet
+```
+
+### Patrones importantes
+
+**Particles.js:** `initParticles(containerId, count)` es una función GLOBAL.
+Nunca envolver en IIFE. Siempre llamar directamente.
+
+**Z-index en secciones oscuras con carrusel:**
+1. carousel div → z-index: 0
+2. overlay div → z-index: 1
+3. particles div → z-index: 2
+4. bg-circle divs → z-index: 2
+5. shimmer div → z-index: 3
+6. contenido → z-index: 4
+
+---
+
+## 5. Versión 2 — Portal de Pacientes
+
+La v2 es idéntica a la v1 + elementos nuevos:
+
+### Archivos frontend añadidos
+```
+login.html          — Página de autenticación (3 pasos)
+portal.html         — Dashboard con tracking en tiempo real
+css/login.css       — Estilos del login y overlay de verificación
+css/portal.css      — Estilos del portal/dashboard
+js/auth.js          — Lógica del flujo de auth (llama a la API)
+js/portal.js        — Tracking con Leaflet + polling a la API
+```
+
+### Archivos backend (MVP2)
+```
+app.js                      — Express app (sin listen, importable por servidor y Netlify)
+server.js                   — Arranque local: sirve app.js + archivos estáticos
+netlify/functions/api.js    — Handler serverless para Netlify
+routes/auth.js              — Endpoints de autenticación (stateless)
+routes/trip.js              — Datos del viaje + posición del conductor
+middleware/auth.js          — requireSession, issueSession, clearSession (JWT cookies)
+middleware/rateLimit.js     — Rate limiting: 10/15min login, 5/10min 2FA
+utils/email.js              — Nodemailer wrapper (consola si no hay SMTP)
+netlify.toml                — Configuración de build y redirects para Netlify
+.env.example                — Variables de entorno documentadas
+package.json                — Dependencias Node.js
+```
+
+### Botón Login en navbar (todas las páginas)
+Botón independiente fuera de los nav-links, con ícono de candado. Texto: **"Login"**. CSS en `navbar.css`:
+```css
+.btn-portal-nav { ... }    /* desktop: outlined cyan, shimmer on hover */
+.drawer-portal-btn { ... } /* mobile drawer: borde cyan, fondo semitransparente */
+```
+
+---
+
+## 6. Flujo de Autenticación del Portal
+
+El flujo tiene **3 pasos**: 2 en `login.html` y 1 overlay en `portal.html`.
+
+Un **indicador de progreso visual** (Sign In → 2FA Code → Trip Access) acompaña los 3 pasos:
+- El paso activo se resalta en cyan con glow
+- Los pasos completados muestran ✓ en verde
+- Se actualiza en tiempo real via `setStepIndicator(n)` en `auth.js`
+
+### Paso 1 — Sign In (`login.html`)
+- Subtítulo: "Welcome back. Enter your credentials to check on your ride."
+- **Email:** `demo@mendeztransport.com`
+- **Password:** `Mendez2026!` (con toggle show/hide)
+- Checkbox: **"Remember this device for 30 days"**
+  - Si marcado: la cookie de sesión dura 30 días en vez de 8 horas
+- Botón: "Sign In →"
+- Al cargar: llama `GET /api/auth/me` — si la cookie sigue válida, salta directo al portal
+- `POST /api/auth/login` valida credenciales y devuelve `maskedEmail`
+
+### Paso 2 — 2FA (`login.html`)
+- Muestra el email enmascarado del paso 1 (ej: `d***o@mendeztransport.com`)
+- **Código:** `123456` (demo — aparece en consola del servidor si no hay SMTP)
+- 6 inputs individuales con auto-avance y soporte para paste
+- Auto-submit al completar los 6 dígitos (280ms delay)
+- Countdown de 30s para reenviar → llama `POST /api/auth/resend-2fa`
+- Botón "← Back" para volver al Paso 1 (retrocede el indicador)
+- `POST /api/auth/verify-2fa` valida el código y emite cookie `httpOnly`
+
+### Cómo funciona el 2FA sin base de datos (stateless)
+El código 2FA se firma dentro de una **cookie JWT** (`mendez_2fa_pending`) de 10 minutos:
+```
+Login correcto → genera código → firma JWT({email, code}) → cookie httpOnly 10min
+Verify 2FA   → lee cookie → verifica JWT → compara código → emite sesión
+```
+No se guarda nada en disco. Funciona igual en Netlify Functions y en local.
+
+### Paso 3 — Verificación de Trip (`portal.html` overlay)
+- Overlay fullscreen con indicador mostrando pasos 1 y 2 como done ✓
+- Subtítulo: "Almost there. Enter your trip details to access real-time tracking."
+- **Trip Number:** `MT-2026-4891`
+- **Últimos 4 del SSN:** `4891`
+- `POST /api/auth/verify-trip` valida contra las env vars del servidor
+- Al verificar: guarda `mendez_trip_verified` en `sessionStorage` + fade-out del overlay
+- Si ya está verificado en la sesión: overlay oculto directamente al cargar
+
+### Claves de storage
+```javascript
+// Cookie httpOnly — manejada por el servidor
+mendez_session       // JWT de sesión (8h o 30 días)
+mendez_2fa_pending   // JWT temporal con el código 2FA (10 min)
+
+// sessionStorage — manejado por el cliente
+mendez_trip_verified // '1' si el trip fue verificado en esta sesión
+```
+
+### Logout (`portal.html` → botón Sign Out)
+```javascript
+window.portalLogout = function() {
+  fetch('/api/auth/logout', { method: 'POST' }).finally(function() {
+    sessionStorage.removeItem('mendez_trip_verified');
+    window.location.href = 'login.html';
+  });
+};
+```
+
+---
+
+## 7. Portal Dashboard
+
+### Layout
+```
+[PORTAL NAVBAR] — Logo | "Patient Portal" badge | Back to site | MG avatar | Sign Out
+
+[TRIP BANNER] — Trip MT-2026-4891 | Today, June 15 · 8:30 AM | Orlando→Kissimmee
+               | 🔒 Secure session | ● Live
+
+┌─────────────────┬──────────────────────────────────────────┐
+│  SIDEBAR 330px  │            MAPA LEAFLET                  │
+│                 │                                          │
+│  [chip] ON THE WAY    (conductor animado moviéndose        │
+│  ETA: 8 min     │   por ruta dashed hacia pickup)          │
+│  Driver 2.3 mi  │                                          │
+│                 │                                          │
+│  Carlos Rivera  │                                          │
+│  Sienna FLA-4892│                                          │
+│  ⭐ 4.9         │                                          │
+│                 ├──────────────────────────────────────────┤
+│  Timeline:      │  ● DRIVER EN ROUTE  │ 2.3mi │ 8:30AM   │
+│  ✅ Confirmed   │  Plate: FLA-4892   │ [Call Support]     │
+│  ✅ Assigned    └──────────────────────────────────────────┘
+│  🔵 En Route
+│  ○ Arrived
+│  ○ Completed
+│
+│  Pickup: 601 E Rollins
+│  Dest: Osceola Regional
+│
+│  Upcoming:
+│  Jun 18 · 9:00 AM
+│  Jun 22 · 2:30 PM
+└─────────────────┘
+```
+
+### Datos del portal desde la API
+`portal.js` llama `GET /api/trip/current` al cargar y rellena:
+
+| Elemento del DOM | `id` | Dato de la API |
+|------------------|------|----------------|
+| Iniciales del avatar | `portalAvatar` | `patient_name` (primeras letras) |
+| Nombre del paciente | `portalPatientName` | `patient_name` |
+| Trip # en banner | `tripNumberBanner` | `trip_number` |
+| Fecha del banner | `bannerDate` | `scheduled_at` formateado |
+| Hora de pickup | `bannerPickupTime` | `scheduled_at` formateado |
+| Ruta resumen | `bannerRoute` | ciudades extraídas de las direcciones |
+| Iniciales del conductor | `driverAvatar` | `driver_name` (primeras letras) |
+| Nombre conductor | `driverName` | `driver_name` |
+| Vehículo + placa | `driverVehicle` | `driver_vehicle · driver_plate` |
+| Rating | `driverRating` | `driver_rating` |
+| Placa en status bar | `statusBarPlate` | `driver_plate` |
+| Dirección pickup | `pickupAddress` | `pickup_address` |
+| Dirección destino | `destinationAddress` | `destination` |
+
+### Tracking — Polling (no SSE)
+El tracking usa **polling** en vez de SSE porque Netlify Functions no soporta conexiones de larga duración.
+
+```
+portal.js → GET /api/tracking/location  cada 13 segundos
+servidor  → calcula posición desde (Date.now() - jwt.iat) / 13000
+          → devuelve { lat, lng, eta, step, total }
+portal.js → actualiza marker Leaflet + ETA + barra de progreso
+```
+
+Datos de la ruta (7 waypoints SW Orlando → AdventHealth):
+```
+DRIVER_START: [28.5212, -81.4385]
+PICKUP:       [28.5650, -81.3799]  (AdventHealth Orlando, 601 E Rollins)
+DESTINATION:  [28.3069, -81.4073]  (Osceola Regional, Kissimmee)
+```
+
+### ETA — Estados de color (`portal.js` + `portal.css`)
+
+| Minutos | Color | Chip label | Clase CSS |
+|---------|-------|------------|-----------|
+| > 8 min | Cyan (default) | "On the way" | — |
+| 5–8 min | Ámbar | "Getting close" | `eta-amber` |
+| 1–4 min | Naranja | "Almost there" | `eta-orange` |
+| 0 min | Verde | "Arriving now" | `eta-green` |
+
+### Mejoras UX implementadas
+- **"Secure session"** badge con ícono de escudo en el trip banner (oculto en móvil <640px)
+- **Copy más humano** en login y overlay
+- **Indicador de progreso** 3 pasos visible en toda la pantalla de login y overlay
+- **Responsive mejorado:** navbar compacto, secciones con menos padding, mapa 48vh en móvil
+
+---
+
+## 8. Backend API — Endpoints
+
+Base URL en producción: `https://[sitio].netlify.app/api`  
+Base URL local: `http://localhost:3000/api`
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/health` | — | Health check |
+| GET | `/auth/me` | Cookie | Retorna usuario si la sesión es válida |
+| POST | `/auth/login` | — | Valida email+pass, emite cookie 2FA pending |
+| POST | `/auth/verify-2fa` | Cookie 2FA | Valida código, emite cookie de sesión |
+| POST | `/auth/resend-2fa` | Cookie 2FA | Reenvía código 2FA |
+| POST | `/auth/verify-trip` | Cookie sesión | Valida trip number + SSN4 |
+| POST | `/auth/logout` | — | Limpia cookies |
+| GET | `/trip/current` | Cookie sesión | Retorna datos del viaje activo |
+| GET | `/tracking/location` | Cookie sesión | Posición actual del conductor (polling) |
+
+### Arquitectura stateless
+- Sin base de datos — todo se valida contra variables de entorno o constantes
+- El código 2FA viaja firmado dentro de la cookie `mendez_2fa_pending` (JWT 10min)
+- La sesión viaja en la cookie `mendez_session` (JWT 8h o 30 días)
+- La posición del conductor se calcula desde `jwt.iat` (tiempo de emisión del token)
+
+---
+
+## 9. Credenciales Demo
+
+| Paso | Campo | Valor |
+|------|-------|-------|
+| Sign In | Email | `demo@mendeztransport.com` |
+| Sign In | Password | `Mendez2026!` |
+| 2FA | Código | `123456` |
+| Portal | Trip Number | `MT-2026-4891` |
+| Portal | Last 4 SSN | `4891` |
+
+> Credenciales configurables via variables de entorno: `DEMO_EMAIL`, `DEMO_PASS`, `DEMO_CODE`, `DEMO_TRIP`, `DEMO_SSN4`.
+> El código 2FA siempre es `123456` mientras no haya SMTP configurado.
+
+### Datos del viaje demo
+
+| Campo | Valor |
+|-------|-------|
+| Paciente | Maria Garcia (iniciales MG) |
+| Conductor | Carlos Rivera |
+| Vehículo | 2023 Toyota Sienna · FLA-4892 |
+| Rating | ⭐ 4.9 |
+| Pickup | 601 E Rollins St, Orlando FL 32803 |
+| Destino | Osceola Regional Medical Center, Kissimmee FL 34741 |
+| Fecha | Today · 8:30 AM (dinámico — siempre es hoy) |
+
+---
+
+## 10. Deploy en Netlify
+
+### Variables de entorno requeridas en Netlify
+| Variable | Descripción | Obligatoria |
+|----------|-------------|-------------|
+| `JWT_SECRET` | Cadena aleatoria larga para firmar los JWT | ✅ Sí |
+| `DEMO_EMAIL` | Email del demo (default: demo@mendeztransport.com) | No |
+| `DEMO_PASS` | Password del demo (default: Mendez2026!) | No |
+| `DEMO_CODE` | Código 2FA fijo (default: 123456) | No |
+| `DEMO_TRIP` | Trip number del demo (default: MT-2026-4891) | No |
+| `DEMO_SSN4` | Últimos 4 SSN del demo (default: 4891) | No |
+| `SMTP_HOST` | Servidor SMTP para email real | No |
+| `SMTP_PORT` | Puerto SMTP (default: 587) | No |
+| `SMTP_USER` | Usuario SMTP | No |
+| `SMTP_PASS` | Password SMTP | No |
+| `SMTP_FROM` | From address del email | No |
+
+### Pasos para subir
+```bash
+git init
+git add .
+git commit -m "Mendez Transportation MVP2"
+# crear repo en GitHub, luego:
+git remote add origin https://github.com/usuario/mendez-transportation.git
+git push -u origin main
+```
+En **app.netlify.com** → New site → Import from Git → seleccionar repo.
+El `netlify.toml` configura todo automáticamente.
+
+### Cómo funciona el redirect
+```
+/api/* → /.netlify/functions/api (serverless Express)
+/*     → archivos estáticos del CDN de Netlify
+```
+
+### Desarrollo local
+```bash
+node server.js
+# abre http://localhost:3000
+```
+
+---
+
+## 11. Próximos pasos (si aprueban)
+
+### Backend real (post-aprobación)
+- [ ] Base de datos real (Supabase PostgreSQL — compatible con Netlify)
+- [ ] Email 2FA real — configurar SMTP (SendGrid / Mailtrap / Gmail)
+- [ ] Usuarios reales con contraseñas hasheadas (bcrypt ya importado)
+- [ ] GPS real del conductor (Supabase Realtime / Socket.io)
+- [ ] Panel admin para el dispatcher (crear/asignar/cancelar viajes)
+- [ ] Rate limiting persistente (Redis o Upstash)
+- [ ] Logs de auditoría (login, 2FA, trip verify, logout)
+- [ ] Reducir dependencia del SSN (verificación alternativa)
+
+### Diseño / UX pendiente
+- [ ] Foto real del conductor (reemplazar placeholder `CR` con `<img>`)
+- [ ] Historial de viajes pasados (tabla)
+- [ ] Notificaciones push ("Tu conductor llega en 5 min")
+
+### WordPress (propuesta original)
+- [ ] Migrar el sitio público a WordPress + tema custom
+- [ ] Booking form conectado a Square Payments
+- [ ] Calculadora de millas con precio dinámico
+
+---
+
+## 12. Propuesta de precios (sugerida)
+
+| Item | Precio |
+|------|--------|
+| Sitio v1 base (actual) | $500 |
+| Portal de pacientes (frontend + backend demo) | +$300 |
+| Backend real + GPS real + BD | +$800–1,200 |
+| Mantenimiento mensual | $150/mes |
+
+---
+
+*Documentación actualizada el 15 de Junio 2026 — MVP2 completo: backend stateless (Express + Netlify Functions), autenticación real con JWT httpOnly cookies, tracking por polling, listo para deploy en Netlify.*

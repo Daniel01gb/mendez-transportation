@@ -1,0 +1,38 @@
+/* ── CSS VARIABLES & ROOT ── */
+:root {
+  --navy:         #1E2A6E;
+  --navy-dark:    #0D1240;
+  --navy-light:   #2A3A8A;
+  --blue-mid:     #4A6FA5;
+  --blue-light:   #8AA4C8;
+  --blue-pale:    #C8D8EC;
+  --off-white:    #F5F6FA;
+  --white:        #FFFFFF;
+  --text-primary: #0D1240;
+  --text-muted:   #6B7A9A;
+  --border:       #E2E8F0;
+  --font-display: 'Raleway', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --radius-sm:    6px;
+  --radius-md:    12px;
+  --radius-lg:    20px;
+  --radius-pill:  100px;
+  --shadow-card:  0 4px 24px rgba(30,42,110,0.08);
+  --shadow-nav:   0 2px 20px rgba(30,42,110,0.12);
+  --shadow-btn:   0 4px 16px rgba(30,42,110,0.25);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+/* ── BODY & TYPOGRAPHY ── */
+body {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; }

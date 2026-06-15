@@ -1,0 +1,287 @@
+/* ── KEYFRAMES (hero.css not loaded on this page) ── */
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+@keyframes kenBurns { from{transform:scale(1.1)} to{transform:scale(1.0)} }
+@keyframes shimmerSweep { 0%{transform:translateX(-150%) skewX(-12deg)} 100%{transform:translateX(160%) skewX(-12deg)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SERVICES PAGE BANNER ── */
+.page-banner {
+  background: var(--navy-dark);
+  min-height: 62vh;
+  padding: 6rem 2.5rem 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Banner carousel */
+.svc-banner-carousel { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.svc-banner-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.6s ease; will-change: transform, opacity;
+}
+.svc-banner-slide.active { opacity: 1; animation: kenBurns 9s ease-in-out forwards; }
+.svc-banner-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(135deg, rgba(13,18,64,.84) 0%, rgba(30,42,110,.68) 60%, rgba(13,18,64,.8) 100%);
+}
+.svc-banner-dots {
+  position: absolute; bottom: 1.75rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: .55rem; z-index: 10;
+}
+
+#bannerParticles { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.banner-bg-circle { position: absolute; border-radius: 50%; pointer-events: none; z-index: 2; }
+.banner-bg-circle:nth-child(4) {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(74,111,165,.16) 0%, transparent 70%);
+  top: -120px; left: -80px;
+  animation: float 9s ease-in-out infinite;
+}
+.banner-bg-circle:nth-child(5) {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(138,164,200,.1) 0%, transparent 70%);
+  bottom: -60px; right: -60px;
+  animation: float 12s ease-in-out infinite reverse;
+}
+.page-banner-content { position: relative; z-index: 3; max-width: 720px; margin: 0 auto; animation: fadeUp .9s ease both; }
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--font-display); font-size: .68rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 1.75rem;
+}
+.breadcrumb a { color: rgba(255,255,255,.5); transition: color .2s; }
+.breadcrumb a:hover { color: var(--blue-light); }
+.breadcrumb-sep { color: rgba(255,255,255,.25); font-size: .8rem; }
+.banner-title {
+  font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 200; color: var(--white); line-height: 1.15; letter-spacing: .02em; margin-bottom: 1.25rem;
+}
+.banner-title strong { font-weight: 700; color: var(--blue-pale); }
+.banner-sub { font-size: 1rem; color: rgba(255,255,255,.55); font-weight: 300; line-height: 1.75; max-width: 560px; margin: 0 auto; }
+
+/* ── SERVICES DETAIL ── */
+.services-detail-section {
+  padding: 6rem 2.5rem;
+  background: var(--white);
+}
+.services-detail-inner { max-width: 1100px; margin: 0 auto; }
+
+.service-detail-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.service-detail-card:last-child { border-bottom: none; }
+.service-detail-card.reverse { direction: rtl; }
+.service-detail-card.reverse > * { direction: ltr; }
+
+.service-detail-text .section-eyebrow { margin-bottom: .6rem; }
+.service-detail-text h2 {
+  font-family: var(--font-display); font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  font-weight: 200; color: var(--navy); letter-spacing: .02em; margin-bottom: 1rem;
+}
+.service-detail-text h2 strong { font-weight: 700; }
+.service-detail-text p {
+  font-size: .92rem; color: var(--text-muted); line-height: 1.9; font-weight: 300; margin-bottom: 1.5rem;
+}
+.service-includes {
+  display: flex; flex-direction: column; gap: .55rem; margin-bottom: 1.75rem;
+}
+.service-include-item {
+  display: flex; align-items: center; gap: .65rem;
+  font-size: .86rem; color: var(--text-muted); font-weight: 300;
+}
+.service-include-item svg { color: var(--navy); flex-shrink: 0; }
+.service-book-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--navy); color: var(--white);
+  font-family: var(--font-display); font-weight: 700; font-size: .75rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .9rem 2rem; border-radius: var(--radius-pill);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  box-shadow: 0 4px 18px rgba(30,42,110,.25);
+}
+.service-book-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 28px rgba(30,42,110,.32); }
+
+.service-detail-visual {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 340px;
+  position: relative;
+  box-shadow: 0 20px 55px rgba(30,42,110,.16);
+}
+
+/* Ken Burns carousel inside each panel */
+.svc-carousel { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.svc-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.6s ease; will-change: transform, opacity;
+}
+.svc-slide.active { opacity: 1; animation: kenBurns 9s ease-in-out forwards; }
+
+/* Gradient: dark at bottom so content reads clearly */
+.svc-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to top, rgba(13,18,64,.88) 0%, rgba(13,18,64,.3) 55%, transparent 100%);
+}
+
+/* Shimmer / destello */
+.svc-shimmer {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.14) 50%, transparent 75%);
+  animation: shimmerSweep 5.5s ease-in-out infinite 1.5s;
+}
+
+/* Content centered at bottom */
+.svc-content {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding: 2rem; gap: 1rem; text-align: center;
+}
+
+.service-visual-icon {
+  width: 80px; height: 80px;
+  background: rgba(13,18,64,.65);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,.18);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-light);
+}
+.service-visual-label {
+  font-family: var(--font-display); font-size: .68rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7);
+}
+.service-tags { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+.service-tag-pill {
+  font-family: var(--font-display); font-size: .6rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(13,18,64,.6); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.85); padding: .35rem .9rem; border-radius: var(--radius-pill);
+}
+
+/* ── INSURANCE / COVERAGE SECTION ── */
+.insurance-section {
+  background: var(--navy-dark);
+  padding: 5rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ken Burns carousel */
+.insurance-carousel { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.insurance-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.8s ease; will-change: transform, opacity;
+}
+.insurance-slide.active { opacity: 1; animation: kenBurns 10s ease-in-out forwards; }
+
+/* Dark overlay */
+.insurance-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(135deg, rgba(13,18,64,.92) 0%, rgba(30,42,110,.85) 55%, rgba(13,18,64,.9) 100%);
+}
+
+/* Particles */
+#insuranceParticles { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+
+/* Ambient glow circles */
+.insurance-bg-circle { position: absolute; border-radius: 50%; pointer-events: none; z-index: 2; }
+.insurance-bg-circle:nth-child(4) {
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, rgba(74,111,165,.13) 0%, transparent 70%);
+  top: -120px; left: -100px;
+  animation: float 10s ease-in-out infinite;
+}
+.insurance-bg-circle:nth-child(5) {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(138,164,200,.09) 0%, transparent 70%);
+  bottom: -80px; right: -60px;
+  animation: float 13s ease-in-out infinite reverse;
+}
+
+/* Shimmer / destello */
+.insurance-shimmer {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.06) 50%, transparent 75%);
+  animation: shimmerSweep 7s ease-in-out infinite 3s;
+}
+
+/* Inner content above all layers */
+.insurance-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 4; }
+.insurance-section .section-eyebrow { color: var(--blue-light); }
+.insurance-section .section-title { color: var(--white); margin-bottom: 1rem; }
+.insurance-intro { font-size: .93rem; color: rgba(255,255,255,.5); line-height: 1.8; margin-bottom: 3rem; }
+.insurance-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2.5rem;
+}
+.insurance-card {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+  border-radius: var(--radius-lg); padding: 1.75rem 1.5rem; text-align: left;
+  transition: background .2s, border-color .2s;
+}
+.insurance-card:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.18); }
+.insurance-card-name {
+  font-family: var(--font-display); font-weight: 700; font-size: .8rem;
+  letter-spacing: .06em; color: var(--white); margin-bottom: .5rem;
+}
+.insurance-card-note { font-size: .8rem; color: rgba(255,255,255,.4); line-height: 1.65; font-weight: 300; }
+.insurance-note { font-size: .82rem; color: rgba(255,255,255,.3); }
+.insurance-note a { color: var(--blue-light); }
+
+/* ── PAGE CTA ── */
+.page-cta-section {
+  background: var(--off-white);
+  border-top: 1px solid var(--border);
+  padding: 5rem 2.5rem;
+  text-align: center;
+}
+.page-cta-inner { max-width: 600px; margin: 0 auto; }
+.page-cta-inner h2 {
+  font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 200; color: var(--navy); letter-spacing: .02em; margin-bottom: 1rem;
+}
+.page-cta-inner h2 strong { font-weight: 700; }
+.page-cta-inner p { font-size: .92rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 2rem; font-weight: 300; }
+.page-cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.btn-cta-primary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--navy); color: var(--white);
+  font-family: var(--font-display); font-weight: 700; font-size: .75rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 1rem 2.2rem; border-radius: var(--radius-pill);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  box-shadow: 0 4px 18px rgba(30,42,110,.25);
+}
+.btn-cta-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 28px rgba(30,42,110,.32); }
+.btn-cta-secondary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: transparent; color: var(--navy);
+  font-family: var(--font-display); font-weight: 600; font-size: .75rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .95rem 2.2rem; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  transition: border-color .2s, background .2s;
+}
+.btn-cta-secondary:hover { border-color: var(--navy); background: var(--white); }
+
+@media (max-width: 900px) {
+  .service-detail-card { grid-template-columns: 1fr; gap: 2.5rem; }
+  .service-detail-card.reverse { direction: ltr; }
+  .insurance-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 580px) {
+  .insurance-grid { grid-template-columns: 1fr; }
+}

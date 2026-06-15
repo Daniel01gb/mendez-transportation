@@ -1,0 +1,88 @@
+/* ── SERVICE AREAS ── */
+@keyframes kenBurns { from{transform:scale(1.1)} to{transform:scale(1.0)} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+@keyframes shimmerSweep { 0%{transform:translateX(-150%) skewX(-12deg)} 100%{transform:translateX(160%) skewX(-12deg)} }
+
+.areas-section {
+  background: var(--navy-dark);
+  padding: 6rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.areas-carousel { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.areas-slide {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.8s ease; will-change: transform, opacity;
+}
+.areas-slide.active { opacity: 1; animation: kenBurns 10s ease-in-out forwards; }
+.areas-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(135deg, rgba(13,18,64,.92) 0%, rgba(30,42,110,.85) 55%, rgba(13,18,64,.9) 100%);
+}
+#areasParticles { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.areas-bg-circle { position: absolute; border-radius: 50%; pointer-events: none; z-index: 2; }
+.areas-bg-circle:nth-child(4) {
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(74,111,165,.13) 0%, transparent 70%);
+  top: -130px; left: -100px; animation: float 10s ease-in-out infinite;
+}
+.areas-bg-circle:nth-child(5) {
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(138,164,200,.09) 0%, transparent 70%);
+  bottom: -80px; right: -60px; animation: float 13s ease-in-out infinite reverse;
+}
+.areas-shimmer {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.06) 50%, transparent 75%);
+  animation: shimmerSweep 8s ease-in-out infinite 2s;
+}
+.areas-inner { position: relative; z-index: 4; }
+.areas-intro {
+  max-width: 560px;
+  margin: 0 auto 3rem;
+  font-size: .93rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.85;
+}
+.areas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  max-width: 920px;
+  margin: 0 auto;
+}
+.area-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  text-align: left;
+  transition: background .22s, border-color .22s, transform .28s cubic-bezier(.34,1.56,.64,1);
+}
+.area-card:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-3px);
+}
+.area-county {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: .55rem;
+}
+.area-cities {
+  font-size: .83rem;
+  color: rgba(255,255,255,.42);
+  line-height: 1.7;
+}
+.areas-note {
+  margin-top: 2.75rem;
+  font-size: .82rem;
+  color: rgba(255,255,255,.28);
+}
+.areas-note a { color: var(--blue-light); text-decoration: none; }
+.areas-note a:hover { text-decoration: underline; }

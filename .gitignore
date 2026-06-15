@@ -1,0 +1,12 @@
+node_modules/
+.env
+db/mendez.db
+*.db
+*.db-shm
+*.db-wal
+
+# Claude Code internals
+.claude/
+
+# Playwright test artifacts
+.playwright-mcp/

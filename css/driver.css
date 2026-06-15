@@ -374,6 +374,52 @@
 .dr-done-banner h3 { font-family: var(--font-display); font-size: 1rem; color: var(--dr-text); margin-bottom: .35rem; }
 .dr-done-banner p  { font-size: .82rem; }
 
+/* ── CABIN CAMERA ── */
+.dr-camera-bar {
+  border-bottom: 1px solid var(--dr-border);
+  overflow: hidden;
+}
+.dr-camera-bar-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .45rem 1.25rem;
+  font-size: .72rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  transition: background .15s;
+}
+.dr-camera-bar.off       .dr-camera-bar-row { color: var(--dr-muted); }
+.dr-camera-bar.requesting .dr-camera-bar-row { background: rgba(59,130,246,.08); color: #60a5fa; }
+.dr-camera-bar.active    .dr-camera-bar-row { background: rgba(16,185,129,.08); color: #34d399; }
+.dr-camera-bar.denied    .dr-camera-bar-row { background: rgba(239,68,68,.08);  color: #f87171; }
+.dr-camera-bar.unavail   .dr-camera-bar-row { background: rgba(107,114,128,.08); color: var(--dr-muted); }
+.dr-camera-bar-text { flex: 1; }
+.dr-camera-toggle {
+  font-family: var(--font-display);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: .22rem .6rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .18s;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.dr-camera-toggle:hover { opacity: 1; }
+.dr-camera-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  background: #000;
+  display: block;
+  border-top: 1px solid var(--dr-border);
+}
+
 /* ── INSTALL PROMPT ── */
 .dr-install-bar {
   position: fixed;

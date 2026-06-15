@@ -7,6 +7,7 @@
   var markers    = {};
   var activeFilter = 'all';
   var editingId    = null;
+  var cabinDriverId = null;
 
   /* ── Boot ── */
   fetch('/api/auth/me', { credentials: 'same-origin' })
@@ -102,6 +103,9 @@
       var from   = shortAddr(t.pickup);
       var to     = shortAddr(t.destination);
       var driver = t.driver ? t.driver.name : '<span class="unassigned">— Unassigned</span>';
+      var cabinBtn = (t.status === 'en_route' && t.driver)
+        ? '<button class="disp-cabin-btn" onclick="viewCabin(' + t.driver.id + ',\'' + t.driver.name.replace(/'/g, "\\'") + '\')">&#128247; Cabin</button>'
+        : '';
       return [
         '<tr data-id="' + t.id + '">',
         '  <td><span class="trip-num">' + t.number.replace('MT-2026-', '#') + '</span></td>',
@@ -110,7 +114,7 @@
         '  <td><span class="trip-time">' + time + '</span></td>',
         '  <td class="driver-cell">' + driver + '</td>',
         '  <td class="route-cell"><span class="route-from">' + from + '</span><span class="route-arrow">→</span>' + to + '</td>',
-        '  <td><button class="disp-edit-btn" onclick="openEdit(' + t.id + ')">Edit</button></td>',
+        '  <td class="actions-cell">' + cabinBtn + '<button class="disp-edit-btn" onclick="openEdit(' + t.id + ')">Edit</button></td>',
         '</tr>'
       ].join('');
     }).join('');
@@ -241,6 +245,54 @@
   /* Close modal on Escape */
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeEdit();
+  });
+
+  /* ── Cabin view ── */
+  window.viewCabin = function (driverId, driverName) {
+    cabinDriverId = driverId;
+    document.getElementById('cabinModalDriver').textContent = driverName;
+    document.getElementById('cabinModal').classList.add('open');
+    fetchCabinSnapshot();
+  };
+
+  window.closeCabin = function () {
+    document.getElementById('cabinModal').classList.remove('open');
+    cabinDriverId = null;
+  };
+
+  window.refreshCabin = function () { fetchCabinSnapshot(); };
+
+  function fetchCabinSnapshot() {
+    if (!cabinDriverId) return;
+    document.getElementById('cabinLoading').style.display = 'flex';
+    document.getElementById('cabinImg').style.display     = 'none';
+    document.getElementById('cabinNoFeed').style.display  = 'none';
+    document.getElementById('cabinTimestamp').textContent = '';
+
+    fetch('/api/dispatcher/snapshot/' + cabinDriverId, { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        document.getElementById('cabinLoading').style.display = 'none';
+        if (data.snapshot && data.snapshot.dataUrl) {
+          var img = document.getElementById('cabinImg');
+          img.src = data.snapshot.dataUrl;
+          img.style.display = 'block';
+          var ts = new Date(data.snapshot.capturedAt).toLocaleTimeString('en-US', {
+            hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+          });
+          document.getElementById('cabinTimestamp').textContent = 'Captured ' + ts;
+        } else {
+          document.getElementById('cabinNoFeed').style.display = 'flex';
+        }
+      })
+      .catch(function () {
+        document.getElementById('cabinLoading').style.display = 'none';
+        document.getElementById('cabinNoFeed').style.display  = 'flex';
+      });
+  }
+
+  document.getElementById('cabinModal').addEventListener('click', function (e) {
+    if (e.target === this) closeCabin();
   });
 
   /* ── Logout ── */

@@ -6,6 +6,11 @@ function getBlobs() {
   catch (_) { return null; }
 }
 
+function getSnapshotBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-snapshots'); }
+  catch (_) { return null; }
+}
+
 function makeTime(h, m) {
   const d = new Date();
   d.setHours(h, m, 0, 0);
@@ -67,6 +72,28 @@ router.post('/location', requireDriver, async (req, res) => {
         updatedAt: new Date().toISOString()
       });
     } catch (e) { console.log('[location blob]', e.message); }
+  }
+  res.json({ ok: true });
+});
+
+/* POST /api/driver/snapshot — stores cabin camera JPEG in Netlify Blobs */
+router.post('/snapshot', requireDriver, async (req, res) => {
+  const { dataUrl } = req.body || {};
+  if (!dataUrl || !String(dataUrl).startsWith('data:image/jpeg;base64,'))
+    return res.status(400).json({ error: 'Invalid snapshot.' });
+  if (dataUrl.length > 180000)
+    return res.status(413).json({ error: 'Snapshot too large.' });
+
+  const store = getSnapshotBlobs();
+  if (store) {
+    try {
+      await store.setJSON('snapshot-' + (req.user.driverId || 1), {
+        driverId: req.user.driverId || 1,
+        name: DRIVER_INFO.name,
+        dataUrl,
+        capturedAt: new Date().toISOString()
+      });
+    } catch (e) { console.log('[snapshot blob]', e.message); }
   }
   res.json({ ok: true });
 });

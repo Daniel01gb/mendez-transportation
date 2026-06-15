@@ -6,6 +6,11 @@ function getBlobs() {
   catch (_) { return null; }
 }
 
+function getSnapshotBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-snapshots'); }
+  catch (_) { return null; }
+}
+
 const DRIVERS = [
   { id: 1, name: 'Carlos Rivera',  vehicle: '2023 Toyota Sienna',    plate: 'FLA-4892', rating: 4.9 },
   { id: 2, name: 'Ana Martinez',   vehicle: '2022 Honda Odyssey',     plate: 'FLA-2341', rating: 4.8 },
@@ -112,6 +117,21 @@ router.get('/stats', requireDispatcher, (_req, res) => {
   const counts = { total: DEMO_TRIPS.length, en_route: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
   DEMO_TRIPS.forEach(t => { if (t.status in counts) counts[t.status]++; });
   res.json(counts);
+});
+
+/* GET /api/dispatcher/snapshot/:driverId — latest cabin snapshot from Netlify Blobs */
+router.get('/snapshot/:driverId', requireDispatcher, async (req, res) => {
+  const driverId = Number(req.params.driverId);
+  if (!Number.isInteger(driverId) || driverId < 1)
+    return res.status(400).json({ error: 'Invalid driverId.' });
+  const store = getSnapshotBlobs();
+  if (!store) return res.json({ snapshot: null });
+  try {
+    const snap = await store.get('snapshot-' + driverId, { type: 'json' });
+    res.json({ snapshot: snap || null });
+  } catch (_) {
+    res.json({ snapshot: null });
+  }
 });
 
 /* PATCH /api/dispatcher/trips/:id/status

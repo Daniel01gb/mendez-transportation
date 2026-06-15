@@ -7,6 +7,9 @@
   var watchId       = null;
   var locationSendInterval = null;
   var lastPosition  = null;
+  var cabinStream   = null;
+  var cabinSnapshotInterval = null;
+  var cabinActive   = false;
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -117,6 +120,76 @@
     clearInterval(locationSendInterval);
     startLocationTracking();
   };
+
+  /* ── Cabin camera ── */
+  function setCameraStatus(state, msg) {
+    var bar = document.getElementById('cameraBar');
+    var txt = document.getElementById('cameraText');
+    if (!bar || !txt) return;
+    bar.className = 'dr-camera-bar ' + state;
+    txt.textContent = msg;
+  }
+
+  window.toggleCabinCamera = function () {
+    if (cabinActive) { stopCabinCamera(); } else { startCabinCamera(); }
+  };
+
+  function startCabinCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraStatus('unavail', 'Camera not available on this device');
+      return;
+    }
+    setCameraStatus('requesting', 'Starting cabin camera…');
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
+      audio: false
+    }).then(function (stream) {
+      cabinStream = stream;
+      cabinActive = true;
+      var video = document.getElementById('cabinVideo');
+      video.srcObject = stream;
+      video.style.display = 'block';
+      setCameraStatus('active', '● Cabin camera active — sending to dispatch');
+      document.getElementById('cameraToggle').textContent = 'Disable';
+      setTimeout(captureAndSendSnapshot, 2000);
+      cabinSnapshotInterval = setInterval(captureAndSendSnapshot, 60000);
+    }).catch(function (err) {
+      var msg = (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')
+        ? 'Camera permission denied — tap to retry'
+        : 'Unable to start camera';
+      setCameraStatus('denied', '✕ ' + msg);
+    });
+  }
+
+  function stopCabinCamera() {
+    if (cabinStream) {
+      cabinStream.getTracks().forEach(function (t) { t.stop(); });
+      cabinStream = null;
+    }
+    clearInterval(cabinSnapshotInterval);
+    cabinSnapshotInterval = null;
+    cabinActive = false;
+    var video = document.getElementById('cabinVideo');
+    if (video) { video.srcObject = null; video.style.display = 'none'; }
+    setCameraStatus('off', 'Cabin camera off');
+    var toggle = document.getElementById('cameraToggle');
+    if (toggle) toggle.textContent = 'Enable';
+  }
+
+  function captureAndSendSnapshot() {
+    var video = document.getElementById('cabinVideo');
+    if (!video || !cabinActive || video.readyState < 2) return;
+    var canvas = document.createElement('canvas');
+    canvas.width = 320; canvas.height = 240;
+    canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
+    var dataUrl = canvas.toDataURL('image/jpeg', 0.65);
+    fetch('/api/driver/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dataUrl: dataUrl }),
+      credentials: 'same-origin'
+    }).catch(function () {});
+  }
 
   function sendLocation(coords) {
     fetch('/api/driver/location', {
@@ -292,6 +365,7 @@
 
   /* ── Logout ── */
   window.driverLogout = function () {
+    stopCabinCamera();
     if (watchId !== null) navigator.geolocation.clearWatch(watchId);
     clearInterval(locationSendInterval);
     fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).finally(function () {

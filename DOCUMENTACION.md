@@ -192,7 +192,7 @@ No se guarda nada en disco. Funciona igual en Netlify Functions y en local.
 - Overlay fullscreen con indicador mostrando pasos 1 y 2 como done ✓
 - Subtítulo: "Almost there. Enter your trip details to access real-time tracking."
 - **Trip Number:** `MT-2026-4891`
-- **Últimos 4 del SSN:** `4891`
+- **Confirmation Code:** `7823` _(reemplazó al SSN last 4 — ya no se maneja PHI)_
 - `POST /api/auth/verify-trip` valida contra las env vars del servidor
 - Al verificar: guarda `mendez_trip_verified` en `sessionStorage` + fade-out del overlay
 - Si ya está verificado en la sesión: overlay oculto directamente al cargar
@@ -306,6 +306,10 @@ DESTINATION:  [28.3069, -81.4073]  (Osceola Regional, Kissimmee)
 - **Indicador de progreso** 3 pasos visible en toda la pantalla de login y overlay
 - **Responsive mejorado:** navbar compacto, secciones con menos padding, mapa 48vh en móvil
 
+### Seguridad adicional
+- `login.html` y `portal.html` tienen `<meta name="robots" content="noindex, nofollow">` — los buscadores no indexan estas páginas
+- **Confirmation Code** (no PHI) reemplaza al SSN en el Paso 3 — cumple mejor con buenas prácticas de manejo de datos sensibles
+
 ---
 
 ## 8. Backend API — Endpoints
@@ -320,7 +324,7 @@ Base URL local: `http://localhost:3000/api`
 | POST | `/auth/login` | — | Valida email+pass, emite cookie 2FA pending |
 | POST | `/auth/verify-2fa` | Cookie 2FA | Valida código, emite cookie de sesión |
 | POST | `/auth/resend-2fa` | Cookie 2FA | Reenvía código 2FA |
-| POST | `/auth/verify-trip` | Cookie sesión | Valida trip number + SSN4 |
+| POST | `/auth/verify-trip` | Cookie sesión | Valida trip number + Confirmation Code |
 | POST | `/auth/logout` | — | Limpia cookies |
 | GET | `/trip/current` | Cookie sesión | Retorna datos del viaje activo |
 | GET | `/tracking/location` | Cookie sesión | Posición actual del conductor (polling) |
@@ -330,6 +334,12 @@ Base URL local: `http://localhost:3000/api`
 - El código 2FA viaja firmado dentro de la cookie `mendez_2fa_pending` (JWT 10min)
 - La sesión viaja en la cookie `mendez_session` (JWT 8h o 30 días)
 - La posición del conductor se calcula desde `jwt.iat` (tiempo de emisión del token)
+- `ssn4` **NO** se incluye en la respuesta de `/api/trip/current` (se removió para no filtrar PHI al cliente)
+
+### Guard de producción (`app.js`)
+Al arrancar, el servidor valida que `JWT_SECRET` y las variables `DEMO_*` estén definidas.
+Si alguna falta en producción (`NODE_ENV=production`), falla con error claro antes de aceptar tráfico.
+Esto evita arranques silenciosos con valores vacíos que dejarían el sistema inseguro.
 
 ---
 
@@ -341,9 +351,9 @@ Base URL local: `http://localhost:3000/api`
 | Sign In | Password | `Mendez2026!` |
 | 2FA | Código | `123456` |
 | Portal | Trip Number | `MT-2026-4891` |
-| Portal | Last 4 SSN | `4891` |
+| Portal | Confirmation Code | `7823` |
 
-> Credenciales configurables via variables de entorno: `DEMO_EMAIL`, `DEMO_PASS`, `DEMO_CODE`, `DEMO_TRIP`, `DEMO_SSN4`.
+> Credenciales configurables via variables de entorno: `DEMO_EMAIL`, `DEMO_PASS`, `DEMO_CODE`, `DEMO_TRIP`, `DEMO_CONF`.
 > El código 2FA siempre es `123456` mientras no haya SMTP configurado.
 
 ### Datos del viaje demo
@@ -370,7 +380,7 @@ Base URL local: `http://localhost:3000/api`
 | `DEMO_PASS` | Password del demo (default: Mendez2026!) | No |
 | `DEMO_CODE` | Código 2FA fijo (default: 123456) | No |
 | `DEMO_TRIP` | Trip number del demo (default: MT-2026-4891) | No |
-| `DEMO_SSN4` | Últimos 4 SSN del demo (default: 4891) | No |
+| `DEMO_CONF` | Confirmation Code del demo (default: 7823) | No |
 | `SMTP_HOST` | Servidor SMTP para email real | No |
 | `SMTP_PORT` | Puerto SMTP (default: 587) | No |
 | `SMTP_USER` | Usuario SMTP | No |
@@ -438,4 +448,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — MVP2 completo: backend stateless (Express + Netlify Functions), autenticación real con JWT httpOnly cookies, tracking por polling, listo para deploy en Netlify.*
+*Documentación actualizada el 15 de Junio 2026 — MVP2 completo + parche de seguridad: SSN reemplazado por Confirmation Code (no PHI), guard de producción en app.js, noindex en páginas del portal, listo para deploy en Netlify.*

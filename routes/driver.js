@@ -1,6 +1,11 @@
 const router = require('express').Router();
 const { requireDriver } = require('../middleware/auth');
 
+function getBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-locations'); }
+  catch (_) { return null; }
+}
+
 function makeTime(h, m) {
   const d = new Date();
   d.setHours(h, m, 0, 0);
@@ -43,6 +48,27 @@ const DEMO_TRIPS = [
 /* GET /api/driver/trips */
 router.get('/trips', requireDriver, (_req, res) => {
   res.json({ driver: DRIVER_INFO, trips: DEMO_TRIPS });
+});
+
+/* POST /api/driver/location — stores real-time position in Netlify Blobs */
+router.post('/location', requireDriver, async (req, res) => {
+  const { lat, lng, accuracy } = req.body || {};
+  if (typeof lat !== 'number' || typeof lng !== 'number')
+    return res.status(400).json({ error: 'Invalid coordinates.' });
+
+  const store = getBlobs();
+  if (store) {
+    try {
+      await store.setJSON('driver-' + (req.user.driverId || 1), {
+        driverId: req.user.driverId || 1,
+        name:     DRIVER_INFO.name,
+        plate:    DRIVER_INFO.plate,
+        lat, lng, accuracy,
+        updatedAt: new Date().toISOString()
+      });
+    } catch (e) { console.log('[location blob]', e.message); }
+  }
+  res.json({ ok: true });
 });
 
 /* PATCH /api/driver/trips/:id/status

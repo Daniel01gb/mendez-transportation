@@ -22,20 +22,58 @@
 
   function loadAll() {
     Promise.all([
-      fetch('/api/dispatcher/trips',  { credentials: 'same-origin' }).then(function(r){return r.json();}),
-      fetch('/api/dispatcher/stats',  { credentials: 'same-origin' }).then(function(r){return r.json();})
+      fetch('/api/dispatcher/trips',     { credentials: 'same-origin' }).then(function(r){return r.json();}),
+      fetch('/api/dispatcher/stats',     { credentials: 'same-origin' }).then(function(r){return r.json();}),
+      fetch('/api/dispatcher/locations', { credentials: 'same-origin' }).then(function(r){return r.json();}).catch(function(){return {locations:[]};})
     ]).then(function (results) {
-      var tripsData = results[0];
-      var stats     = results[1];
+      var tripsData   = results[0];
+      var stats       = results[1];
+      var locationsData = results[2];
       allTrips   = tripsData.trips;
       allDrivers = tripsData.drivers;
+      applyRealLocations(allTrips, locationsData.locations || []);
       renderStats(stats);
       renderTable(allTrips);
       initMap(allTrips);
       populateDriverDropdown(allDrivers);
+      /* Poll real driver positions every 15s */
+      setInterval(pollLocations, 15000);
     }).catch(function () {
       window.location.href = 'login.html';
     });
+  }
+
+  function applyRealLocations(trips, locations) {
+    locations.forEach(function (loc) {
+      var trip = trips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
+      if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
+    });
+  }
+
+  function pollLocations() {
+    fetch('/api/dispatcher/locations', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        (data.locations || []).forEach(function (loc) {
+          var trip = allTrips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
+          if (!trip) return;
+          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
+          var m = markers[trip.id];
+          if (m) {
+            m.setLatLng([loc.lat, loc.lng]);
+            m.getPopup().setContent(buildPopup(trip, true));
+          }
+        });
+      }).catch(function () {});
+  }
+
+  function buildPopup(trip, isReal) {
+    var freshLabel = isReal ? ' <span style="color:#10B981;font-size:10px">● GPS</span>' : '';
+    return '<div style="font-family:sans-serif;min-width:160px">' +
+      '<div style="font-weight:700;color:#059669;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">● En Route' + freshLabel + '</div>' +
+      '<div style="font-weight:600;font-size:13px">' + (trip.driver ? trip.driver.name : '—') + '</div>' +
+      '<div style="font-size:11px;color:#6B7280;margin-top:2px">' + trip.patient_name + ' · ' + trip.number + '</div>' +
+      '</div>';
   }
 
   /* ── Stats ── */

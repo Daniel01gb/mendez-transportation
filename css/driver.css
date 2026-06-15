@@ -135,6 +135,26 @@
   border-radius: 100px;
 }
 
+/* ── LOCATION BAR ── */
+.dr-location-bar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .45rem 1.25rem;
+  font-size: .72rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+  border-bottom: 1px solid var(--dr-border);
+}
+.dr-location-bar.requesting { background: rgba(59,130,246,.08); color: #60a5fa; }
+.dr-location-bar.active     { background: rgba(16,185,129,.08); color: #34d399; }
+.dr-location-bar.warn       { background: rgba(245,158,11,.08); color: #fbbf24; }
+.dr-location-bar.denied     { background: rgba(239,68,68,.08);  color: #f87171; }
+.dr-location-bar svg        { flex-shrink: 0; }
+.dr-location-bar.active svg { animation: activePulse 2s ease-in-out infinite; }
+
 /* ── TRIP LIST ── */
 .dr-trips {
   padding: 1rem;

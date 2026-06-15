@@ -1,6 +1,11 @@
 const router = require('express').Router();
 const { requireDispatcher } = require('../middleware/auth');
 
+function getBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-locations'); }
+  catch (_) { return null; }
+}
+
 const DRIVERS = [
   { id: 1, name: 'Carlos Rivera',  vehicle: '2023 Toyota Sienna',    plate: 'FLA-4892', rating: 4.9 },
   { id: 2, name: 'Ana Martinez',   vehicle: '2022 Honda Odyssey',     plate: 'FLA-2341', rating: 4.8 },
@@ -76,6 +81,21 @@ const DEMO_TRIPS = [
     scheduled_at: makeTime(14, 0), notes: ''
   },
 ];
+
+/* GET /api/dispatcher/locations — real driver positions from Netlify Blobs */
+router.get('/locations', requireDispatcher, async (_req, res) => {
+  const store = getBlobs();
+  if (!store) return res.json({ locations: [] });
+  try {
+    const { blobs } = await store.list();
+    const locations = await Promise.all(
+      blobs.map(function (b) { return store.get(b.key, { type: 'json' }); })
+    );
+    res.json({ locations: locations.filter(Boolean) });
+  } catch (e) {
+    res.json({ locations: [] });
+  }
+});
 
 /* GET /api/dispatcher/trips */
 router.get('/trips', requireDispatcher, (_req, res) => {

@@ -1,9 +1,12 @@
 /* driver.js — Driver PWA logic */
 (function () {
 
-  var trips  = [];
-  var driver = null;
+  var trips         = [];
+  var driver        = null;
   var installPrompt = null;
+  var watchId       = null;
+  var locationSendInterval = null;
+  var lastPosition  = null;
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -29,12 +32,108 @@
     document.getElementById('installBar').style.display = 'none';
   };
 
+  /* ── Geolocation ── */
+  function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function openMapsApp(address, forNavigation) {
+    var encoded = encodeURIComponent(address);
+    if (forNavigation) {
+      /* Navigation: Apple Maps on iOS, Google Maps on Android */
+      if (isIOS()) {
+        window.location.href = 'maps://?daddr=' + encoded;
+      } else {
+        window.open('https://maps.google.com/?daddr=' + encoded, '_blank');
+      }
+    } else {
+      /* Just view location */
+      if (isIOS()) {
+        window.location.href = 'maps://?q=' + encoded;
+      } else {
+        window.open('https://maps.google.com/?q=' + encoded, '_blank');
+      }
+    }
+  }
+  window.openMapsApp = openMapsApp;
+
+  function openWaze(address) {
+    window.open('https://waze.com/ul?q=' + encodeURIComponent(address) + '&navigate=yes', '_blank');
+  }
+  window.openWaze = openWaze;
+
+  function setLocationStatus(state, msg) {
+    var bar = document.getElementById('locationBar');
+    var txt = document.getElementById('locationText');
+    if (!bar || !txt) return;
+    bar.className = 'dr-location-bar ' + state;
+    txt.textContent = msg;
+    bar.style.display = 'flex';
+  }
+
+  function startLocationTracking() {
+    if (!('geolocation' in navigator)) {
+      setLocationStatus('denied', 'Location not available on this device');
+      return;
+    }
+
+    setLocationStatus('requesting', 'Requesting location permission…');
+
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        lastPosition = pos.coords;
+        setLocationStatus('active', '● Location active — sharing with dispatch');
+        sendLocation(pos.coords);
+
+        /* Watch continuously */
+        watchId = navigator.geolocation.watchPosition(
+          function (p) {
+            lastPosition = p.coords;
+            setLocationStatus('active', '● Location active — sharing with dispatch');
+          },
+          function () { setLocationStatus('warn', '⚠ Location signal lost'); },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+        );
+
+        /* Send position every 15 seconds */
+        locationSendInterval = setInterval(function () {
+          if (lastPosition) sendLocation(lastPosition);
+        }, 15000);
+      },
+      function (err) {
+        var msg = err.code === 1
+          ? 'Location denied — tap to enable in browser settings'
+          : 'Unable to get location';
+        setLocationStatus('denied', '✕ ' + msg);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  }
+
+  /* Allow dispatcher to tap the banner to retry */
+  window.retryLocation = function () {
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    clearInterval(locationSendInterval);
+    startLocationTracking();
+  };
+
+  function sendLocation(coords) {
+    fetch('/api/driver/location', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ lat: coords.latitude, lng: coords.longitude, accuracy: coords.accuracy }),
+      credentials: 'same-origin'
+    }).catch(function () {});
+  }
+
   /* ── Auth check + boot ── */
   fetch('/api/auth/me', { credentials: 'same-origin' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (d) {
       if (!d || d.role !== 'driver') { window.location.href = 'login.html'; return; }
       loadTrips();
+      startLocationTracking();
     });
 
   function loadTrips() {
@@ -99,32 +198,33 @@
     var card = document.createElement('div');
     card.className = 'dr-card' + (trip.status === 'en_route' ? ' active' : '') + (trip.status === 'completed' ? ' completed' : '');
 
-    var pickupEncoded = encodeURIComponent(trip.pickup);
-    var destEncoded   = encodeURIComponent(trip.destination);
-    var mapsUrl       = 'https://maps.google.com/?q=' + pickupEncoded;
-    var wazeUrl       = 'https://waze.com/ul?q=' + pickupEncoded + '&navigate=yes';
+    var dest = JSON.stringify(trip.destination);
+    var pick = JSON.stringify(trip.pickup);
+
+    var mapsSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>';
+    var mazeSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>';
 
     var actionButtons = '';
     if (trip.status === 'en_route') {
       actionButtons = [
-        '<a class="dr-btn dr-btn-map" href="' + mapsUrl + '" target="_blank" rel="noopener">',
-        '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> Maps',
-        '</a>',
-        '<a class="dr-btn dr-btn-waze" href="' + wazeUrl + '" target="_blank" rel="noopener">',
-        '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg> Waze',
-        '</a>',
+        '<button class="dr-btn dr-btn-map" onclick="openMapsApp(' + dest + ',true)">',
+        '  ' + mapsSvg + ' Navigate',
+        '</button>',
+        '<button class="dr-btn dr-btn-waze" onclick="openWaze(' + dest + ')">',
+        '  ' + mazeSvg + ' Waze',
+        '</button>',
         '<button class="dr-btn dr-btn-status" onclick="updateStatus(' + trip.id + ',\'completed\',this)">',
         '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Complete',
         '</button>'
       ].join('');
     } else if (trip.status === 'confirmed') {
       actionButtons = [
-        '<a class="dr-btn dr-btn-map" href="' + mapsUrl + '" target="_blank" rel="noopener">',
-        '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> Maps',
-        '</a>',
-        '<a class="dr-btn dr-btn-waze" href="' + wazeUrl + '" target="_blank" rel="noopener">',
-        '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg> Waze',
-        '</a>',
+        '<button class="dr-btn dr-btn-map" onclick="openMapsApp(' + pick + ',true)">',
+        '  ' + mapsSvg + ' Navigate',
+        '</button>',
+        '<button class="dr-btn dr-btn-waze" onclick="openWaze(' + pick + ')">',
+        '  ' + mazeSvg + ' Waze',
+        '</button>',
         '<button class="dr-btn dr-btn-status start" onclick="updateStatus(' + trip.id + ',\'en_route\',this)">',
         '  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start',
         '</button>'
@@ -192,6 +292,8 @@
 
   /* ── Logout ── */
   window.driverLogout = function () {
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    clearInterval(locationSendInterval);
     fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).finally(function () {
       window.location.href = 'login.html';
     });

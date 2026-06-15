@@ -3,6 +3,7 @@ const jwt    = require('jsonwebtoken');
 const { sendTwoFaEmail }              = require('../utils/email');
 const { requireSession, issueSession, clearSession } = require('../middleware/auth');
 const { loginLimiter, twoFaLimiter }  = require('../middleware/rateLimit');
+const { loginRules, verify2faRules, verifyTripRules, handleValidation } = require('../middleware/validate');
 
 const secret         = () => process.env.JWT_SECRET || 'dev_secret_change_in_prod';
 const PENDING_COOKIE = 'mendez_2fa_pending';
@@ -22,7 +23,7 @@ router.get('/me', requireSession, (req, res) => {
 });
 
 /* ── POST /api/auth/login ── */
-router.post('/login', loginLimiter, async (req, res) => {
+router.post('/login', loginLimiter, loginRules, handleValidation, async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Missing fields.' });
   if (email.toLowerCase().trim() !== DEMO.email || password !== DEMO.pass) {
@@ -70,7 +71,7 @@ router.post('/resend-2fa', twoFaLimiter, async (req, res) => {
 });
 
 /* ── POST /api/auth/verify-2fa ── */
-router.post('/verify-2fa', twoFaLimiter, (req, res) => {
+router.post('/verify-2fa', twoFaLimiter, verify2faRules, handleValidation, (req, res) => {
   const { code, rememberDevice } = req.body || {};
   const pending = req.cookies[PENDING_COOKIE];
   if (!pending) return res.status(401).json({ error: 'Session expired. Please sign in again.' });
@@ -89,7 +90,7 @@ router.post('/verify-2fa', twoFaLimiter, (req, res) => {
 });
 
 /* ── POST /api/auth/verify-trip ── */
-router.post('/verify-trip', requireSession, (req, res) => {
+router.post('/verify-trip', requireSession, verifyTripRules, handleValidation, (req, res) => {
   const { tripNumber, confirmCode } = req.body || {};
   if (!tripNumber || !confirmCode) return res.status(400).json({ error: 'Missing fields.' });
   if (tripNumber.trim() !== DEMO.trip || confirmCode.trim() !== DEMO.conf) {

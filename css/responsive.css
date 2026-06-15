@@ -82,8 +82,6 @@
   .hamburger        { display: flex; }
   .mobile-nav       { display: block; }
   .fab-book         { display: none; }
-  .btn-primary      { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,.75); box-shadow: none; }
-  .btn-primary:hover { background: rgba(255,255,255,.1); transform: translateY(-2px); }
   .hero h1          { font-size: clamp(1.9rem, 7.5vw, 3rem); }
   .hero-ctas, .cta-buttons { flex-direction: column; align-items: center; }
   .stats-grid       { grid-template-columns: 1fr; max-width: 380px; }

@@ -207,7 +207,12 @@
   position: relative;
   overflow: hidden;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(30,42,110,.35); }
+@keyframes btnBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+.btn-primary { animation: btnBounce 2s ease-in-out infinite; }
+.btn-primary:hover { animation-play-state: paused; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(30,42,110,.35); }
 .btn-primary::after {
   content: '';
   position: absolute;

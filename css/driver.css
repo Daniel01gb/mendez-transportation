@@ -411,6 +411,23 @@
   opacity: .85;
 }
 .dr-camera-toggle:hover { opacity: 1; }
+.dr-camera-flip {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: .7;
+  transition: all .18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.dr-camera-flip:hover  { opacity: 1; }
+.dr-camera-flip:active { transform: rotate(180deg); }
 .dr-camera-preview {
   width: 100%;
   max-height: 180px;

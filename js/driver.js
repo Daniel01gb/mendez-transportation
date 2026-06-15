@@ -13,6 +13,7 @@
   var peer          = null;
   var peerCalls     = [];
   var currentPeerId = null;
+  var facingMode    = 'user'; /* 'user' = front (cabin), 'environment' = rear (road) */
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -144,7 +145,7 @@
     }
     setCameraStatus('requesting', 'Starting cabin camera…');
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+      video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false
     }).then(function (stream) {
       cabinStream = stream;
@@ -152,8 +153,10 @@
       var video = document.getElementById('cabinVideo');
       video.srcObject = stream;
       video.style.display = 'block';
-      setCameraStatus('active', '● Cabin camera live — dispatcher can connect');
+      var label = facingMode === 'user' ? 'front (cabin)' : 'rear (road)';
+      setCameraStatus('active', '● Live — ' + label + ' — dispatcher can connect');
       document.getElementById('cameraToggle').textContent = 'Disable';
+      document.getElementById('cameraFlip').style.display = 'flex';
       startPeerStreaming(stream);
       setTimeout(captureAndSendSnapshot, 2000);
       cabinSnapshotInterval = setInterval(captureAndSendSnapshot, 60000);
@@ -179,7 +182,45 @@
     setCameraStatus('off', 'Cabin camera off');
     var toggle = document.getElementById('cameraToggle');
     if (toggle) toggle.textContent = 'Enable';
+    document.getElementById('cameraFlip').style.display = 'none';
   }
+
+  /* Flip between front (cabin) and rear (road) camera */
+  window.flipCamera = function () {
+    if (!cabinActive) return;
+    facingMode = facingMode === 'user' ? 'environment' : 'user';
+    var label = facingMode === 'user' ? 'front (cabin)' : 'rear (road)';
+    setCameraStatus('requesting', 'Switching to ' + label + ' camera…');
+
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    }).then(function (stream) {
+      /* Stop old tracks */
+      if (cabinStream) cabinStream.getTracks().forEach(function (t) { t.stop(); });
+      cabinStream = stream;
+
+      /* Update preview */
+      var video = document.getElementById('cabinVideo');
+      video.srcObject = stream;
+
+      /* Replace track in all live WebRTC calls — no reconnect needed */
+      var newTrack = stream.getVideoTracks()[0];
+      peerCalls.forEach(function (call) {
+        var pc = call.peerConnection;
+        if (!pc) return;
+        var sender = pc.getSenders().find(function (s) { return s.track && s.track.kind === 'video'; });
+        if (sender) sender.replaceTrack(newTrack).catch(function () {});
+      });
+
+      setCameraStatus('active', '● Live — ' + label + ' — dispatcher can connect');
+    }).catch(function () {
+      /* Revert facingMode on failure */
+      facingMode = facingMode === 'user' ? 'environment' : 'user';
+      var prevLabel = facingMode === 'user' ? 'front (cabin)' : 'rear (road)';
+      setCameraStatus('active', '● Live — ' + prevLabel + ' — dispatcher can connect');
+    });
+  };
 
   /* ── WebRTC peer streaming (dispatcher connects here) ── */
   function startPeerStreaming(stream) {

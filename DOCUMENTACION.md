@@ -41,6 +41,33 @@ Sitio web profesional para **Mendez Transportation LLC**, una empresa de transpo
 | `mendes website/` | **Versión 1** — 6 páginas públicas, sin portal |
 | `mendes website v2/` | **Versión 2** — v1 + login + portal + backend API |
 
+### Estructura de `mendes website v2/` (post-refactorización)
+```
+mendes website v2/
+├── css/                    — Todos los estilos del sitio
+├── js/                     — Scripts del frontend (auth, portal, booking, etc.)
+├── middleware/             — auth.js, rateLimit.js
+├── netlify/functions/      — api.js (handler serverless)
+├── routes/                 — auth.js, trip.js
+├── utils/                  — email.js
+├── index.html              — Home
+├── about.html / services.html / areas.html / faq.html / contact.html
+├── login.html / portal.html
+├── app.js                  — Express app (importable por server y Netlify)
+├── server.js               — Arranque local
+├── DOCUMENTACION.md
+├── package.json
+├── netlify.toml
+└── .env.example
+```
+
+**Archivos eliminados en la refactorización (Junio 2026):**
+- `footer.php`, `front-page.php`, `functions.php`, `style.css` — WordPress (no aplica en este MVP)
+- `railway.toml` — config de Railway (se usa Netlify)
+- `mendez-transportation-preview.html` — preview monolítico de 147KB
+- `sugerencias.md` — notas temporales
+- `db/` — SQLite experimental (arquitectura actual es stateless)
+
 ---
 
 ## 4. Versión 1 — Sitio Público (6 páginas)
@@ -478,4 +505,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Fix iOS Safari, FAB eliminado, bounce en btn-primary (↕) y loginBounce en btn-portal-nav (↔). Deploy via `npx netlify deploy --prod`.*
+*Documentación actualizada el 15 de Junio 2026 — Refactorización: carpeta limpiada (WordPress, Railway, db/ y archivos temporales eliminados). Fix iOS Safari, FAB eliminado, bounces en CTA buttons. Deploy via `npx netlify deploy --prod`.*

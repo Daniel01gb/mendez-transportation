@@ -24,6 +24,14 @@ const DISPATCHER = {
   name:  'Alex Rodriguez'
 };
 
+const DRIVER = {
+  email: (process.env.DRIVER_EMAIL || 'driver@mendeztransport.com').toLowerCase(),
+  pass:  process.env.DRIVER_PASS   || 'Driver2026!',
+  code:  process.env.DRIVER_CODE   || '789012',
+  name:  'Carlos Rivera',
+  driverId: 1
+};
+
 /* ── GET /api/auth/me ── */
 router.get('/me', requireSession, (req, res) => {
   res.json({ ok: true, email: req.user.email, role: req.user.role || 'patient' });
@@ -40,6 +48,9 @@ router.post('/login', loginLimiter, loginRules, handleValidation, async (req, re
   if (normalizedEmail === DISPATCHER.email && password === DISPATCHER.pass) {
     role = 'dispatcher';
     code = DISPATCHER.code;
+  } else if (normalizedEmail === DRIVER.email && password === DRIVER.pass) {
+    role = 'driver';
+    code = DRIVER.code;
   } else if (normalizedEmail === DEMO.email && password === DEMO.pass) {
     role = 'patient';
     code = DEMO.code;

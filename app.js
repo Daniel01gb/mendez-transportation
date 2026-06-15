@@ -6,6 +6,7 @@ const cors         = require('cors');
 const authRoutes        = require('./routes/auth');
 const tripRoutes        = require('./routes/trip');
 const dispatcherRoutes  = require('./routes/dispatcher');
+const driverRoutes      = require('./routes/driver');
 const { globalLimiter } = require('./middleware/rateLimit');
 
 /* Fail loudly in production if critical env vars are missing */
@@ -61,6 +62,7 @@ app.use(globalLimiter);
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth',       authRoutes);
 app.use('/api/dispatcher', dispatcherRoutes);
+app.use('/api/driver',     driverRoutes);
 app.use('/api',            tripRoutes);
 
 /* Generic error handler — never leak stack traces in production */

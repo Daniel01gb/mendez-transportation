@@ -49,4 +49,17 @@ function clearSession(res) {
   res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'strict' });
 }
 
-module.exports = { requireSession, requireDispatcher, issueSession, clearSession };
+function requireDriver(req, res, next) {
+  const token = req.cookies[COOKIE_NAME];
+  if (!token) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    req.user = jwt.verify(token, secret());
+    if (req.user.role !== 'driver') return res.status(403).json({ error: 'Access denied' });
+    next();
+  } catch {
+    res.clearCookie(COOKIE_NAME);
+    res.status(401).json({ error: 'Session expired' });
+  }
+}
+
+module.exports = { requireSession, requireDispatcher, requireDriver, issueSession, clearSession };

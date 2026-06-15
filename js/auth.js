@@ -78,7 +78,7 @@
   fetch('/api/auth/me', { credentials: 'same-origin' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (d) {
-      if (d) window.location.href = d.role === 'dispatcher' ? 'dispatcher.html' : 'portal.html';
+      if (d) window.location.href = d.role === 'dispatcher' ? 'dispatcher.html' : d.role === 'driver' ? 'driver.html' : 'portal.html';
     });
 
   /* ── Elements ── */
@@ -225,7 +225,7 @@
       verifyBtn.innerHTML = '&#10003; Verified!';
       verifyBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
       verifyBtn.style.color      = '#fff';
-      var dest = res.data.role === 'dispatcher' ? 'dispatcher.html' : 'portal.html';
+      var dest = res.data.role === 'dispatcher' ? 'dispatcher.html' : res.data.role === 'driver' ? 'driver.html' : 'portal.html';
       setTimeout(function () { window.location.href = dest; }, 600);
     })
     .catch(function () {

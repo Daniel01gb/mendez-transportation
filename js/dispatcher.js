@@ -71,7 +71,9 @@
 
   function applyRealLocations(trips, locations) {
     locations.forEach(function (loc) {
-      var trip = trips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
+      var trip = trips.find(function (t) {
+        return t.driver && Number(t.driver.id) === Number(loc.driverId) && t.status === 'en_route';
+      });
       if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: loc.peerId || null };
     });
   }
@@ -80,16 +82,23 @@
     fetch('/api/dispatcher/locations', { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
+        var tableNeedsUpdate = false;
         (data.locations || []).forEach(function (loc) {
-          var trip = allTrips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
+          var trip = allTrips.find(function (t) {
+            return t.driver && Number(t.driver.id) === Number(loc.driverId) && t.status === 'en_route';
+          });
           if (!trip) return;
-          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: loc.peerId || null };
+          var prevPeerId = trip.driver_position && trip.driver_position.peerId;
+          var newPeerId  = loc.peerId || null;
+          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: newPeerId };
+          if (prevPeerId !== newPeerId) tableNeedsUpdate = true;
           var m = markers[trip.id];
           if (m) {
             m.setLatLng([loc.lat, loc.lng]);
             m.getPopup().setContent(buildPopup(trip, true));
           }
         });
+        if (tableNeedsUpdate) renderTable(allTrips);
       }).catch(function () {});
   }
 
@@ -333,6 +342,15 @@
     if (e.target === this) closeIncidentModal();
   });
 
+  /* ── ICE servers (STUN + TURN for NAT traversal) ── */
+  var ICE_SERVERS = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'turn:openrelay.metered.ca:80',              username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443',             username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+  ];
+
   /* ── Cabin view (WebRTC live + snapshot fallback) ── */
   window.viewCabin = function (driverId, driverName, peerId) {
     cabinDriverId = driverId;
@@ -392,14 +410,7 @@
 
     if (typeof Peer === 'undefined') { cabinReset(); showCabinNoFeed('WebRTC not available.'); return; }
 
-    dispPeer = new Peer({
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-      }
-    });
+    dispPeer = new Peer({ config: { iceServers: ICE_SERVERS } });
 
     var connectTimeout = setTimeout(function () {
       if (loadingEl.style.display !== 'none') {

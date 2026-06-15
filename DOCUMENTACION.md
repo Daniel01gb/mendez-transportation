@@ -484,7 +484,7 @@ El último middleware de `app.js` captura cualquier error no manejado y responde
 | Variable | Descripción | Obligatoria |
 |----------|-------------|-------------|
 | `JWT_SECRET` | Cadena aleatoria larga para firmar los JWT | ✅ Sí |
-| `ALLOWED_ORIGINS` | Orígenes permitidos en CORS (ej: `https://v2mn.netlify.app`) | ✅ Sí ⚠️ PENDIENTE |
+| `ALLOWED_ORIGINS` | Orígenes permitidos en CORS (`https://dreamy-travesseiro-61a309.netlify.app`) | ✅ Configurado |
 | `DEMO_EMAIL` | Email del demo (default: demo@mendeztransport.com) | No |
 | `DEMO_PASS` | Password del demo (default: Mendez2026!) | No |
 | `DEMO_CODE` | Código 2FA fijo (default: 123456) | No |
@@ -496,16 +496,24 @@ El último middleware de `app.js` captura cualquier error no manejado y responde
 | `SMTP_PASS` | Password SMTP | No |
 | `SMTP_FROM` | From address del email | No |
 
-> **⚠️ Acción pendiente:** Agregar `ALLOWED_ORIGINS = https://v2mn.netlify.app` en Netlify dashboard → Site settings → Environment variables → redeploy. Sin esto el CORS bloquea todas las peticiones del frontend en producción.
+> Variables configuradas vía CLI en el nuevo sitio. `ALLOWED_ORIGINS` apunta a `https://dreamy-travesseiro-61a309.netlify.app`. ✅
 
-### Deploy en producción (v2mn.netlify.app)
+### Deploy en producción
 
-El auto-deploy desde GitHub **no funciona** en este sitio. Usar siempre el CLI:
+**Cuenta Netlify activa:** `danielguilln666@gmail.com`  
+**Site:** `dreamy-travesseiro-61a309` (ID: `dcf0e080-e850-4832-bd6e-831ec15a6c96`)  
+**URL:** `https://dreamy-travesseiro-61a309.netlify.app`
+
+El auto-deploy desde GitHub está activo en esta cuenta — cada push a `master` despliega automáticamente.
+
+Para deploy manual desde CLI:
 ```bash
 npx netlify deploy --prod
 ```
-El proyecto ya está vinculado al sitio `v2mn` (ID: `bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae`).
-Si se desvincula: `npx netlify link --id bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae`
+Si el CLI no está vinculado: `npx netlify link --id dcf0e080-e850-4832-bd6e-831ec15a6c96`  
+Si la sesión expiró: `npx netlify logout` → `npx netlify login` (con danielguilln666@gmail.com)
+
+> **Cuenta anterior (agotó créditos):** danielagb984@gmail.com — site v2mn (`bc01b9a0-1abd-4bdb-b423-fb96ae45f2ae`)
 
 ### Pasos para subir por primera vez (nuevo entorno)
 ```bash

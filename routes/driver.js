@@ -16,6 +16,11 @@ function getIncidentBlobs() {
   catch (_) { return null; }
 }
 
+function getRTCStore() {
+  try { return require('@netlify/blobs').getStore('rtc-signals'); }
+  catch (_) { return null; }
+}
+
 function makeTime(h, m) {
   const d = new Date();
   d.setHours(h, m, 0, 0);

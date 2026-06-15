@@ -95,15 +95,15 @@ const DEMO_TRIPS = [
 /* GET /api/dispatcher/locations — real driver positions from Netlify Blobs */
 router.get('/locations', requireDispatcher, async (_req, res) => {
   const store = getBlobs();
-  if (!store) return res.json({ locations: [] });
+  if (!store) return res.json({ locations: [], _debug: 'store_null' });
   try {
     const { blobs } = await store.list();
     const locations = await Promise.all(
       blobs.map(function (b) { return store.get(b.key, { type: 'json' }); })
     );
-    res.json({ locations: locations.filter(Boolean) });
+    res.json({ locations: locations.filter(Boolean), _debug: 'ok_' + blobs.length });
   } catch (e) {
-    res.json({ locations: [] });
+    res.json({ locations: [], _debug: 'error: ' + e.message });
   }
 });
 

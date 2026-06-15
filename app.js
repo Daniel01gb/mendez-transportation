@@ -60,6 +60,7 @@ app.use(cookieParser());
 app.use(globalLimiter);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+app.get('/api/debug-blobs', (_req, res) => res.json(process._blobsDebug || { note: 'not_in_lambda' }));
 app.use('/api/auth',       authRoutes);
 app.use('/api/dispatcher', dispatcherRoutes);
 app.use('/api/driver',     driverRoutes);

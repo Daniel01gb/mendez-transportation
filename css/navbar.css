@@ -225,7 +225,13 @@
   transition: left .55s ease;
   pointer-events: none;
 }
+@keyframes loginBounce {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(6px); }
+}
+.btn-portal-nav { animation: loginBounce 2s ease-in-out infinite; }
 .btn-portal-nav:hover {
+  animation-play-state: paused;
   color: #fff;
   background: rgba(14,165,233,.18);
   border-color: rgba(56,189,248,.65);
@@ -234,6 +240,7 @@
 }
 .btn-portal-nav:hover::before { left: 130%; }
 .btn-portal-nav:active {
+  animation-play-state: paused;
   transform: translateY(0) scale(.97);
   transition: transform .08s, box-shadow .08s;
 }

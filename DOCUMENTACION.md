@@ -46,7 +46,7 @@ Sitio web profesional para **Mendez Transportation LLC**, una empresa de transpo
 mendes website v2/
 ├── css/                    — Todos los estilos del sitio
 ├── js/                     — Scripts del frontend (auth, portal, booking, etc.)
-├── middleware/             — auth.js, rateLimit.js
+├── middleware/             — auth.js, rateLimit.js, validate.js
 ├── netlify/functions/      — api.js (handler serverless)
 ├── routes/                 — auth.js, trip.js
 ├── utils/                  — email.js
@@ -164,6 +164,7 @@ routes/auth.js              — Endpoints de autenticación (stateless)
 routes/trip.js              — Datos del viaje + posición del conductor
 middleware/auth.js          — requireSession, issueSession, clearSession (JWT cookies)
 middleware/rateLimit.js     — Rate limiting: 10/15min login, 5/10min 2FA
+middleware/validate.js      — Reglas express-validator para login, 2FA y trip
 utils/email.js              — Nodemailer wrapper (consola si no hay SMTP)
 netlify.toml                — Configuración de build y redirects para Netlify
 .env.example                — Variables de entorno documentadas
@@ -370,6 +371,86 @@ Esto evita arranques silenciosos con valores vacíos que dejarían el sistema in
 
 ---
 
+## 8b. Seguridad — Capas implementadas (Junio 2026)
+
+### Paquetes de seguridad activos
+| Paquete | Versión | Propósito |
+|---------|---------|-----------|
+| `helmet` | ^8.x | 13 headers de seguridad HTTP (CSP, HSTS, X-Frame-Options, etc.) |
+| `cors` | ^2.x | CORS estricto: solo orígenes en lista blanca |
+| `express-validator` | ^7.x | Sanitización y validación de inputs antes de procesarlos |
+| `express-rate-limit` | ^7.x | Rate limiting por ruta (global, login, 2FA) |
+| `nodemailer` | ^9.x | v9 — corrige 4 CVEs altos de SMTP injection y DoS |
+
+### Helmet — Headers configurados (`app.js`)
+```javascript
+helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:  ["'self'"],
+      scriptSrc:   ["'self'"],
+      styleSrc:    ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc:     ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc:      ["'self'", 'data:', 'https:'],
+      connectSrc:  ["'self'"],
+      frameSrc:    ["'none'"],
+      objectSrc:   ["'none'"],
+    }
+  },
+  crossOriginEmbedderPolicy: false   // Necesario para Leaflet/mapas externos
+})
+```
+
+### CORS (`app.js`)
+Solo acepta peticiones de orígenes en la variable `ALLOWED_ORIGINS` (separados por coma).
+En dev local (sin esa variable), permite `localhost:3000` y `localhost:8888`.
+
+**⚠️ PENDIENTE — Agregar en Netlify dashboard (`Site settings → Environment variables`):**
+```
+ALLOWED_ORIGINS = https://v2mn.netlify.app
+```
+Cuando haya dominio propio:
+```
+ALLOWED_ORIGINS = https://v2mn.netlify.app,https://mendeztransport.com
+```
+Sin esta variable en producción, **todas las peticiones del frontend serán bloqueadas por CORS**.
+
+### Validación de inputs (`middleware/validate.js`)
+Usa `express-validator`. Aplica antes de que el handler de la ruta procese nada:
+
+| Ruta | Reglas |
+|------|--------|
+| `POST /auth/login` | email válido + normalizado, password string 1–128 chars |
+| `POST /auth/verify-2fa` | code exactamente 6 dígitos numéricos (`/^\d{6}$/`) |
+| `POST /auth/verify-trip` | tripNumber y confirmCode strings no vacíos, max 32/16 chars |
+
+### Body limit
+`express.json({ limit: '16kb' })` — previene ataques de payload gigante (body bomb).
+
+### Error handler global
+El último middleware de `app.js` captura cualquier error no manejado y responde con `{ error: 'Internal server error' }` — nunca expone stack traces en producción.
+
+### Resumen del estado de seguridad actual
+| Capa | Estado |
+|------|--------|
+| HTTPS (TLS) | ✅ Netlify lo da automático |
+| JWT httpOnly + SameSite Strict | ✅ middleware/auth.js |
+| 2FA por email (6 dígitos, 10 min) | ✅ routes/auth.js |
+| Rate limiting (login 10/15min, 2FA 5/10min) | ✅ middleware/rateLimit.js |
+| Security headers (helmet) | ✅ app.js |
+| CORS estricto | ✅ app.js (requiere ALLOWED_ORIGINS en Netlify) |
+| Validación de inputs | ✅ middleware/validate.js |
+| Body size limit | ✅ app.js |
+| Guard de producción | ✅ app.js |
+| noindex en login/portal | ✅ HTML meta tags |
+| Sin PHI — Confirmation Code | ✅ |
+| nodemailer sin CVEs | ✅ v9.x |
+| Square Payments | ⏳ Fase siguiente |
+| Audit log | ⏳ Fase siguiente |
+| Rate limiting persistente (Redis) | ⏳ Fase siguiente |
+
+---
+
 ## 9. Credenciales Demo
 
 | Paso | Campo | Valor |
@@ -403,6 +484,7 @@ Esto evita arranques silenciosos con valores vacíos que dejarían el sistema in
 | Variable | Descripción | Obligatoria |
 |----------|-------------|-------------|
 | `JWT_SECRET` | Cadena aleatoria larga para firmar los JWT | ✅ Sí |
+| `ALLOWED_ORIGINS` | Orígenes permitidos en CORS (ej: `https://v2mn.netlify.app`) | ✅ Sí ⚠️ PENDIENTE |
 | `DEMO_EMAIL` | Email del demo (default: demo@mendeztransport.com) | No |
 | `DEMO_PASS` | Password del demo (default: Mendez2026!) | No |
 | `DEMO_CODE` | Código 2FA fijo (default: 123456) | No |
@@ -413,6 +495,8 @@ Esto evita arranques silenciosos con valores vacíos que dejarían el sistema in
 | `SMTP_USER` | Usuario SMTP | No |
 | `SMTP_PASS` | Password SMTP | No |
 | `SMTP_FROM` | From address del email | No |
+
+> **⚠️ Acción pendiente:** Agregar `ALLOWED_ORIGINS = https://v2mn.netlify.app` en Netlify dashboard → Site settings → Environment variables → redeploy. Sin esto el CORS bloquea todas las peticiones del frontend en producción.
 
 ### Deploy en producción (v2mn.netlify.app)
 
@@ -505,4 +589,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Refactorización: carpeta limpiada (WordPress, Railway, db/ y archivos temporales eliminados). Fix iOS Safari, FAB eliminado, bounces en CTA buttons. Deploy via `npx netlify deploy --prod`.*
+*Documentación actualizada el 15 de Junio 2026 — Seguridad fase inmediata: helmet, CORS, express-validator, body limit, error handler global, nodemailer v9 (4 CVEs corregidos). Refactorización previa: carpeta limpiada (WordPress, Railway, db/ y archivos temporales eliminados). Fix iOS Safari, FAB eliminado, bounces en CTA buttons. Deploy via `npx netlify deploy --prod`.*

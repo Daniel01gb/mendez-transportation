@@ -3,8 +3,9 @@ const express      = require('express');
 const cookieParser = require('cookie-parser');
 const helmet       = require('helmet');
 const cors         = require('cors');
-const authRoutes   = require('./routes/auth');
-const tripRoutes   = require('./routes/trip');
+const authRoutes        = require('./routes/auth');
+const tripRoutes        = require('./routes/trip');
+const dispatcherRoutes  = require('./routes/dispatcher');
 const { globalLimiter } = require('./middleware/rateLimit');
 
 /* Fail loudly in production if critical env vars are missing */
@@ -58,8 +59,9 @@ app.use(cookieParser());
 app.use(globalLimiter);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
-app.use('/api/auth', authRoutes);
-app.use('/api',      tripRoutes);
+app.use('/api/auth',       authRoutes);
+app.use('/api/dispatcher', dispatcherRoutes);
+app.use('/api',            tripRoutes);
 
 /* Generic error handler — never leak stack traces in production */
 app.use((err, _req, res, _next) => {

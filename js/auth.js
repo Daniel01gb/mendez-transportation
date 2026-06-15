@@ -74,10 +74,12 @@
   var loginStep = document.getElementById('loginStep');
   if (!loginStep) return;
 
-  /* If cookie is still valid → skip straight to portal */
-  fetch('/api/auth/me', { credentials: 'same-origin' }).then(function (r) {
-    if (r.ok) window.location.href = 'portal.html';
-  });
+  /* If cookie is still valid → redirect to correct dashboard by role */
+  fetch('/api/auth/me', { credentials: 'same-origin' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (d) window.location.href = d.role === 'dispatcher' ? 'dispatcher.html' : 'portal.html';
+    });
 
   /* ── Elements ── */
   var verifyStep  = document.getElementById('verifyStep');
@@ -223,7 +225,8 @@
       verifyBtn.innerHTML = '&#10003; Verified!';
       verifyBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
       verifyBtn.style.color      = '#fff';
-      setTimeout(function () { window.location.href = 'portal.html'; }, 600);
+      var dest = res.data.role === 'dispatcher' ? 'dispatcher.html' : 'portal.html';
+      setTimeout(function () { window.location.href = dest; }, 600);
     })
     .catch(function () {
       showError(verifyError, 'Connection error. Please try again.');

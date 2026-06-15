@@ -17,33 +17,49 @@ const DEMO = {
   conf:  process.env.DEMO_CONF  || '7823'
 };
 
+const DISPATCHER = {
+  email: (process.env.DISPATCHER_EMAIL || 'dispatcher@mendeztransport.com').toLowerCase(),
+  pass:  process.env.DISPATCHER_PASS   || 'Dispatch2026!',
+  code:  process.env.DISPATCHER_CODE   || '654321',
+  name:  'Alex Rodriguez'
+};
+
 /* ── GET /api/auth/me ── */
 router.get('/me', requireSession, (req, res) => {
-  res.json({ ok: true, email: req.user.email });
+  res.json({ ok: true, email: req.user.email, role: req.user.role || 'patient' });
 });
 
 /* ── POST /api/auth/login ── */
 router.post('/login', loginLimiter, loginRules, handleValidation, async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Missing fields.' });
-  if (email.toLowerCase().trim() !== DEMO.email || password !== DEMO.pass) {
+
+  const normalizedEmail = email.toLowerCase().trim();
+  let role, code;
+
+  if (normalizedEmail === DISPATCHER.email && password === DISPATCHER.pass) {
+    role = 'dispatcher';
+    code = DISPATCHER.code;
+  } else if (normalizedEmail === DEMO.email && password === DEMO.pass) {
+    role = 'patient';
+    code = DEMO.code;
+  } else {
     return res.status(401).json({ error: 'Invalid email or password.' });
   }
 
-  /* Real email if SMTP is set, otherwise demo code */
-  let code = DEMO.code;
+  /* Real email if SMTP is set, otherwise use demo code */
   if (process.env.SMTP_HOST) {
     code = String(Math.floor(100000 + Math.random() * 900000));
-    try { await sendTwoFaEmail(email, code); } catch (e) { console.error('[email]', e.message); }
+    try { await sendTwoFaEmail(normalizedEmail, code); } catch (e) { console.error('[email]', e.message); }
   } else {
-    console.log(`[2FA] To: ${email}  |  Code: ${code}`);
+    console.log(`[2FA] To: ${normalizedEmail}  |  Code: ${code}  |  Role: ${role}`);
   }
 
-  /* Sign code into a short-lived httpOnly cookie — no database needed */
-  const token = jwt.sign({ email: email.toLowerCase().trim(), code }, secret(), { expiresIn: '10m' });
+  /* Sign code + role into a short-lived httpOnly cookie — no database needed */
+  const token = jwt.sign({ email: normalizedEmail, code, role }, secret(), { expiresIn: '10m' });
   res.cookie(PENDING_COOKIE, token, cookieOpts(10 * 60 * 1000));
 
-  res.json({ ok: true, maskedEmail: mask(email) });
+  res.json({ ok: true, maskedEmail: mask(normalizedEmail) });
 });
 
 /* ── POST /api/auth/resend-2fa ── */
@@ -85,8 +101,9 @@ router.post('/verify-2fa', twoFaLimiter, verify2faRules, handleValidation, (req,
   }
 
   res.clearCookie(PENDING_COOKIE, { httpOnly: true, sameSite: 'strict' });
-  issueSession(res, { email: payload.email }, !!rememberDevice);
-  res.json({ ok: true });
+  const role = payload.role || 'patient';
+  issueSession(res, { email: payload.email, role }, !!rememberDevice);
+  res.json({ ok: true, role });
 });
 
 /* ── POST /api/auth/verify-trip ── */

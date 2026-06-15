@@ -1,5 +1,5 @@
 /* Mendez Driver — Service Worker */
-const CACHE = 'mendez-driver-v1';
+const CACHE = 'mendez-driver-v2';
 const SHELL = [
   '/driver.html',
   '/css/base.css',

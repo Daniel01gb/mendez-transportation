@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const { requireDispatcher } = require('../middleware/auth');
 
+var _blobsError = null;
 function getBlobs() {
   try { return require('@netlify/blobs').getStore('driver-locations'); }
-  catch (_) { return null; }
+  catch (e) { _blobsError = e.message; return null; }
 }
 
 function getSnapshotBlobs() {
@@ -95,7 +96,7 @@ const DEMO_TRIPS = [
 /* GET /api/dispatcher/locations — real driver positions from Netlify Blobs */
 router.get('/locations', requireDispatcher, async (_req, res) => {
   const store = getBlobs();
-  if (!store) return res.json({ locations: [], _debug: 'store_null' });
+  if (!store) return res.json({ locations: [], _debug: 'store_null', _error: _blobsError });
   try {
     const { blobs } = await store.list();
     const locations = await Promise.all(

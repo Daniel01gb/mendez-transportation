@@ -27,6 +27,7 @@
 html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
 /* ── BODY & TYPOGRAPHY ── */
+html { overflow-x: hidden; }
 body {
   font-family: var(--font-body);
   color: var(--text-primary);

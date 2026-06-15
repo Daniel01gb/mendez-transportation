@@ -48,11 +48,12 @@ mendes website v2/
 ├── js/                     — Scripts del frontend (auth, portal, booking, etc.)
 ├── middleware/             — auth.js, rateLimit.js, validate.js
 ├── netlify/functions/      — api.js (handler serverless)
-├── routes/                 — auth.js, trip.js
+├── routes/                 — auth.js, trip.js, dispatcher.js
 ├── utils/                  — email.js
 ├── index.html              — Home
 ├── about.html / services.html / areas.html / faq.html / contact.html
 ├── login.html / portal.html
+├── dispatcher.html         — Panel del dispatcher (rol: dispatcher)
 ├── app.js                  — Express app (importable por server y Netlify)
 ├── server.js               — Arranque local
 ├── DOCUMENTACION.md
@@ -160,9 +161,10 @@ js/portal.js        — Tracking con Leaflet + polling a la API
 app.js                      — Express app (sin listen, importable por servidor y Netlify)
 server.js                   — Arranque local: sirve app.js + archivos estáticos
 netlify/functions/api.js    — Handler serverless para Netlify
-routes/auth.js              — Endpoints de autenticación (stateless)
-routes/trip.js              — Datos del viaje + posición del conductor
-middleware/auth.js          — requireSession, issueSession, clearSession (JWT cookies)
+routes/auth.js              — Endpoints de autenticación (stateless, patient + dispatcher)
+routes/trip.js              — Datos del viaje + posición del conductor (paciente)
+routes/dispatcher.js        — Trips demo, stats, patch status (dispatcher)
+middleware/auth.js          — requireSession, requireDispatcher, issueSession, clearSession
 middleware/rateLimit.js     — Rate limiting: 10/15min login, 5/10min 2FA
 middleware/validate.js      — Reglas express-validator para login, 2FA y trip
 utils/email.js              — Nodemailer wrapper (consola si no hay SMTP)
@@ -451,8 +453,99 @@ El último middleware de `app.js` captura cualquier error no manejado y responde
 
 ---
 
+## 8c. Panel del Dispatcher (demo — Junio 2026)
+
+### Rol y acceso
+- Credenciales separadas del paciente — mismo `login.html`, el JWT incluye `role: 'dispatcher'`
+- Después del 2FA redirige a `dispatcher.html` (paciente va a `portal.html`)
+- El backend usa `requireDispatcher` middleware: si `role !== 'dispatcher'` → 403
+
+### Archivos del dispatcher
+```
+dispatcher.html        — Dashboard completo
+css/dispatcher.css     — Estilos del panel (dark navbar, stats bar, tabla, mapa, modal)
+js/dispatcher.js       — Lógica: carga trips/stats, tabla, filtros, mapa Leaflet, edit modal
+routes/dispatcher.js   — GET /api/dispatcher/trips, GET /stats, PATCH /trips/:id/status
+```
+
+### Datos demo (6 viajes, 4 conductores)
+| Trip # | Paciente | Status | Conductor | Hora |
+|--------|----------|--------|-----------|------|
+| MT-2026-4891 | Maria Garcia | en_route | Carlos Rivera | 8:30 AM |
+| MT-2026-4892 | Robert Johnson | confirmed | Ana Martinez | 10:00 AM |
+| MT-2026-4893 | Linda Chen | pending | — | 12:30 PM |
+| MT-2026-4894 | James Wilson | completed | Miguel Santos | 6:00 AM |
+| MT-2026-4895 | Patricia Brown | en_route | Luis Hernandez | 9:15 AM |
+| MT-2026-4896 | Dorothy Martinez | pending | — | 2:00 PM |
+
+### Conductores demo
+| ID | Nombre | Vehículo | Placa | Rating |
+|----|--------|----------|-------|--------|
+| 1 | Carlos Rivera | 2023 Toyota Sienna | FLA-4892 | ⭐ 4.9 |
+| 2 | Ana Martinez | 2022 Honda Odyssey | FLA-2341 | ⭐ 4.8 |
+| 3 | Miguel Santos | 2023 Chrysler Pacifica | FLA-7821 | ⭐ 4.7 |
+| 4 | Luis Hernandez | 2021 Toyota Sienna | FLA-5513 | ⭐ 4.8 |
+
+### Funcionalidades del panel
+- Stats bar: Total / En Route / Pending / Confirmed / Completed
+- Tabla de viajes con filtros por status
+- Mapa Leaflet con posiciones de conductores activos (en_route)
+- Modal de edición: cambiar status, asignar conductor, agregar notas
+- Cambios actualizan el estado en memoria del frontend (demo — sin persistencia en BD)
+
+### Nota importante para backend real
+Al conectar Supabase en Phase 3, `routes/dispatcher.js` reemplaza las constantes `DEMO_TRIPS`
+y `DRIVERS` por queries a la base de datos. El frontend (`dispatcher.js`) no cambia.
+
+---
+
+## 8d. Driver PWA — App del Conductor (en construcción)
+
+### Concepto
+PWA (Progressive Web App) — página web móvil que el conductor instala desde Chrome en su teléfono
+sin pasar por Play Store ni App Store. Abre como app nativa con ícono en pantalla de inicio.
+
+### Instalación por el conductor (una sola vez)
+```
+1. Dispatcher envía link por WhatsApp
+2. Conductor abre en Chrome
+3. Chrome muestra: "Agregar Mendez Driver a pantalla de inicio"
+4. Toca "Agregar" → ícono en el teléfono
+5. Abre como app fullscreen sin barra del navegador
+```
+
+### Archivos necesarios
+```
+driver.html      — Pantalla del conductor (viajes del día, cambio de status, link a Waze)
+css/driver.css   — Estilos mobile-first
+js/driver.js     — Lógica: carga viajes asignados, actualiza status, abre mapas
+manifest.json    — Nombre, ícono, color de la app (hace posible "instalar" la PWA)
+sw.js            — Service Worker (cache offline básico)
+routes/driver.js — GET /api/driver/trips, PATCH /api/driver/trips/:id/status
+```
+
+### Rol en el sistema de auth
+Nuevo rol `role: 'driver'` en el JWT — mismo login.html, `requireDriver` middleware.
+Conductor solo ve sus propios viajes (filtrado por `driver_id`).
+
+### Funcionalidades del conductor
+- Ver viajes del día asignados a él
+- Cambiar status: `Confirmed → En Route → Arrived → Completed`
+- Botón "Waze" / "Google Maps" con la dirección de pickup pre-cargada
+- Dispatcher ve el cambio de status en tiempo real en su panel
+
+### Integración con brokers (roadmap)
+| Opción | Descripción | Costo estimado |
+|--------|-------------|----------------|
+| Formulario web | Brokers/facilidades envían viajes desde URL privada → aparece en dispatcher como `pending` | ~$200–300 |
+| Email → trip | Webhook parsea email del broker y crea el viaje automáticamente | ~$100–150 |
+| API Modivcare/MTM | Integración directa con plataforma del broker | Fase separada, requiere acuerdo |
+
+---
+
 ## 9. Credenciales Demo
 
+### Paciente
 | Paso | Campo | Valor |
 |------|-------|-------|
 | Sign In | Email | `demo@mendeztransport.com` |
@@ -461,8 +554,16 @@ El último middleware de `app.js` captura cualquier error no manejado y responde
 | Portal | Trip Number | `MT-2026-4891` |
 | Portal | Confirmation Code | `7823` |
 
-> Credenciales configurables via variables de entorno: `DEMO_EMAIL`, `DEMO_PASS`, `DEMO_CODE`, `DEMO_TRIP`, `DEMO_CONF`.
-> El código 2FA siempre es `123456` mientras no haya SMTP configurado.
+### Dispatcher
+| Paso | Campo | Valor |
+|------|-------|-------|
+| Sign In | Email | `dispatcher@mendeztransport.com` |
+| Sign In | Password | `Dispatch2026!` |
+| 2FA | Código | `654321` |
+| Panel | — | Acceso directo a `dispatcher.html` (sin verificación de trip) |
+
+> Todas las credenciales son configurables vía variables de entorno (`DEMO_*`, `DISPATCHER_*`).
+> El código 2FA usa el valor fijo de env var mientras no haya SMTP configurado.
 
 ### Datos del viaje demo
 
@@ -490,6 +591,9 @@ El último middleware de `app.js` captura cualquier error no manejado y responde
 | `DEMO_CODE` | Código 2FA fijo (default: 123456) | No |
 | `DEMO_TRIP` | Trip number del demo (default: MT-2026-4891) | No |
 | `DEMO_CONF` | Confirmation Code del demo (default: 7823) | No |
+| `DISPATCHER_EMAIL` | Email del dispatcher (default: dispatcher@mendeztransport.com) | No |
+| `DISPATCHER_PASS` | Password del dispatcher (default: Dispatch2026!) | No |
+| `DISPATCHER_CODE` | Código 2FA del dispatcher (default: 654321) | No |
 | `SMTP_HOST` | Servidor SMTP para email real | No |
 | `SMTP_PORT` | Puerto SMTP (default: 587) | No |
 | `SMTP_USER` | Usuario SMTP | No |
@@ -542,35 +646,39 @@ node server.js
 
 ## 11. Próximos pasos (si aprueban)
 
-### Backend real (post-aprobación)
-- [ ] Base de datos real (Supabase PostgreSQL — compatible con Netlify)
-- [ ] Email 2FA real — configurar SMTP (SendGrid / Mailtrap / Gmail)
-- [ ] Usuarios reales con contraseñas hasheadas (bcrypt ya importado)
-- [ ] GPS real del conductor (Supabase Realtime / Socket.io)
-- [ ] Panel admin para el dispatcher (crear/asignar/cancelar viajes)
-- [ ] Rate limiting persistente (Redis o Upstash)
-- [ ] Logs de auditoría (login, 2FA, trip verify, logout)
-- [x] Reducir dependencia del SSN — reemplazado por Confirmation Code (no PHI) ✓
+### MVP actual — lo que ya está demo-listo ✅
+- [x] Sitio público (6 páginas)
+- [x] Portal del paciente (login + 2FA + tracking)
+- [x] Panel del dispatcher (viajes, mapa, edit modal, filtros)
+- [x] Sistema de roles JWT (patient / dispatcher)
+- [x] Seguridad: helmet, CORS, express-validator, rate limiting
 
-### Diseño / UX pendiente
-- [ ] Foto real del conductor (reemplazar placeholder `CR` con `<img>`)
-- [ ] Historial de viajes pasados (tabla)
-- [ ] Notificaciones push ("Tu conductor llega en 5 min")
+### Driver PWA — en construcción 🔧
+- [ ] `driver.html` — pantalla del conductor (viajes asignados, cambio de status)
+- [ ] `manifest.json` + `sw.js` — hace la PWA instalable desde Chrome
+- [ ] `routes/driver.js` — endpoint de viajes del conductor + patch status
+- [ ] Rol `driver` en el sistema de auth
+
+### Phase 3 — Backend real (post-aprobación)
+- [ ] Base de datos real (Supabase PostgreSQL)
+- [ ] Email 2FA real — SMTP (SendGrid recomendado)
+- [ ] Usuarios reales con contraseñas hasheadas (bcrypt ya importado)
+- [ ] GPS real del conductor (Supabase Realtime)
+- [ ] Dispatcher puede crear/asignar/cancelar viajes reales
+- [ ] Rate limiting persistente (Upstash Redis)
+- [ ] Logs de auditoría (login, 2FA, trip verify, logout)
+- [ ] Formulario de brokers (facilidades médicas envían trips directamente)
+- [ ] Square Payments para cobro de co-pays
 
 ### Fixes mobile aplicados
-- **iOS Safari `position:fixed`** — `html { overflow-x: hidden }` agregado a `base.css`. Sin esto, el `overflow-x: hidden` solo en `body` hace que iOS Safari rompa `position: fixed`.
-- **FAB "Book Your Ride" eliminado** — el botón flotante causaba problemas de posicionamiento en iOS. Reemplazado por efecto de bounce en el botón `btn-primary` del hero.
+- **iOS Safari `position:fixed`** — `html { overflow-x: hidden }` agregado a `base.css`
+- **FAB "Book Your Ride" eliminado** — reemplazado por bounce en `btn-primary` del hero
 
 ### Animaciones de botones (CTAs)
 | Botón | Archivo | Animación |
 |-------|---------|-----------|
 | `btn-primary` — "Book Your Ride Now" (hero) | `hero.css` | `btnBounce`: sube/baja 7px · loop 2s · pausa en hover |
 | `btn-portal-nav` — "Login" (navbar) | `navbar.css` | `loginBounce`: izquierda→derecha 6px · loop 2s · pausa en hover |
-
-### WordPress (propuesta original)
-- [ ] Migrar el sitio público a WordPress + tema custom
-- [ ] Booking form conectado a Square Payments
-- [ ] Calculadora de millas con precio dinámico
 
 ---
 
@@ -597,4 +705,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Seguridad fase inmediata: helmet, CORS, express-validator, body limit, error handler global, nodemailer v9 (4 CVEs corregidos). Refactorización previa: carpeta limpiada (WordPress, Railway, db/ y archivos temporales eliminados). Fix iOS Safari, FAB eliminado, bounces en CTA buttons. Deploy via `npx netlify deploy --prod`.*
+*Documentación actualizada el 15 de Junio 2026 — Panel dispatcher completo (roles JWT, 6 viajes demo, 4 conductores, mapa, filtros, modal de edición). Driver PWA en construcción. Seguridad: helmet, CORS, express-validator, nodemailer v9. Deploy en nueva cuenta Netlify (`dreamy-travesseiro-61a309`, danielguilln666@gmail.com) con auto-deploy desde GitHub activo.*

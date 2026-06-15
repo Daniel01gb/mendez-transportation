@@ -14,6 +14,7 @@
   var peerCalls     = [];
   var currentPeerId = null;
   var facingMode    = 'user'; /* 'user' = front (cabin), 'environment' = rear (road) */
+  var micMuted      = false;
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -146,10 +147,11 @@
     setCameraStatus('requesting', 'Starting cabin camera…');
     navigator.mediaDevices.getUserMedia({
       video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
+      audio: true
     }).then(function (stream) {
       cabinStream = stream;
       cabinActive = true;
+      micMuted = false;
       var video = document.getElementById('cabinVideo');
       video.srcObject = stream;
       video.style.display = 'block';
@@ -157,12 +159,16 @@
       setCameraStatus('active', '● Live — ' + label + ' — dispatcher can connect');
       document.getElementById('cameraToggle').textContent = 'Disable';
       document.getElementById('cameraFlip').style.display = 'flex';
+      if (stream.getAudioTracks().length > 0) {
+        document.getElementById('cameraMic').style.display = 'flex';
+        updateMicBtn();
+      }
       startPeerStreaming(stream);
       setTimeout(captureAndSendSnapshot, 2000);
       cabinSnapshotInterval = setInterval(captureAndSendSnapshot, 60000);
     }).catch(function (err) {
       var msg = (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')
-        ? 'Camera permission denied — tap to retry'
+        ? 'Camera/mic permission denied — tap to retry'
         : 'Unable to start camera';
       setCameraStatus('denied', '✕ ' + msg);
     });
@@ -183,6 +189,23 @@
     var toggle = document.getElementById('cameraToggle');
     if (toggle) toggle.textContent = 'Enable';
     document.getElementById('cameraFlip').style.display = 'none';
+    document.getElementById('cameraMic').style.display  = 'none';
+  }
+
+  window.toggleMic = function () {
+    if (!cabinStream) return;
+    micMuted = !micMuted;
+    cabinStream.getAudioTracks().forEach(function (t) { t.enabled = !micMuted; });
+    updateMicBtn();
+  };
+
+  function updateMicBtn() {
+    var btn = document.getElementById('cameraMic');
+    if (!btn) return;
+    btn.title = micMuted ? 'Unmute mic' : 'Mute mic';
+    btn.classList.toggle('muted', micMuted);
+    btn.querySelector('.mic-on').style.display  = micMuted ? 'none' : 'block';
+    btn.querySelector('.mic-off').style.display = micMuted ? 'block' : 'none';
   }
 
   /* Flip between front (cabin) and rear (road) camera */
@@ -196,21 +219,27 @@
       video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false
     }).then(function (stream) {
-      /* Stop old tracks */
-      if (cabinStream) cabinStream.getTracks().forEach(function (t) { t.stop(); });
-      cabinStream = stream;
+      /* Stop old video tracks only — keep existing audio track alive */
+      var existingAudio = cabinStream ? cabinStream.getAudioTracks() : [];
+      if (cabinStream) cabinStream.getVideoTracks().forEach(function (t) { t.stop(); });
+
+      /* Build combined stream: new video + existing audio */
+      var newVideoTrack = stream.getVideoTracks()[0];
+      var combined = new MediaStream();
+      combined.addTrack(newVideoTrack);
+      existingAudio.forEach(function (t) { combined.addTrack(t); });
+      cabinStream = combined;
 
       /* Update preview */
       var video = document.getElementById('cabinVideo');
-      video.srcObject = stream;
+      video.srcObject = combined;
 
-      /* Replace track in all live WebRTC calls — no reconnect needed */
-      var newTrack = stream.getVideoTracks()[0];
+      /* Replace video track in all live WebRTC calls — no reconnect needed */
       peerCalls.forEach(function (call) {
         var pc = call.peerConnection;
         if (!pc) return;
         var sender = pc.getSenders().find(function (s) { return s.track && s.track.kind === 'video'; });
-        if (sender) sender.replaceTrack(newTrack).catch(function () {});
+        if (sender) sender.replaceTrack(newVideoTrack).catch(function () {});
       });
 
       setCameraStatus('active', '● Live — ' + label + ' — dispatcher can connect');

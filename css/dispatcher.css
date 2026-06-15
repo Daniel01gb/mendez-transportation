@@ -583,6 +583,22 @@
 .disp-cabin-no-feed svg { opacity: .35; margin-bottom: .2rem; }
 .disp-cabin-no-feed p:first-of-type { font-family: var(--font-display); font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.5); }
 .disp-cabin-no-feed p:last-of-type  { font-size: .75rem; }
+.disp-cabin-speaker {
+  background: transparent;
+  border: 1px solid var(--disp-border);
+  color: var(--disp-muted);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.disp-cabin-speaker:hover { background: var(--disp-bg); color: var(--disp-text); }
+.disp-cabin-speaker.muted { border-color: #FCA5A5; color: #DC2626; }
 .disp-cabin-timestamp {
   font-size: .72rem;
   color: var(--disp-muted);

@@ -275,9 +275,21 @@
     liveVideo.srcObject = null;
     liveVideo.style.display = 'none';
     document.getElementById('cabinLiveBadge').style.display = 'none';
+    document.getElementById('cabinSpeaker').style.display   = 'none';
     if (dispPeer) { try { dispPeer.destroy(); } catch (_) {} dispPeer = null; }
     cabinDriverId = null;
     cabinPeerId   = null;
+  };
+
+  window.toggleCabinAudio = function () {
+    var video = document.getElementById('cabinLiveVideo');
+    var btn   = document.getElementById('cabinSpeaker');
+    if (!video) return;
+    video.muted = !video.muted;
+    btn.classList.toggle('muted', video.muted);
+    btn.querySelector('.spk-on').style.display  = video.muted ? 'none'  : 'block';
+    btn.querySelector('.spk-off').style.display = video.muted ? 'block' : 'none';
+    btn.title = video.muted ? 'Unmute audio' : 'Mute audio';
   };
 
   window.refreshCabin = function () {
@@ -332,6 +344,13 @@
         video.srcObject = remoteStream;
         video.style.display = 'block';
         document.getElementById('cabinLiveBadge').style.display = 'flex';
+        var spk = document.getElementById('cabinSpeaker');
+        if (remoteStream.getAudioTracks().length > 0) {
+          spk.style.display = 'flex';
+          spk.classList.remove('muted');
+          spk.querySelector('.spk-on').style.display  = 'block';
+          spk.querySelector('.spk-off').style.display = 'none';
+        }
       });
 
       call.on('error', function () {

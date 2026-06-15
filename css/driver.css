@@ -411,6 +411,23 @@
   opacity: .85;
 }
 .dr-camera-toggle:hover { opacity: 1; }
+.dr-camera-mic {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: .8;
+  transition: all .18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.dr-camera-mic:hover { opacity: 1; }
+.dr-camera-mic.muted { border-color: #f87171; color: #f87171; opacity: 1; }
 .dr-camera-flip {
   background: transparent;
   border: 1px solid currentColor;

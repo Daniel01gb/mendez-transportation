@@ -451,16 +451,18 @@
 .fab-book::before {
   content: '';
   position: absolute;
-  top: -50%; left: -80%;
-  width: 55%; height: 200%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-  transform: skewX(-18deg);
-  transition: left .55s ease;
+  top: -120%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.22), transparent);
+  transition: top .6s ease;
   pointer-events: none;
 }
-.fab-book:hover::before { left: 130%; }
-@keyframes fabPop {
-  from { transform: translateX(-50%) scale(.6); opacity: 0; }
-  to   { transform: translateX(-50%) scale(1);  opacity: 1; }
+.fab-book:hover::before { top: 120%; }
+@keyframes fabSlideDown {
+  from { transform: translateX(-50%) translateY(-24px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);     opacity: 1; }
 }
+.fab-book { animation: fabSlideDown .45s cubic-bezier(.34,1.56,.64,1) both; }
 .fab-book:active { transform: translateX(-50%) scale(.96); }

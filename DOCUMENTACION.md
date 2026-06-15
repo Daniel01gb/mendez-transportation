@@ -538,13 +538,38 @@ y `DRIVERS` por queries a la base de datos. El frontend (`dispatcher.js`) no cam
 PWA (Progressive Web App) — página web móvil que el conductor instala desde Chrome en su teléfono
 sin pasar por Play Store ni App Store. Abre como app nativa fullscreen con ícono en pantalla de inicio.
 
+### Compatibilidad por dispositivo
+
+| Función | Android (home screen) | iPhone (home screen) | iPhone (Safari) |
+|---|---|---|---|
+| Cámara | ✅ | ❌ | ✅ |
+| Micrófono | ✅ | ❌ | ✅ |
+| Ubicación GPS | ✅ | ✅* | ✅ |
+| WebRTC video live | ✅ | ❌ | ✅ |
+| Instalable home screen | ✅ | ✅ | — |
+
+*En iPhone standalone la ubicación funciona pero puede requerir aprobarla en Settings → Privacy → Location Services → Safari Websites.
+
+**Causa:** iOS/WebKit bloquea `getUserMedia` (cámara + micrófono) cuando la PWA corre en modo standalone (home screen). Es una limitación de Apple, no del código. Android Chrome no tiene esta restricción.
+
+**Solución implementada:** la app detecta `window.navigator.standalone === true` en iOS y muestra un banner ámbar con botón **"Open in Safari →"** que abre la misma URL en Mobile Safari donde todo funciona.
+
+**Recomendación al cliente:**
+- Conductores con **Android** → instalar desde Chrome, usar desde home screen sin problema
+- Conductores con **iPhone** → usar desde **Safari** (no instalar como app, o tocar "Open in Safari" cuando aparezca el aviso)
+
 ### Instalación por el conductor (una sola vez)
 ```
-1. Dispatcher envía link por WhatsApp: https://dreamy-travesseiro-61a309.netlify.app/driver.html
+Android:
+1. Dispatcher envía link por WhatsApp
 2. Conductor abre en Chrome
-3. Chrome muestra: "Agregar Mendez Driver a pantalla de inicio"
-4. Toca "Agregar" → ícono en el teléfono
-5. Abre como app fullscreen sin barra del navegador
+3. Chrome muestra banner: "Agregar Mendez Driver a pantalla de inicio"
+4. Toca "Agregar" → ícono en el teléfono → funciona completo desde ahí
+
+iPhone:
+1. Conductor abre el link en Safari (NO Chrome)
+2. Compartir → "Agregar a pantalla de inicio" (opcional, solo para el ícono)
+3. Usar siempre desde Safari para tener cámara y micrófono
 ```
 
 ### Archivos del conductor
@@ -600,6 +625,13 @@ Al verificar 2FA con credenciales de driver, redirige a `driver.html`.
 - Driver crea un `Peer` con ID aleatorio al activar la cámara
 - Responde llamadas entrantes del dispatcher con el stream completo (video + audio)
 - Al cerrar sesión: detiene cámara, micrófono, GPS y destruye el peer
+
+**iOS Standalone — aviso automático:**
+- Detecta `navigator.standalone === true` en iOS al cargar
+- Muestra banner ámbar: "Camera & microphone unavailable"
+- Botón **Open in Safari →** → `window.open(url, '_blank')` abre Mobile Safari
+- Al tocar Enable en modo standalone también muestra el banner
+- Error de location en standalone incluye ruta: *Settings → Privacy → Location Services*
 
 ### Integración con brokers (roadmap)
 | Opción | Descripción | Costo estimado |
@@ -785,4 +817,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa: viajes, GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s, instalable como PWA. Panel dispatcher: botón 🔴 Live / 📷 Cabin, mapa actualiza cada 5s, modal Cabin View con video+audio+speaker toggle. 3 roles JWT (patient / dispatcher / driver). Deploy activo en Netlify `dreamy-travesseiro-61a309` (danielguilln666@gmail.com).*
+*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa con compatibilidad Android/iOS documentada: Android funciona al 100% desde home screen; iPhone requiere Safari (WebKit bloquea getUserMedia en standalone). Banner automático en iOS standalone con botón "Open in Safari". GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s. Panel dispatcher: 🔴 Live / 📷 Cabin, mapa 5s, Cabin View modal con video+audio. 3 roles JWT. Deploy activo en Netlify `dreamy-travesseiro-61a309`.*

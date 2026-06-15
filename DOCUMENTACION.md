@@ -441,7 +441,12 @@ node server.js
 ### Fixes mobile aplicados
 - **iOS Safari `position:fixed`** — `html { overflow-x: hidden }` agregado a `base.css`. Sin esto, el `overflow-x: hidden` solo en `body` hace que iOS Safari rompa `position: fixed`.
 - **FAB "Book Your Ride" eliminado** — el botón flotante causaba problemas de posicionamiento en iOS. Reemplazado por efecto de bounce en el botón `btn-primary` del hero.
-- **`btn-primary` bounce** — animación `btnBounce` en `hero.css`: sube 7px y baja en loop de 2s. Se pausa al hover.
+
+### Animaciones de botones (CTAs)
+| Botón | Archivo | Animación |
+|-------|---------|-----------|
+| `btn-primary` — "Book Your Ride Now" (hero) | `hero.css` | `btnBounce`: sube/baja 7px · loop 2s · pausa en hover |
+| `btn-portal-nav` — "Login" (navbar) | `navbar.css` | `loginBounce`: izquierda→derecha 6px · loop 2s · pausa en hover |
 
 ### WordPress (propuesta original)
 - [ ] Migrar el sitio público a WordPress + tema custom
@@ -473,4 +478,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Fix iOS Safari position:fixed, FAB eliminado, bounce en btn-primary. Deploy manual via CLI (`npx netlify deploy --prod`) — auto-deploy de GitHub deshabilitado.*
+*Documentación actualizada el 15 de Junio 2026 — Fix iOS Safari, FAB eliminado, bounce en btn-primary (↕) y loginBounce en btn-portal-nav (↔). Deploy via `npx netlify deploy --prod`.*

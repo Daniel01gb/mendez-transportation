@@ -376,10 +376,12 @@ Base URL local: `http://localhost:3000/api`
 | PATCH | `/dispatcher/trips/:id/status` | Dispatcher | Actualiza status/driver/notas (demo — sin persistencia) |
 | GET | `/dispatcher/locations` | Dispatcher | Posiciones GPS reales desde Netlify Blobs |
 | GET | `/dispatcher/snapshot/:driverId` | Dispatcher | Último snapshot de la cabina del conductor |
+| GET | `/dispatcher/incidents` | Dispatcher | Lista todos los reportes de incidentes (Netlify Blobs) |
 | GET | `/driver/trips` | Driver | Viajes del día asignados al conductor |
 | PATCH | `/driver/trips/:id/status` | Driver | Actualiza status del viaje (en_route / completed) |
 | POST | `/driver/location` | Driver | Envía coordenadas GPS + peerId (WebRTC) a Netlify Blobs |
 | POST | `/driver/snapshot` | Driver | Sube snapshot JPEG de la cabina a Netlify Blobs |
+| POST | `/driver/incident` | Driver | Reporta un incidente con foto de evidencia a Netlify Blobs |
 
 ### Arquitectura stateless
 - Sin base de datos — todo se valida contra variables de entorno o constantes
@@ -517,14 +519,41 @@ routes/dispatcher.js   — GET /api/dispatcher/trips, GET /stats, PATCH /trips/:
 - **Botón 🔴 Live** (pulsante, rojo) en filas En Route → driver tiene cámara activa → video WebRTC en tiempo real
 - **Botón 📷 Cabin** (verde) → driver no transmite en vivo pero tiene snapshot disponible
 - Modal Cabin View: video live stream O último snapshot con timestamp; botón Reconnect y mute de audio
+- **Punto rojo `!`** en la celda de status cuando el trip tiene un incidente reportado
+- **Botón ⚠ Report** abre modal con: tipo de incidente, conductor + timestamp, link Google Maps, notas, foto de evidencia
+- Incidentes polled cada 30s, se actualiza la tabla automáticamente
 
 ### Netlify Blobs — stores utilizados
 | Store | Clave | Contenido |
 |-------|-------|-----------|
 | `driver-locations` | `driver-{id}` | `{ driverId, name, plate, lat, lng, accuracy, peerId, updatedAt }` |
 | `driver-snapshots` | `snapshot-{id}` | `{ driverId, name, dataUrl, capturedAt }` |
+| `driver-incidents` | `incident-{tripId}-{timestamp}` | `{ tripId, tripNumber, patientName, driverId, driverName, type, notes, photoDataUrl, lat, lng, reportedAt }` |
 
 `peerId` es el ID de PeerJS del driver cuando tiene la cámara activa — el dispatcher lo usa para conectarse directamente.
+
+### GET `/api/dispatcher/incidents` — Detalle
+- Retorna array de todos los incidentes ordenados por `reportedAt` descendente
+- Cada incidente incluye: tipo, conductor, paciente, trip, coordenadas GPS, notas, foto (base64 JPEG)
+- El dispatcher los agrupa por `tripId` en memoria con `incidentsByTrip`
+- Se actualiza cada 30 segundos vía `pollIncidents()`
+
+### POST `/api/driver/incident` — Detalle
+Body JSON (max 400kb por la foto):
+```json
+{
+  "tripId": "MT-2026-4891",
+  "tripNumber": "MT-2026-4891",
+  "patientName": "Maria Garcia",
+  "type": "no_show",
+  "notes": "Esperé 10 minutos. Nadie respondió.",
+  "photoDataUrl": "data:image/jpeg;base64,...",
+  "lat": 28.565,
+  "lng": -81.379
+}
+```
+Tipos válidos: `no_show` · `no_answer` · `wrong_address` · `refused` · `vehicle_issue` · `other`  
+La foto se redimensiona a **640×480 JPEG 72%** en el cliente (canvas) antes de enviarse para mantener el payload bajo 200kb.
 
 ### Nota importante para backend real
 Al conectar Supabase en Phase 3, `routes/dispatcher.js` reemplaza las constantes `DEMO_TRIPS`
@@ -625,6 +654,16 @@ Al verificar 2FA con credenciales de driver, redirige a `driver.html`.
 - Driver crea un `Peer` con ID aleatorio al activar la cámara
 - Responde llamadas entrantes del dispatcher con el stream completo (video + audio)
 - Al cerrar sesión: detiene cámara, micrófono, GPS y destruye el peer
+
+**Reporte de incidentes:**
+- Botón **⚠ Report Incident** visible en cada viaje activo (desaparece tras enviar el reporte)
+- Bottom sheet (panel deslizante desde abajo) con 6 tipos de incidente:
+  - 🚫 No Show · 📞 No Answer · 📍 Wrong Address · ⛔ Patient Refused · 🔧 Vehicle Issue · 📝 Other
+- Campo de notas libre
+- Foto de evidencia: abre selector/cámara con `<input type="file" capture="environment">` — **funciona en iOS standalone** (no usa `getUserMedia`)
+- La foto se redimensiona a 640×480 JPEG 72% en un canvas antes de enviarse
+- Al enviarse: badge rojo `⚠ INCIDENTE REPORTADO` aparece en la tarjeta del viaje; el botón de reportar desaparece
+- El reporte incluye las coordenadas GPS en ese momento (si disponibles)
 
 **iOS Standalone — aviso automático:**
 - Detecta `navigator.standalone === true` en iOS al cargar
@@ -770,6 +809,10 @@ node server.js
   - [x] Video WebRTC en vivo (~1s delay) vía PeerJS → dispatcher ve **🔴 Live**
   - [x] Snapshot automático cada 60s → fallback cuando no hay stream en vivo
   - [x] Instalable como PWA (manifest.json + service worker)
+  - [x] Reporte de incidentes con 6 tipos, notas y foto de evidencia
+- [x] Panel del dispatcher — reportes de incidentes:
+  - [x] Punto rojo `!` en tabla cuando hay incidente en el trip
+  - [x] Modal con tipo, conductor, timestamp, Google Maps link, notas y foto
 
 ### Phase 3 — Backend real (post-aprobación)
 - [ ] Base de datos real (Supabase PostgreSQL)
@@ -817,4 +860,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa con compatibilidad Android/iOS documentada: Android funciona al 100% desde home screen; iPhone requiere Safari (WebKit bloquea getUserMedia en standalone). Banner automático en iOS standalone con botón "Open in Safari". GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s. Panel dispatcher: 🔴 Live / 📷 Cabin, mapa 5s, Cabin View modal con video+audio. 3 roles JWT. Deploy activo en Netlify `dreamy-travesseiro-61a309`.*
+*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa con compatibilidad Android/iOS documentada: Android funciona al 100% desde home screen; iPhone requiere Safari (WebKit bloquea getUserMedia en standalone). Banner automático en iOS standalone con botón "Open in Safari". GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s. Reporte de incidentes: 6 tipos, notas, foto evidencia (funciona en iOS standalone via file input), badge en tarjeta al enviar, guards de duplicado. Panel dispatcher: 🔴 Live / 📷 Cabin, mapa 5s, Cabin View modal con video+audio, punto rojo `!` + modal de incidente con foto + Google Maps link. Netlify Blobs: 3 stores (locations, snapshots, incidents). 3 roles JWT. Deploy activo en Netlify `dreamy-travesseiro-61a309`.*

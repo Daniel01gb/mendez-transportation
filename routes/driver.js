@@ -55,9 +55,9 @@ router.get('/trips', requireDriver, (_req, res) => {
   res.json({ driver: DRIVER_INFO, trips: DEMO_TRIPS });
 });
 
-/* POST /api/driver/location — stores real-time position in Netlify Blobs */
+/* POST /api/driver/location — stores real-time position + peerId in Netlify Blobs */
 router.post('/location', requireDriver, async (req, res) => {
-  const { lat, lng, accuracy } = req.body || {};
+  const { lat, lng, accuracy, peerId } = req.body || {};
   if (typeof lat !== 'number' || typeof lng !== 'number')
     return res.status(400).json({ error: 'Invalid coordinates.' });
 
@@ -69,6 +69,7 @@ router.post('/location', requireDriver, async (req, res) => {
         name:     DRIVER_INFO.name,
         plate:    DRIVER_INFO.plate,
         lat, lng, accuracy,
+        peerId:   peerId || null,
         updatedAt: new Date().toISOString()
       });
     } catch (e) { console.log('[location blob]', e.message); }

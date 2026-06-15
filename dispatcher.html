@@ -169,8 +169,9 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12a9 9 0 11-6.219-8.56"/>
           </svg>
-          Loading snapshot…
+          <span id="cabinLoadingMsg">Connecting…</span>
         </div>
+        <video class="disp-cabin-live" id="cabinLiveVideo" autoplay playsinline style="display:none"></video>
         <img class="disp-cabin-img" id="cabinImg" alt="Cabin snapshot" style="display:none">
         <div class="disp-cabin-no-feed" id="cabinNoFeed" style="display:none">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -178,17 +179,18 @@
             <line x1="1" y1="1" x2="23" y2="23" stroke-width="2"/>
           </svg>
           <p>No cabin feed available</p>
-          <p>Driver has not enabled the cabin camera yet.</p>
+          <p id="cabinNoFeedMsg">Driver has not enabled the cabin camera yet.</p>
         </div>
+        <div class="disp-cabin-live-badge" id="cabinLiveBadge" style="display:none">🔴 LIVE</div>
       </div>
       <div class="disp-modal-footer">
         <span class="disp-cabin-timestamp" id="cabinTimestamp"></span>
         <button class="disp-btn-cancel" onclick="closeCabin()">Close</button>
-        <button class="disp-btn-save" onclick="refreshCabin()">
+        <button class="disp-btn-save" id="cabinRefreshBtn" onclick="refreshCabin()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:.3rem">
             <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
           </svg>
-          Refresh
+          Reconnect
         </button>
       </div>
     </div>
@@ -238,6 +240,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="js/dispatcher.js"></script>
 </body>
 </html>

@@ -10,6 +10,9 @@
   var cabinStream   = null;
   var cabinSnapshotInterval = null;
   var cabinActive   = false;
+  var peer          = null;
+  var peerCalls     = [];
+  var currentPeerId = null;
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -99,10 +102,10 @@
           { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
         );
 
-        /* Send position every 15 seconds */
+        /* Send position every 5 seconds */
         locationSendInterval = setInterval(function () {
           if (lastPosition) sendLocation(lastPosition);
-        }, 15000);
+        }, 5000);
       },
       function (err) {
         var msg = err.code === 1
@@ -141,7 +144,7 @@
     }
     setCameraStatus('requesting', 'Starting cabin camera…');
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false
     }).then(function (stream) {
       cabinStream = stream;
@@ -149,8 +152,9 @@
       var video = document.getElementById('cabinVideo');
       video.srcObject = stream;
       video.style.display = 'block';
-      setCameraStatus('active', '● Cabin camera active — sending to dispatch');
+      setCameraStatus('active', '● Cabin camera live — dispatcher can connect');
       document.getElementById('cameraToggle').textContent = 'Disable';
+      startPeerStreaming(stream);
       setTimeout(captureAndSendSnapshot, 2000);
       cabinSnapshotInterval = setInterval(captureAndSendSnapshot, 60000);
     }).catch(function (err) {
@@ -162,6 +166,7 @@
   }
 
   function stopCabinCamera() {
+    stopPeerStreaming();
     if (cabinStream) {
       cabinStream.getTracks().forEach(function (t) { t.stop(); });
       cabinStream = null;
@@ -174,6 +179,36 @@
     setCameraStatus('off', 'Cabin camera off');
     var toggle = document.getElementById('cameraToggle');
     if (toggle) toggle.textContent = 'Enable';
+  }
+
+  /* ── WebRTC peer streaming (dispatcher connects here) ── */
+  function startPeerStreaming(stream) {
+    if (typeof Peer === 'undefined') return;
+    currentPeerId = 'mz-drv-' + Math.random().toString(36).substr(2, 9);
+    peer = new Peer(currentPeerId, {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    });
+    peer.on('open', function (id) { currentPeerId = id; });
+    peer.on('call', function (call) {
+      call.answer(stream);
+      peerCalls.push(call);
+      call.on('close', function () {
+        peerCalls = peerCalls.filter(function (c) { return c !== call; });
+      });
+    });
+    peer.on('error', function () {});
+  }
+
+  function stopPeerStreaming() {
+    peerCalls.forEach(function (c) { try { c.close(); } catch (_) {} });
+    peerCalls = [];
+    if (peer) { try { peer.destroy(); } catch (_) {} peer = null; }
+    currentPeerId = null;
   }
 
   function captureAndSendSnapshot() {
@@ -195,7 +230,12 @@
     fetch('/api/driver/location', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ lat: coords.latitude, lng: coords.longitude, accuracy: coords.accuracy }),
+      body:    JSON.stringify({
+        lat:      coords.latitude,
+        lng:      coords.longitude,
+        accuracy: coords.accuracy,
+        peerId:   currentPeerId || null
+      }),
       credentials: 'same-origin'
     }).catch(function () {});
   }

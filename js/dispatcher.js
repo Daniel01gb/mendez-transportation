@@ -5,9 +5,11 @@
   var allDrivers = [];
   var dispMap    = null;
   var markers    = {};
-  var activeFilter = 'all';
-  var editingId    = null;
+  var activeFilter  = 'all';
+  var editingId     = null;
   var cabinDriverId = null;
+  var cabinPeerId   = null;
+  var dispPeer      = null;
 
   /* ── Boot ── */
   fetch('/api/auth/me', { credentials: 'same-origin' })
@@ -37,8 +39,8 @@
       renderTable(allTrips);
       initMap(allTrips);
       populateDriverDropdown(allDrivers);
-      /* Poll real driver positions every 15s */
-      setInterval(pollLocations, 15000);
+      /* Poll real driver positions every 5s */
+      setInterval(pollLocations, 5000);
     }).catch(function () {
       window.location.href = 'login.html';
     });
@@ -47,7 +49,7 @@
   function applyRealLocations(trips, locations) {
     locations.forEach(function (loc) {
       var trip = trips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
-      if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
+      if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: loc.peerId || null };
     });
   }
 
@@ -58,7 +60,7 @@
         (data.locations || []).forEach(function (loc) {
           var trip = allTrips.find(function (t) { return t.driver && t.driver.id === loc.driverId && t.status === 'en_route'; });
           if (!trip) return;
-          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
+          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: loc.peerId || null };
           var m = markers[trip.id];
           if (m) {
             m.setLatLng([loc.lat, loc.lng]);
@@ -103,9 +105,16 @@
       var from   = shortAddr(t.pickup);
       var to     = shortAddr(t.destination);
       var driver = t.driver ? t.driver.name : '<span class="unassigned">— Unassigned</span>';
-      var cabinBtn = (t.status === 'en_route' && t.driver)
-        ? '<button class="disp-cabin-btn" onclick="viewCabin(' + t.driver.id + ',\'' + t.driver.name.replace(/'/g, "\\'") + '\')">&#128247; Cabin</button>'
-        : '';
+      var peerId = t.driver_position && t.driver_position.peerId ? t.driver_position.peerId : null;
+      var cabinBtn = '';
+      if (t.status === 'en_route' && t.driver) {
+        var driverNameEsc = t.driver.name.replace(/'/g, "\\'");
+        if (peerId) {
+          cabinBtn = '<button class="disp-cabin-btn live" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',\'' + peerId + '\')">🔴 Live</button>';
+        } else {
+          cabinBtn = '<button class="disp-cabin-btn" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',null)">📷 Cabin</button>';
+        }
+      }
       return [
         '<tr data-id="' + t.id + '">',
         '  <td><span class="trip-num">' + t.number.replace('MT-2026-', '#') + '</span></td>',
@@ -247,32 +256,121 @@
     if (e.key === 'Escape') closeEdit();
   });
 
-  /* ── Cabin view ── */
-  window.viewCabin = function (driverId, driverName) {
+  /* ── Cabin view (WebRTC live + snapshot fallback) ── */
+  window.viewCabin = function (driverId, driverName, peerId) {
     cabinDriverId = driverId;
+    cabinPeerId   = peerId || null;
     document.getElementById('cabinModalDriver').textContent = driverName;
     document.getElementById('cabinModal').classList.add('open');
-    fetchCabinSnapshot();
+    if (peerId) {
+      startLiveView(peerId);
+    } else {
+      fetchCabinSnapshot();
+    }
   };
 
   window.closeCabin = function () {
     document.getElementById('cabinModal').classList.remove('open');
+    var liveVideo = document.getElementById('cabinLiveVideo');
+    liveVideo.srcObject = null;
+    liveVideo.style.display = 'none';
+    document.getElementById('cabinLiveBadge').style.display = 'none';
+    if (dispPeer) { try { dispPeer.destroy(); } catch (_) {} dispPeer = null; }
     cabinDriverId = null;
+    cabinPeerId   = null;
   };
 
-  window.refreshCabin = function () { fetchCabinSnapshot(); };
+  window.refreshCabin = function () {
+    if (cabinPeerId) { startLiveView(cabinPeerId); } else { fetchCabinSnapshot(); }
+  };
+
+  function cabinReset() {
+    document.getElementById('cabinLoading').style.display    = 'none';
+    document.getElementById('cabinLiveVideo').style.display  = 'none';
+    document.getElementById('cabinImg').style.display        = 'none';
+    document.getElementById('cabinNoFeed').style.display     = 'none';
+    document.getElementById('cabinLiveBadge').style.display  = 'none';
+    document.getElementById('cabinTimestamp').textContent    = '';
+  }
+
+  function startLiveView(peerId) {
+    cabinReset();
+    var loadingEl = document.getElementById('cabinLoading');
+    loadingEl.style.display = 'flex';
+    document.getElementById('cabinLoadingMsg').textContent = 'Connecting to driver…';
+
+    if (dispPeer) { try { dispPeer.destroy(); } catch (_) {} dispPeer = null; }
+
+    if (typeof Peer === 'undefined') { cabinReset(); showCabinNoFeed('WebRTC not available.'); return; }
+
+    dispPeer = new Peer({
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    });
+
+    var connectTimeout = setTimeout(function () {
+      if (loadingEl.style.display !== 'none') {
+        cabinReset();
+        showCabinNoFeed('Connection timed out — driver may not be streaming.');
+      }
+    }, 10000);
+
+    dispPeer.on('open', function () {
+      var canvas = document.createElement('canvas');
+      canvas.width = 1; canvas.height = 1;
+      var dummyStream = canvas.captureStream(1);
+      var call = dispPeer.call(peerId, dummyStream);
+
+      call.on('stream', function (remoteStream) {
+        clearTimeout(connectTimeout);
+        cabinReset();
+        var video = document.getElementById('cabinLiveVideo');
+        video.srcObject = remoteStream;
+        video.style.display = 'block';
+        document.getElementById('cabinLiveBadge').style.display = 'flex';
+      });
+
+      call.on('error', function () {
+        clearTimeout(connectTimeout);
+        cabinReset();
+        showCabinNoFeed('Connection error — driver may have stopped streaming.');
+      });
+
+      call.on('close', function () {
+        clearTimeout(connectTimeout);
+        if (document.getElementById('cabinModal').classList.contains('open')) {
+          cabinReset();
+          showCabinNoFeed('Stream ended by driver.');
+        }
+      });
+    });
+
+    dispPeer.on('error', function () {
+      clearTimeout(connectTimeout);
+      cabinReset();
+      showCabinNoFeed('Could not connect — check your connection.');
+    });
+  }
+
+  function showCabinNoFeed(msg) {
+    document.getElementById('cabinNoFeedMsg').textContent = msg || 'Driver has not enabled the cabin camera yet.';
+    document.getElementById('cabinNoFeed').style.display = 'flex';
+  }
 
   function fetchCabinSnapshot() {
     if (!cabinDriverId) return;
+    cabinReset();
     document.getElementById('cabinLoading').style.display = 'flex';
-    document.getElementById('cabinImg').style.display     = 'none';
-    document.getElementById('cabinNoFeed').style.display  = 'none';
-    document.getElementById('cabinTimestamp').textContent = '';
+    document.getElementById('cabinLoadingMsg').textContent = 'Loading snapshot…';
 
     fetch('/api/dispatcher/snapshot/' + cabinDriverId, { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        document.getElementById('cabinLoading').style.display = 'none';
+        cabinReset();
         if (data.snapshot && data.snapshot.dataUrl) {
           var img = document.getElementById('cabinImg');
           img.src = data.snapshot.dataUrl;
@@ -282,13 +380,10 @@
           });
           document.getElementById('cabinTimestamp').textContent = 'Captured ' + ts;
         } else {
-          document.getElementById('cabinNoFeed').style.display = 'flex';
+          showCabinNoFeed('Driver has not enabled the cabin camera yet.');
         }
       })
-      .catch(function () {
-        document.getElementById('cabinLoading').style.display = 'none';
-        document.getElementById('cabinNoFeed').style.display  = 'flex';
-      });
+      .catch(function () { cabinReset(); showCabinNoFeed('Could not load snapshot.'); });
   }
 
   document.getElementById('cabinModal').addEventListener('click', function (e) {

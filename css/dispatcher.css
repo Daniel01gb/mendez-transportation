@@ -506,6 +506,20 @@
   border-color: rgba(16,185,129,.55);
   color: #047857;
 }
+.disp-cabin-btn.live {
+  background: rgba(239,68,68,.12);
+  border-color: rgba(239,68,68,.35);
+  color: #DC2626;
+  animation: liveGlow 2s ease-in-out infinite;
+}
+.disp-cabin-btn.live:hover {
+  background: rgba(239,68,68,.22);
+  border-color: rgba(239,68,68,.6);
+}
+@keyframes liveGlow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.3); }
+  50%      { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+}
 
 /* ── CABIN MODAL ── */
 .disp-cabin-modal { max-width: 480px; }
@@ -516,6 +530,7 @@
   justify-content: center;
   background: #000;
   overflow: hidden;
+  position: relative;
 }
 .disp-cabin-loading {
   display: flex;
@@ -528,10 +543,33 @@
 }
 .disp-cabin-loading svg { animation: cabinSpin 1s linear infinite; color: var(--s-en-route); }
 @keyframes cabinSpin { to { transform: rotate(360deg); } }
+.disp-cabin-live {
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  background: #000;
+}
 .disp-cabin-img {
   width: 100%;
   display: block;
   object-fit: contain;
+}
+.disp-cabin-live-badge {
+  position: absolute;
+  top: .65rem;
+  left: .65rem;
+  background: rgba(220,38,38,.9);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: .22rem .55rem;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  pointer-events: none;
 }
 .disp-cabin-no-feed {
   display: flex;

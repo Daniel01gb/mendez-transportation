@@ -1,12 +1,12 @@
 node_modules/
 .env
-db/mendez.db
-*.db
-*.db-shm
-*.db-wal
+db/
 
 # Claude Code internals
 .claude/
 
 # Playwright test artifacts
 .playwright-mcp/
+
+# Local Netlify folder
+.netlify

@@ -119,6 +119,50 @@
     </div>
   </div>
 
+  <!-- ── INCIDENT REPORT SHEET ── -->
+  <div class="dr-incident-overlay" id="incidentOverlay" style="display:none" onclick="closeIncidentOverlay(event)">
+    <div class="dr-incident-sheet">
+      <div class="dr-incident-handle"></div>
+      <div class="dr-incident-header">
+        <div>
+          <div class="dr-incident-title">Report Incident</div>
+          <div class="dr-incident-trip-label" id="incidentTripLabel">—</div>
+        </div>
+        <button class="dr-incident-close" onclick="closeIncidentSheet()">✕</button>
+      </div>
+      <div class="dr-incident-body">
+        <p class="dr-incident-section-label">Incident type <span style="color:#f87171">*</span></p>
+        <div class="dr-incident-types" id="incidentTypes">
+          <button class="dr-type-btn" data-type="no_show"       onclick="selectIncidentType(this)">🚫 No Show</button>
+          <button class="dr-type-btn" data-type="no_answer"     onclick="selectIncidentType(this)">📞 No Answer</button>
+          <button class="dr-type-btn" data-type="wrong_address" onclick="selectIncidentType(this)">📍 Wrong Address</button>
+          <button class="dr-type-btn" data-type="refused"       onclick="selectIncidentType(this)">⛔ Patient Refused</button>
+          <button class="dr-type-btn" data-type="vehicle_issue" onclick="selectIncidentType(this)">🔧 Vehicle Issue</button>
+          <button class="dr-type-btn" data-type="other"         onclick="selectIncidentType(this)">📝 Other</button>
+        </div>
+        <p class="dr-incident-section-label" style="margin-top:.85rem">Notes</p>
+        <textarea class="dr-incident-notes" id="incidentNotes" placeholder="Describe what happened…" rows="3"></textarea>
+        <p class="dr-incident-section-label" style="margin-top:.85rem">Photo evidence</p>
+        <input type="file" accept="image/*" capture="environment" id="incidentPhotoInput" style="display:none" onchange="handleIncidentPhoto(this)">
+        <button class="dr-incident-photo-btn" id="incidentPhotoBtn" onclick="document.getElementById('incidentPhotoInput').click()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo / Choose from Library
+        </button>
+        <div class="dr-incident-photo-preview" id="incidentPhotoPreview" style="display:none">
+          <img class="dr-incident-photo-img" id="incidentPhotoImg" alt="Evidence">
+          <button class="dr-incident-photo-remove" onclick="removeIncidentPhoto()">✕ Remove</button>
+        </div>
+      </div>
+      <div class="dr-incident-footer">
+        <button class="dr-incident-cancel" onclick="closeIncidentSheet()">Cancel</button>
+        <button class="dr-incident-submit" id="incidentSubmitBtn" onclick="submitIncident()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          Submit Report
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="js/driver.js"></script>
 </body>

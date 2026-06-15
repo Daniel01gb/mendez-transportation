@@ -10,6 +10,7 @@
   var cabinDriverId = null;
   var cabinPeerId   = null;
   var dispPeer      = null;
+  var incidentsByTrip = {}; /* tripId → incident report */
 
   /* ── Boot ── */
   fetch('/api/auth/me', { credentials: 'same-origin' })
@@ -27,23 +28,45 @@
     Promise.all([
       fetch('/api/dispatcher/trips',     { credentials: 'same-origin' }).then(function(r){return r.json();}),
       fetch('/api/dispatcher/stats',     { credentials: 'same-origin' }).then(function(r){return r.json();}),
-      fetch('/api/dispatcher/locations', { credentials: 'same-origin' }).then(function(r){return r.json();}).catch(function(){return {locations:[]};})
+      fetch('/api/dispatcher/locations', { credentials: 'same-origin' }).then(function(r){return r.json();}).catch(function(){return {locations:[]};}),
+      fetch('/api/dispatcher/incidents', { credentials: 'same-origin' }).then(function(r){return r.json();}).catch(function(){return {incidents:[]};})
     ]).then(function (results) {
-      var tripsData   = results[0];
-      var stats       = results[1];
+      var tripsData     = results[0];
+      var stats         = results[1];
       var locationsData = results[2];
+      var incidentsData = results[3];
       allTrips   = tripsData.trips;
       allDrivers = tripsData.drivers;
       applyRealLocations(allTrips, locationsData.locations || []);
+      applyIncidents(incidentsData.incidents || []);
       renderStats(stats);
       renderTable(allTrips);
       initMap(allTrips);
       populateDriverDropdown(allDrivers);
       /* Poll real driver positions every 5s */
       setInterval(pollLocations, 5000);
+      /* Poll incidents every 30s */
+      setInterval(pollIncidents, 30000);
     }).catch(function () {
       window.location.href = 'login.html';
     });
+  }
+
+  function applyIncidents(incidents) {
+    incidentsByTrip = {};
+    incidents.forEach(function (inc) {
+      if (!incidentsByTrip[inc.tripId]) incidentsByTrip[inc.tripId] = inc;
+    });
+  }
+
+  function pollIncidents() {
+    fetch('/api/dispatcher/incidents', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var prev = Object.keys(incidentsByTrip).length;
+        applyIncidents(data.incidents || []);
+        if (Object.keys(incidentsByTrip).length !== prev) renderTable(allTrips);
+      }).catch(function () {});
   }
 
   function applyRealLocations(trips, locations) {
@@ -115,15 +138,20 @@
           cabinBtn = '<button class="disp-cabin-btn" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',null)">📷 Cabin</button>';
         }
       }
+      var incident    = incidentsByTrip[t.id];
+      var incidentBtn = incident
+        ? '<button class="disp-incident-btn" onclick="viewIncident(' + t.id + ')">⚠ Report</button>'
+        : '';
+      var statusCell  = statusBadge(t.status) + (incident ? ' <span class="disp-incident-dot" title="Incident reported">!</span>' : '');
       return [
         '<tr data-id="' + t.id + '">',
         '  <td><span class="trip-num">' + t.number.replace('MT-2026-', '#') + '</span></td>',
         '  <td><span class="patient-name">' + t.patient_name + '</span></td>',
-        '  <td>' + statusBadge(t.status) + '</td>',
+        '  <td>' + statusCell + '</td>',
         '  <td><span class="trip-time">' + time + '</span></td>',
         '  <td class="driver-cell">' + driver + '</td>',
         '  <td class="route-cell"><span class="route-from">' + from + '</span><span class="route-arrow">→</span>' + to + '</td>',
-        '  <td class="actions-cell">' + cabinBtn + '<button class="disp-edit-btn" onclick="openEdit(' + t.id + ')">Edit</button></td>',
+        '  <td class="actions-cell">' + incidentBtn + cabinBtn + '<button class="disp-edit-btn" onclick="openEdit(' + t.id + ')">Edit</button></td>',
         '</tr>'
       ].join('');
     }).join('');
@@ -254,6 +282,55 @@
   /* Close modal on Escape */
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeEdit();
+  });
+
+  /* ── Incident report viewer ── */
+  var INCIDENT_LABELS = {
+    no_show: '🚫 No Show', no_answer: '📞 No Answer',
+    wrong_address: '📍 Wrong Address', refused: '⛔ Patient Refused',
+    vehicle_issue: '🔧 Vehicle Issue', other: '📝 Other'
+  };
+
+  window.viewIncident = function (tripId) {
+    var inc = incidentsByTrip[tripId];
+    if (!inc) return;
+    var ts = new Date(inc.reportedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    var mapsUrl = (inc.lat && inc.lng)
+      ? 'https://maps.google.com/?q=' + inc.lat + ',' + inc.lng
+      : null;
+
+    document.getElementById('incidentModalTitle').textContent  = inc.tripNumber + ' · ' + inc.patientName;
+    document.getElementById('incidentModalType').textContent   = INCIDENT_LABELS[inc.type] || inc.type;
+    document.getElementById('incidentModalDriver').textContent = inc.driverName + ' · ' + ts;
+    document.getElementById('incidentModalNotes').textContent  = inc.notes || '—';
+
+    var locEl = document.getElementById('incidentModalLocation');
+    if (mapsUrl) {
+      locEl.innerHTML = '<a href="' + mapsUrl + '" target="_blank" rel="noopener" style="color:#3B82F6">📍 View on Google Maps</a>';
+    } else {
+      locEl.textContent = '—';
+    }
+
+    var photoEl = document.getElementById('incidentModalPhoto');
+    var noPhotoEl = document.getElementById('incidentModalNoPhoto');
+    if (inc.photoDataUrl) {
+      photoEl.src = inc.photoDataUrl;
+      photoEl.style.display = 'block';
+      noPhotoEl.style.display = 'none';
+    } else {
+      photoEl.style.display = 'none';
+      noPhotoEl.style.display = 'flex';
+    }
+
+    document.getElementById('incidentModal').classList.add('open');
+  };
+
+  window.closeIncidentModal = function () {
+    document.getElementById('incidentModal').classList.remove('open');
+  };
+
+  document.getElementById('incidentModal').addEventListener('click', function (e) {
+    if (e.target === this) closeIncidentModal();
   });
 
   /* ── Cabin view (WebRTC live + snapshot fallback) ── */

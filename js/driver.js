@@ -4,6 +4,11 @@
   var trips         = [];
   var driver        = null;
   var installPrompt = null;
+  var incidentTripId     = null;
+  var incidentTripNumber = null;
+  var incidentPatient    = null;
+  var incidentType       = null;
+  var incidentPhotoUrl   = null;
   var watchId       = null;
   var locationSendInterval = null;
   var lastPosition  = null;
@@ -441,6 +446,13 @@
       '</div>'
     ].join('') : '';
 
+    var incidentBadge = trip.incident
+      ? '<div class="dr-incident-badge">⚠ Incident reported</div>'
+      : '';
+    var reportBtn = (trip.status !== 'completed' && !trip.incident)
+      ? '<button class="dr-report-btn" onclick="openIncident(' + trip.id + ',\'' + trip.number + '\',\'' + escHtml(trip.patient_name).replace(/'/g,"\\'") + '\')">⚠ Report Incident</button>'
+      : '';
+
     card.innerHTML = [
       '<div class="dr-card-header">',
       '  <div class="dr-card-left">',
@@ -466,6 +478,8 @@
       '  </div>',
       notesHtml,
       trip.status !== 'completed' ? '<div class="dr-actions">' + actionButtons + '</div>' : '',
+      incidentBadge,
+      reportBtn ? '<div class="dr-report-wrap">' + reportBtn + '</div>' : '',
       '</div>'
     ].join('');
 
@@ -491,6 +505,106 @@
       render();
     })
     .catch(function () { btn.classList.remove('loading'); });
+  };
+
+  /* ── Incident report ── */
+  window.openIncident = function (tripId, tripNumber, patientName) {
+    incidentTripId     = tripId;
+    incidentTripNumber = tripNumber;
+    incidentPatient    = patientName;
+    incidentType       = null;
+    incidentPhotoUrl   = null;
+    document.getElementById('incidentTripLabel').textContent = tripNumber + ' · ' + patientName;
+    document.getElementById('incidentNotes').value = '';
+    document.getElementById('incidentPhotoPreview').style.display = 'none';
+    document.getElementById('incidentPhotoBtn').textContent = '';
+    document.getElementById('incidentPhotoBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Take Photo / Choose from Library';
+    document.getElementById('incidentPhotoInput').value = '';
+    document.getElementById('incidentSubmitBtn').disabled = false;
+    document.getElementById('incidentSubmitBtn').innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg> Submit Report';
+    document.querySelectorAll('.dr-type-btn').forEach(function (b) { b.classList.remove('selected'); });
+    document.getElementById('incidentOverlay').style.display = 'flex';
+  };
+
+  window.closeIncidentSheet = function () {
+    document.getElementById('incidentOverlay').style.display = 'none';
+  };
+  window.closeIncidentOverlay = function (e) {
+    if (e.target === document.getElementById('incidentOverlay')) closeIncidentSheet();
+  };
+
+  window.selectIncidentType = function (btn) {
+    document.querySelectorAll('.dr-type-btn').forEach(function (b) { b.classList.remove('selected'); });
+    btn.classList.add('selected');
+    incidentType = btn.dataset.type;
+  };
+
+  window.handleIncidentPhoto = function (input) {
+    var file = input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        var maxW = 640, maxH = 480;
+        var w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        incidentPhotoUrl = canvas.toDataURL('image/jpeg', 0.72);
+        document.getElementById('incidentPhotoImg').src = incidentPhotoUrl;
+        document.getElementById('incidentPhotoPreview').style.display = 'flex';
+        document.getElementById('incidentPhotoBtn').textContent = '📷 Change Photo';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.removeIncidentPhoto = function () {
+    incidentPhotoUrl = null;
+    document.getElementById('incidentPhotoPreview').style.display = 'none';
+    document.getElementById('incidentPhotoInput').value = '';
+    document.getElementById('incidentPhotoBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Take Photo / Choose from Library';
+  };
+
+  window.submitIncident = function () {
+    if (!incidentType) {
+      var types = document.getElementById('incidentTypes');
+      types.classList.add('shake');
+      setTimeout(function () { types.classList.remove('shake'); }, 500);
+      return;
+    }
+    var btn = document.getElementById('incidentSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Sending…';
+
+    fetch('/api/driver/incident', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tripId:      incidentTripId,
+        tripNumber:  incidentTripNumber,
+        patientName: incidentPatient,
+        type:        incidentType,
+        notes:       document.getElementById('incidentNotes').value,
+        photoDataUrl: incidentPhotoUrl,
+        lat: lastPosition ? lastPosition.latitude  : null,
+        lng: lastPosition ? lastPosition.longitude : null
+      }),
+      credentials: 'same-origin'
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res.ok) { btn.disabled = false; btn.textContent = 'Submit Report'; return; }
+      var trip = trips.find(function (t) { return t.id === incidentTripId; });
+      if (trip) trip.incident = { type: incidentType };
+      closeIncidentSheet();
+      render();
+    })
+    .catch(function () { btn.disabled = false; btn.textContent = 'Submit Report'; });
   };
 
   /* ── Logout ── */

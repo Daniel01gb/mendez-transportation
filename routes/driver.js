@@ -11,6 +11,11 @@ function getSnapshotBlobs() {
   catch (_) { return null; }
 }
 
+function getIncidentBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-incidents'); }
+  catch (_) { return null; }
+}
+
 function makeTime(h, m) {
   const d = new Date();
   d.setHours(h, m, 0, 0);
@@ -95,6 +100,37 @@ router.post('/snapshot', requireDriver, async (req, res) => {
         capturedAt: new Date().toISOString()
       });
     } catch (e) { console.log('[snapshot blob]', e.message); }
+  }
+  res.json({ ok: true });
+});
+
+/* POST /api/driver/incident — stores incident report + photo evidence in Netlify Blobs */
+router.post('/incident', requireDriver, async (req, res) => {
+  const { tripId, tripNumber, patientName, type, notes, photoDataUrl, lat, lng } = req.body || {};
+  const validTypes = ['no_show', 'no_answer', 'wrong_address', 'refused', 'vehicle_issue', 'other'];
+  if (!tripId || !validTypes.includes(type))
+    return res.status(400).json({ error: 'Invalid incident data.' });
+  if (photoDataUrl && photoDataUrl.length > 400000)
+    return res.status(413).json({ error: 'Photo too large.' });
+
+  const store = getIncidentBlobs();
+  const report = {
+    tripId:      Number(tripId),
+    tripNumber:  tripNumber  || '',
+    patientName: patientName || '',
+    driverId:    req.user.driverId || 1,
+    driverName:  DRIVER_INFO.name,
+    type,
+    notes:        notes        || '',
+    photoDataUrl: photoDataUrl || null,
+    lat: lat || null,
+    lng: lng || null,
+    reportedAt: new Date().toISOString()
+  };
+  if (store) {
+    try {
+      await store.setJSON('incident-' + Number(tripId) + '-' + Date.now(), report);
+    } catch (e) { console.log('[incident blob]', e.message); }
   }
   res.json({ ok: true });
 });

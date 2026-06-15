@@ -606,6 +606,93 @@
   font-family: var(--font-display);
 }
 
+/* ── INCIDENT DOT BADGE (table) ── */
+.disp-incident-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #DC2626;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-left: .3rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── INCIDENT REPORT BUTTON (table) ── */
+.disp-incident-btn {
+  background: rgba(220,38,38,.08);
+  border: 1px solid rgba(220,38,38,.28);
+  color: #DC2626;
+  font-family: var(--font-display);
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  padding: .3rem .65rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+  margin-right: .35rem;
+}
+.disp-incident-btn:hover {
+  background: rgba(220,38,38,.16);
+  border-color: rgba(220,38,38,.5);
+}
+
+/* ── INCIDENT MODAL ── */
+.disp-incident-modal { max-width: 460px; }
+.disp-incident-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .6rem 0;
+  border-bottom: 1px solid var(--disp-border);
+  font-size: .83rem;
+  color: var(--disp-text);
+}
+.disp-incident-row:last-child { border-bottom: none; }
+.disp-incident-field-label {
+  font-family: var(--font-display);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--disp-muted);
+  min-width: 80px;
+  padding-top: .05rem;
+  flex-shrink: 0;
+}
+.disp-incident-type-val {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .85rem;
+  color: #DC2626;
+}
+.disp-incident-notes-val {
+  font-size: .83rem;
+  color: var(--disp-text);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.disp-incident-photo {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+  max-height: 220px;
+  border: 1px solid var(--disp-border);
+}
+.disp-incident-no-photo {
+  font-size: .78rem;
+  color: var(--disp-muted);
+  font-style: italic;
+  padding: .5rem 0;
+}
+
 /* ── EMPTY STATE ── */
 .disp-empty {
   padding: 3rem;

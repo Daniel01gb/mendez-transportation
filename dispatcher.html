@@ -154,6 +154,45 @@
 
   </main>
 
+  <!-- ── INCIDENT REPORT MODAL ── -->
+  <div class="disp-modal-overlay" id="incidentModal">
+    <div class="disp-modal disp-incident-modal">
+      <div class="disp-modal-header">
+        <div>
+          <h3 style="color:#DC2626">⚠ Incident Report</h3>
+          <div class="disp-modal-trip-num" id="incidentModalTitle">—</div>
+        </div>
+        <button class="disp-modal-close" onclick="closeIncidentModal()">✕</button>
+      </div>
+      <div class="disp-modal-body">
+        <div class="disp-incident-row">
+          <span class="disp-incident-field-label">Type</span>
+          <span class="disp-incident-type-val" id="incidentModalType">—</span>
+        </div>
+        <div class="disp-incident-row">
+          <span class="disp-incident-field-label">Reported by</span>
+          <span id="incidentModalDriver">—</span>
+        </div>
+        <div class="disp-incident-row">
+          <span class="disp-incident-field-label">Location</span>
+          <span id="incidentModalLocation">—</span>
+        </div>
+        <div class="disp-incident-row" style="flex-direction:column;gap:.35rem">
+          <span class="disp-incident-field-label">Notes</span>
+          <span class="disp-incident-notes-val" id="incidentModalNotes">—</span>
+        </div>
+        <div class="disp-incident-row" style="flex-direction:column;gap:.5rem">
+          <span class="disp-incident-field-label">Photo evidence</span>
+          <img class="disp-incident-photo" id="incidentModalPhoto" alt="Evidence" style="display:none">
+          <div class="disp-incident-no-photo" id="incidentModalNoPhoto">No photo attached</div>
+        </div>
+      </div>
+      <div class="disp-modal-footer">
+        <button class="disp-btn-save" onclick="closeIncidentModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── CABIN VIEW MODAL ── -->
   <div class="disp-modal-overlay" id="cabinModal">
     <div class="disp-modal disp-cabin-modal">

@@ -11,6 +11,11 @@ function getSnapshotBlobs() {
   catch (_) { return null; }
 }
 
+function getIncidentBlobs() {
+  try { return require('@netlify/blobs').getStore('driver-incidents'); }
+  catch (_) { return null; }
+}
+
 const DRIVERS = [
   { id: 1, name: 'Carlos Rivera',  vehicle: '2023 Toyota Sienna',    plate: 'FLA-4892', rating: 4.9 },
   { id: 2, name: 'Ana Martinez',   vehicle: '2022 Honda Odyssey',     plate: 'FLA-2341', rating: 4.8 },
@@ -117,6 +122,21 @@ router.get('/stats', requireDispatcher, (_req, res) => {
   const counts = { total: DEMO_TRIPS.length, en_route: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
   DEMO_TRIPS.forEach(t => { if (t.status in counts) counts[t.status]++; });
   res.json(counts);
+});
+
+/* GET /api/dispatcher/incidents — all incident reports from Netlify Blobs */
+router.get('/incidents', requireDispatcher, async (_req, res) => {
+  const store = getIncidentBlobs();
+  if (!store) return res.json({ incidents: [] });
+  try {
+    const { blobs } = await store.list();
+    const incidents = await Promise.all(
+      blobs.map(b => store.get(b.key, { type: 'json' }))
+    );
+    res.json({ incidents: incidents.filter(Boolean) });
+  } catch (_) {
+    res.json({ incidents: [] });
+  }
 });
 
 /* GET /api/dispatcher/snapshot/:driverId — latest cabin snapshot from Netlify Blobs */

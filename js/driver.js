@@ -15,6 +15,8 @@
   var currentPeerId = null;
   var facingMode    = 'user'; /* 'user' = front (cabin), 'environment' = rear (road) */
   var micMuted      = false;
+  /* iOS standalone (home screen PWA) blocks getUserMedia — detect early */
+  var iosStandalone = /iPad|iPhone|iPod/.test(navigator.userAgent) && !!window.navigator.standalone;
 
   /* ── Register service worker ── */
   if ('serviceWorker' in navigator) {
@@ -110,9 +112,14 @@
         }, 5000);
       },
       function (err) {
-        var msg = err.code === 1
-          ? 'Location denied — tap to enable in browser settings'
-          : 'Unable to get location';
+        var msg;
+        if (err.code === 1 && iosStandalone) {
+          msg = 'Allow location: Settings → Privacy → Location Services → Safari Websites';
+        } else if (err.code === 1) {
+          msg = 'Location denied — tap to enable in browser settings';
+        } else {
+          msg = 'Unable to get location';
+        }
         setLocationStatus('denied', '✕ ' + msg);
       },
       { enableHighAccuracy: true, timeout: 15000 }
@@ -126,6 +133,17 @@
     startLocationTracking();
   };
 
+  /* ── iOS standalone notice ── */
+  function showIOSNotice() {
+    document.getElementById('iosNotice').style.display = 'flex';
+  }
+  window.openInSafari = function () {
+    window.open(window.location.href, '_blank', 'noopener');
+  };
+  window.dismissIOSNotice = function () {
+    document.getElementById('iosNotice').style.display = 'none';
+  };
+
   /* ── Cabin camera ── */
   function setCameraStatus(state, msg) {
     var bar = document.getElementById('cameraBar');
@@ -136,6 +154,7 @@
   }
 
   window.toggleCabinCamera = function () {
+    if (iosStandalone) { showIOSNotice(); return; }
     if (cabinActive) { stopCabinCamera(); } else { startCabinCamera(); }
   };
 
@@ -315,6 +334,7 @@
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (d) {
       if (!d || d.role !== 'driver') { window.location.href = 'login.html'; return; }
+      if (iosStandalone) showIOSNotice();
       loadTrips();
       startLocationTracking();
     });

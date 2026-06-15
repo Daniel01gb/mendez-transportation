@@ -45,6 +45,23 @@
     <span class="dr-trip-count" id="tripCount">—</span>
   </div>
 
+  <!-- ── iOS STANDALONE NOTICE ── -->
+  <div class="dr-ios-notice" id="iosNotice" style="display:none">
+    <div class="dr-ios-notice-body">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0;color:#F59E0B">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <div class="dr-ios-notice-text">
+        <strong>Camera &amp; microphone unavailable</strong>
+        iOS blocks camera access when the app runs from the Home Screen. Open in Safari to use all features.
+      </div>
+    </div>
+    <div class="dr-ios-notice-actions">
+      <button class="dr-ios-btn-safari" onclick="openInSafari()">Open in Safari →</button>
+      <button class="dr-ios-btn-dismiss" onclick="dismissIOSNotice()">Dismiss</button>
+    </div>
+  </div>
+
   <!-- ── LOCATION STATUS ── -->
   <div class="dr-location-bar" id="locationBar" style="display:none" onclick="retryLocation()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

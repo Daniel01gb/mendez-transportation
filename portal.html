@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Track Your Ride — Patient Portal · Mendez Transportation</title>
+  <meta name="robots" content="noindex, nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -63,10 +64,10 @@
         </div>
 
         <div class="form-group">
-          <label for="portalSsn4">Last 4 digits of SSN</label>
-          <input type="tel" id="portalSsn4" placeholder="••••" maxlength="4"
+          <label for="portalConfCode">Confirmation Code</label>
+          <input type="tel" id="portalConfCode" placeholder="e.g. 7823" maxlength="6"
                  autocomplete="off" inputmode="numeric"/>
-          <span class="input-hint">Used to verify your identity securely</span>
+          <span class="input-hint">Sent with your booking confirmation</span>
         </div>
 
         <div class="error-msg" id="portalVerifyError">
@@ -93,7 +94,7 @@
         </div>
 
         <div class="demo-hint">
-          Demo &nbsp;·&nbsp; Trip: MT-2026-4891 &nbsp;/&nbsp; SSN: 4891
+          Demo &nbsp;·&nbsp; Trip: MT-2026-4891 &nbsp;/&nbsp; Code: 7823
         </div>
       </div>
 

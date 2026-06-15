@@ -13,7 +13,7 @@ const DEMO = {
   pass:  process.env.DEMO_PASS  || 'Mendez2026!',
   code:  process.env.DEMO_CODE  || '123456',
   trip:  process.env.DEMO_TRIP  || 'MT-2026-4891',
-  ssn4:  process.env.DEMO_SSN4  || '4891'
+  conf:  process.env.DEMO_CONF  || '7823'
 };
 
 /* ── GET /api/auth/me ── */
@@ -90,10 +90,10 @@ router.post('/verify-2fa', twoFaLimiter, (req, res) => {
 
 /* ── POST /api/auth/verify-trip ── */
 router.post('/verify-trip', requireSession, (req, res) => {
-  const { tripNumber, ssn4 } = req.body || {};
-  if (!tripNumber || !ssn4) return res.status(400).json({ error: 'Missing fields.' });
-  if (tripNumber.trim() !== DEMO.trip || ssn4.trim() !== DEMO.ssn4) {
-    return res.status(401).json({ error: 'Trip number or SSN digits do not match our records.' });
+  const { tripNumber, confirmCode } = req.body || {};
+  if (!tripNumber || !confirmCode) return res.status(400).json({ error: 'Missing fields.' });
+  if (tripNumber.trim() !== DEMO.trip || confirmCode.trim() !== DEMO.conf) {
+    return res.status(401).json({ error: 'Trip number or confirmation code do not match our records.' });
   }
   res.json({ ok: true, tripId: 1 });
 });

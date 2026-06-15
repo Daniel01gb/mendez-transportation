@@ -24,20 +24,20 @@
     } else {
       var pVerifyBtn   = document.getElementById('portalVerifyBtn');
       var pTripInput   = document.getElementById('portalTripNumber');
-      var pSsnInput    = document.getElementById('portalSsn4');
+      var pConfInput   = document.getElementById('portalConfCode');
       var pVerifyError = document.getElementById('portalVerifyError');
 
       pVerifyBtn.addEventListener('click', handlePortalVerify);
       pTripInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') handlePortalVerify(); });
-      pSsnInput.addEventListener('keydown',  function (e) { if (e.key === 'Enter') handlePortalVerify(); });
+      pConfInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') handlePortalVerify(); });
 
       function handlePortalVerify() {
         var trip = pTripInput.value.trim();
-        var ssn  = pSsnInput.value.trim();
+        var conf = pConfInput.value.trim();
         hideError(pVerifyError);
 
         if (!trip) return showError(pVerifyError, 'Please enter your trip number.');
-        if (!/^\d{4}$/.test(ssn)) return showError(pVerifyError, 'Please enter exactly 4 digits of your SSN.');
+        if (!/^\d{4,6}$/.test(conf)) return showError(pVerifyError, 'Please enter your confirmation code.');
 
         pVerifyBtn.classList.add('loading');
         pVerifyBtn.disabled = true;
@@ -45,7 +45,7 @@
         fetch('/api/auth/verify-trip', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ tripNumber: trip, ssn4: ssn }),
+          body:    JSON.stringify({ tripNumber: trip, confirmCode: conf }),
           credentials: 'same-origin'
         })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })

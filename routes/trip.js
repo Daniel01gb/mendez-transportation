@@ -22,7 +22,6 @@ function tripData() {
   return {
     id:             1,
     trip_number:    process.env.DEMO_TRIP || 'MT-2026-4891',
-    ssn4:           process.env.DEMO_SSN4 || '4891',
     patient_name:   'Maria Garcia',
     pickup_address: '601 E Rollins St, Orlando FL 32803',
     destination:    'Osceola Regional Medical Center, Kissimmee FL 34741',

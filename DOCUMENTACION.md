@@ -423,7 +423,7 @@ node server.js
 - [ ] Panel admin para el dispatcher (crear/asignar/cancelar viajes)
 - [ ] Rate limiting persistente (Redis o Upstash)
 - [ ] Logs de auditoría (login, 2FA, trip verify, logout)
-- [ ] Reducir dependencia del SSN (verificación alternativa)
+- [x] Reducir dependencia del SSN — reemplazado por Confirmation Code (no PHI) ✓
 
 ### Diseño / UX pendiente
 - [ ] Foto real del conductor (reemplazar placeholder `CR` con `<img>`)
@@ -437,15 +437,27 @@ node server.js
 
 ---
 
-## 12. Propuesta de precios (sugerida)
+## 12. Propuesta de precios (oficial — Junio 2026)
 
 | Item | Precio |
 |------|--------|
-| Sitio v1 base (actual) | $500 |
-| Portal de pacientes (frontend + backend demo) | +$300 |
-| Backend real + GPS real + BD | +$800–1,200 |
-| Mantenimiento mensual | $150/mes |
+| Sitio v1 — 6 páginas públicas | $500 |
+| Portal de pacientes Phase 2 (login + 2FA + tracking + backend API) | $750 |
+| **Bundle Phase 1 + Phase 2** | **$1,100** _(ahorra $150)_ |
+| Backend real + GPS real + BD + panel dispatcher (Phase 3) | $800–1,200 |
+| Mantenimiento — solo sitio público (Phase 1) | $150/mes |
+| Mantenimiento — sitio completo + portal + API (Phase 1 + 2) | $250/mes |
+
+### Archivos de propuesta generados
+
+| Archivo | Contenido |
+|---------|-----------|
+| `Desktop/propuesta-mendez.html` | Propuesta Phase 1 — rediseño web ($500) |
+| `Desktop/propuesta-mendez-portal.html` | Propuesta Phase 2 — portal de pacientes ($750) |
+| `Desktop/propuesta-mendez-comparacion.html` | Comparación ambas fases + bundle ($1,100) |
+
+> Los tres archivos HTML se imprimen a PDF con Ctrl+P → Guardar como PDF desde el navegador.
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — MVP2 completo + parche de seguridad: SSN reemplazado por Confirmation Code (no PHI), guard de producción en app.js, noindex en páginas del portal, listo para deploy en Netlify.*
+*Documentación actualizada el 15 de Junio 2026 — Precios oficiales definidos: Phase 1 $500 · Phase 2 $750 · Bundle $1,100 · Mantenimiento $150/$250 mes. Tres propuestas HTML generadas en Desktop. Confirmation Code implementado (no PHI). Guard de producción activo.*

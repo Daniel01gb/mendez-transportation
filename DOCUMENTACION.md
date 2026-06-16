@@ -24,8 +24,10 @@ Sitio web profesional para **Mendez Transportation LLC**, una empresa de transpo
 | Propuesta v1 enviada al cliente | ✅ Enviada (PDF + Netlify preview) |
 | Sitio v2 — Frontend portal (demo) | ✅ Completo |
 | Sitio v2 — Backend API (MVP2) | ✅ Completo |
-| Deploy Netlify para demo al cliente | ✅ Listo para subir |
-| Aprobación del cliente | ⏳ Pendiente |
+| WebRTC live video driver→dispatcher | ✅ Funcional (probado en local + tunnel) |
+| Deploy Netlify (`dreamy-travesseiro-61a309`) | ⚠️ Cuenta sin créditos temporalmente |
+| GPS real en mapa del dispatcher | ⚠️ Netlify Blobs no funciona en Functions v1 |
+| Aprobación del cliente | ⏳ Reunión MVP — 16 Junio 2026 |
 
 **Modelo de cobro acordado:**
 - $250 al aprobar (50% upfront — Zelle o USDT)
@@ -413,33 +415,39 @@ Esto evita arranques silenciosos con valores vacíos que dejarían el sistema in
 helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc:  ["'self'"],
-      scriptSrc:   ["'self'"],
-      styleSrc:    ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc:     ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc:      ["'self'", 'data:', 'https:'],
-      connectSrc:  ["'self'"],
-      frameSrc:    ["'none'"],
-      objectSrc:   ["'none'"],
+      defaultSrc:    ["'self'"],
+      scriptSrc:     ["'self'", 'https://unpkg.com', 'https://cdn.jsdelivr.net'],
+      scriptSrcAttr: ["'unsafe-inline'"],   // permite onclick= en HTML (PeerJS, Leaflet)
+      styleSrc:      ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com',
+                      'https://unpkg.com', 'https://cdn.jsdelivr.net'],
+      fontSrc:       ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc:        ["'self'", 'data:', 'https:'],
+      connectSrc:    ["'self'", 'wss://0.peerjs.com', 'https://0.peerjs.com', 'wss://*.peerjs.com'],
+      frameSrc:      ["'none'"],
+      objectSrc:     ["'none'"],
     }
   },
   crossOriginEmbedderPolicy: false   // Necesario para Leaflet/mapas externos
 })
 ```
 
-### CORS (`app.js`)
-Solo acepta peticiones de orígenes en la variable `ALLOWED_ORIGINS` (separados por coma).
-En dev local (sin esa variable), permite `localhost:3000` y `localhost:8888`.
+**Cambios vs. configuración original:**
+- `scriptSrc` ahora permite `unpkg.com` y `cdn.jsdelivr.net` (donde viven PeerJS y Leaflet)
+- `scriptSrcAttr: ['unsafe-inline']` permite handlers `onclick=` en HTML — necesario porque sin esto Helmet bloquea todos los botones del dispatcher y la cámara del driver
+- `connectSrc` incluye los servidores WebSocket de PeerJS para señalización WebRTC
 
-**⚠️ PENDIENTE — Agregar en Netlify dashboard (`Site settings → Environment variables`):**
+### CORS (`app.js`)
+- **En desarrollo** (`NODE_ENV !== 'production'`): permite **todos los orígenes** — necesario para acceder desde tunnel URLs (`localhost.run`, `ngrok`) y desde el celular en la misma red
+- **En producción**: solo acepta orígenes listados en `ALLOWED_ORIGINS` (env var separada por comas)
+
+**⚠️ Configurar en Netlify antes de re-activar el deploy:**
 ```
-ALLOWED_ORIGINS = https://v2mn.netlify.app
+ALLOWED_ORIGINS = https://dreamy-travesseiro-61a309.netlify.app
 ```
-Cuando haya dominio propio:
+Con dominio propio:
 ```
-ALLOWED_ORIGINS = https://v2mn.netlify.app,https://mendeztransport.com
+ALLOWED_ORIGINS = https://dreamy-travesseiro-61a309.netlify.app,https://mendeztransport.com
 ```
-Sin esta variable en producción, **todas las peticiones del frontend serán bloqueadas por CORS**.
 
 ### Validación de inputs (`middleware/validate.js`)
 Usa `express-validator`. Aplica antes de que el handler de la ruta procese nada:
@@ -516,9 +524,8 @@ routes/dispatcher.js   — GET /api/dispatcher/trips, GET /stats, PATCH /trips/:
 - Mapa Leaflet con posiciones GPS reales de conductores (en_route) — se actualiza cada **5 segundos**
 - Modal de edición: cambiar status, asignar conductor, agregar notas
 - Cambios actualizan el estado en memoria del frontend (demo — sin persistencia en BD)
-- **Botón 🔴 Live** (pulsante, rojo) en filas En Route → driver tiene cámara activa → video WebRTC en tiempo real
-- **Botón 📷 Cabin** (verde) → driver no transmite en vivo pero tiene snapshot disponible
-- Modal Cabin View: video live stream O último snapshot con timestamp; botón Reconnect y mute de audio
+- **Botón 🔴 Live** siempre visible en filas En Route — peer ID calculado directamente como `mz-drv-{driver.id}` sin depender de Netlify Blobs
+- Modal Cabin View: video live stream WebRTC; botón Reconnect y mute de audio
 - **Punto rojo `!`** en la celda de status cuando el trip tiene un incidente reportado
 - **Botón ⚠ Report** abre modal con: tipo de incidente, conductor + timestamp, link Google Maps, notas, foto de evidencia
 - Incidentes polled cada 30s, se actualiza la tabla automáticamente
@@ -526,11 +533,12 @@ routes/dispatcher.js   — GET /api/dispatcher/trips, GET /stats, PATCH /trips/:
 ### Netlify Blobs — stores utilizados
 | Store | Clave | Contenido |
 |-------|-------|-----------|
-| `driver-locations` | `driver-{id}` | `{ driverId, name, plate, lat, lng, accuracy, peerId, updatedAt }` |
+| `driver-locations` | `driver-{id}` | `{ driverId, name, plate, lat, lng, accuracy, updatedAt }` |
 | `driver-snapshots` | `snapshot-{id}` | `{ driverId, name, dataUrl, capturedAt }` |
 | `driver-incidents` | `incident-{tripId}-{timestamp}` | `{ tripId, tripNumber, patientName, driverId, driverName, type, notes, photoDataUrl, lat, lng, reportedAt }` |
 
-`peerId` es el ID de PeerJS del driver cuando tiene la cámara activa — el dispatcher lo usa para conectarse directamente.
+**⚠️ Problema conocido — Netlify Blobs en Functions v1:**  
+`@netlify/blobs` v10 requiere `NETLIFY_BLOBS_CONTEXT` que Netlify solo inyecta en Functions v2. Con el handler `serverless-http` (Functions v1) la variable no llega → `getStore()` falla → GPS real y snapshots no funcionan en producción Netlify. El WebRTC **no depende de Blobs** (peer ID es determinístico), por lo que el live video SÍ funciona. La solución definitiva es migrar a Functions v2 o agregar `NETLIFY_TOKEN` + `NETLIFY_SITE_ID` explícitos (Phase 3).
 
 ### GET `/api/dispatcher/incidents` — Detalle
 - Retorna array de todos los incidentes ordenados por `reportedAt` descendente
@@ -648,11 +656,14 @@ Al verificar 2FA con credenciales de driver, redirige a `driver.html`.
 - **🎤 Mic** → mute/unmute del micrófono (se pone rojo cuando muteado)
 - Preview del video en la barra de cámara
 - Auto-captura snapshot JPEG 320×240 cada 60s → sube a Netlify Blobs (`driver-snapshots`)
-- Al activar la cámara, genera un **Peer ID** aleatorio (`mz-drv-XXXXXXXX`) y lo incluye en cada ping de GPS
+- Al activar la cámara, registra un **Peer ID determinístico**: `mz-drv-{driver.id}` (ej. `mz-drv-1` para Carlos Rivera)
 
 **WebRTC (PeerJS):**
-- Driver crea un `Peer` con ID aleatorio al activar la cámara
+- Driver crea un `Peer` con ID determinístico `mz-drv-{driverId}` al activar la cámara
+- Si el ID ya está tomado (reconexión rápida), reintenta con sufijo: `mz-drv-1-{timestamp36}`
 - Responde llamadas entrantes del dispatcher con el stream completo (video + audio)
+- **El dispatcher calcula el peer ID directamente** desde `trip.driver.id` — no depende de Netlify Blobs
+- TURN servers (Open Relay) incluidos para funcionar a través de NAT/firewalls
 - Al cerrar sesión: detiene cámara, micrófono, GPS y destruye el peer
 
 **Reporte de incidentes:**
@@ -791,6 +802,30 @@ node server.js
 # abre http://localhost:3000
 ```
 
+No se necesita `.env` — todas las variables tienen defaults en el código. El rate limiter es en memoria y se resetea al reiniciar el servidor.
+
+### Testing con celular (tunnel HTTPS)
+La cámara y el GPS del celular **requieren HTTPS**. Para exponer localhost al celular:
+
+```bash
+# Terminal 1 — servidor
+node server.js
+
+# Terminal 2 — tunnel público HTTPS (sin cuenta requerida)
+ssh -R 80:localhost:3000 nokey@localhost.run
+# → da una URL como https://xxxxxx.lhr.life
+```
+
+- **Laptop (dispatcher):** `http://localhost:3000/dispatcher.html`
+- **Celular (driver):** `https://xxxxxx.lhr.live/driver.html`
+
+El tunnel funciona desde cualquier red (4G/5G, WiFi distinto). Solo requiere que la laptop tenga internet.
+
+**Alternativa con ngrok** (requiere cuenta gratuita):
+```bash
+ngrok http 3000
+```
+
 ---
 
 ## 11. Próximos pasos (si aprueban)
@@ -806,13 +841,26 @@ node server.js
   - [x] GPS en tiempo real (5s) → mapa del dispatcher se actualiza en vivo
   - [x] Cámara de cabina con flip frontal/trasera
   - [x] Micrófono — audio en el stream
-  - [x] Video WebRTC en vivo (~1s delay) vía PeerJS → dispatcher ve **🔴 Live**
-  - [x] Snapshot automático cada 60s → fallback cuando no hay stream en vivo
+  - [x] Video WebRTC en vivo (~1s delay) vía PeerJS → dispatcher ve **🔴 Live** ✅ **verificado**
+  - [x] Peer ID determinístico `mz-drv-{id}` — no depende de Netlify Blobs
+  - [x] TURN servers (Open Relay) para conexión a través de NAT
+  - [x] Snapshot automático cada 60s
   - [x] Instalable como PWA (manifest.json + service worker)
   - [x] Reporte de incidentes con 6 tipos, notas y foto de evidencia
 - [x] Panel del dispatcher — reportes de incidentes:
   - [x] Punto rojo `!` en tabla cuando hay incidente en el trip
   - [x] Modal con tipo, conductor, timestamp, Google Maps link, notas y foto
+
+### Limitaciones conocidas en demo local
+| Feature | Local | Netlify (cuando vuelva) |
+|---------|-------|------------------------|
+| Login / auth / 2FA | ✅ | ✅ |
+| Tabla de trips dispatcher | ✅ | ✅ |
+| 🔴 Live WebRTC (video) | ✅ (con tunnel HTTPS) | ✅ |
+| GPS real en mapa | ❌ sin Blobs | ❌ mismo problema |
+| Snapshot de cabina | ❌ sin Blobs | ❌ mismo problema |
+| Incidentes (guardar/ver) | ❌ sin Blobs | ❌ mismo problema |
+| GPS simulado en mapa | ✅ posiciones estáticas | ✅ posiciones estáticas |
 
 ### Phase 3 — Backend real (post-aprobación)
 - [ ] Base de datos real (Supabase PostgreSQL)
@@ -860,4 +908,4 @@ node server.js
 
 ---
 
-*Documentación actualizada el 15 de Junio 2026 — Driver PWA completa con compatibilidad Android/iOS documentada: Android funciona al 100% desde home screen; iPhone requiere Safari (WebKit bloquea getUserMedia en standalone). Banner automático en iOS standalone con botón "Open in Safari". GPS 5s, cámara cabina, flip frontal/trasera, micrófono, video WebRTC en vivo (PeerJS ~1s delay), snapshot fallback 60s. Reporte de incidentes: 6 tipos, notas, foto evidencia (funciona en iOS standalone via file input), badge en tarjeta al enviar, guards de duplicado. Panel dispatcher: 🔴 Live / 📷 Cabin, mapa 5s, Cabin View modal con video+audio, punto rojo `!` + modal de incidente con foto + Google Maps link. Netlify Blobs: 3 stores (locations, snapshots, incidents). 3 roles JWT. Deploy activo en Netlify `dreamy-travesseiro-61a309`.*
+*Documentación actualizada el 16 de Junio 2026 — WebRTC live video verificado y funcional: peer IDs ahora son determinísticos (`mz-drv-{driverId}`) — dispatcher muestra el botón 🔴 Live sin depender de Netlify Blobs. TURN servers Open Relay para NAT traversal. CSP actualizado: unpkg.com/cdn.jsdelivr.net para PeerJS+Leaflet, scriptSrcAttr unsafe-inline para handlers onclick, PeerJS WebSocket en connectSrc. CORS en dev permite todos los orígenes (tunnels, celulares). Testing local: `node server.js` + `ssh -R 80:localhost:3000 nokey@localhost.run` para HTTPS en celular. Netlify Blobs pendiente (Functions v1 no recibe NETLIFY_BLOBS_CONTEXT — GPS real y snapshots no funcionan en Netlify). Reunión MVP 16 Jun 2026.*

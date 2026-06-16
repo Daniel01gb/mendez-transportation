@@ -30,13 +30,14 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc:  ["'self'"],
-      scriptSrc:   ["'self'"],
-      styleSrc:    ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      scriptSrc:   ["'self'", 'https://unpkg.com', 'https://cdn.jsdelivr.net'],
+      styleSrc:    ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://unpkg.com', 'https://cdn.jsdelivr.net'],
       fontSrc:     ["'self'", 'https://fonts.gstatic.com'],
       imgSrc:      ["'self'", 'data:', 'https:'],
-      connectSrc:  ["'self'"],
-      frameSrc:    ["'none'"],
-      objectSrc:   ["'none'"],
+      connectSrc:  ["'self'", 'wss://0.peerjs.com', 'https://0.peerjs.com', 'wss://*.peerjs.com'],
+      frameSrc:      ["'none'"],
+      objectSrc:     ["'none'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       upgradeInsecureRequests: []
     }
   },
@@ -45,8 +46,10 @@ app.use(helmet({
 
 app.use(cors({
   origin(origin, cb) {
-    /* Allow requests with no origin (server-to-server, curl) in dev */
-    if (!origin) return cb(null, process.env.NODE_ENV === 'production' ? false : true);
+    /* In dev, allow all origins (covers tunnels, mobile on local network, etc.) */
+    if (process.env.NODE_ENV !== 'production') return cb(null, true);
+    /* In production, no-origin requests are denied; listed origins are allowed */
+    if (!origin) return cb(null, false);
     if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },

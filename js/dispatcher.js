@@ -74,7 +74,7 @@
       var trip = trips.find(function (t) {
         return t.driver && Number(t.driver.id) === Number(loc.driverId) && t.status === 'en_route';
       });
-      if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: loc.peerId || null };
+      if (trip) trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
     });
   }
 
@@ -82,23 +82,18 @@
     fetch('/api/dispatcher/locations', { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var tableNeedsUpdate = false;
         (data.locations || []).forEach(function (loc) {
           var trip = allTrips.find(function (t) {
             return t.driver && Number(t.driver.id) === Number(loc.driverId) && t.status === 'en_route';
           });
           if (!trip) return;
-          var prevPeerId = trip.driver_position && trip.driver_position.peerId;
-          var newPeerId  = loc.peerId || null;
-          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt, peerId: newPeerId };
-          if (prevPeerId !== newPeerId) tableNeedsUpdate = true;
+          trip.driver_position = { lat: loc.lat, lng: loc.lng, real: true, updatedAt: loc.updatedAt };
           var m = markers[trip.id];
           if (m) {
             m.setLatLng([loc.lat, loc.lng]);
             m.getPopup().setContent(buildPopup(trip, true));
           }
         });
-        if (tableNeedsUpdate) renderTable(allTrips);
       }).catch(function () {});
   }
 
@@ -137,15 +132,12 @@
       var from   = shortAddr(t.pickup);
       var to     = shortAddr(t.destination);
       var driver = t.driver ? t.driver.name : '<span class="unassigned">— Unassigned</span>';
-      var peerId = t.driver_position && t.driver_position.peerId ? t.driver_position.peerId : null;
       var cabinBtn = '';
       if (t.status === 'en_route' && t.driver) {
         var driverNameEsc = t.driver.name.replace(/'/g, "\\'");
-        if (peerId) {
-          cabinBtn = '<button class="disp-cabin-btn live" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',\'' + peerId + '\')">🔴 Live</button>';
-        } else {
-          cabinBtn = '<button class="disp-cabin-btn" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',null)">📷 Cabin</button>';
-        }
+        /* Peer ID is deterministic: mz-drv-{driverId} — no need to read from Blobs */
+        var peerId = 'mz-drv-' + t.driver.id;
+        cabinBtn = '<button class="disp-cabin-btn live" onclick="viewCabin(' + t.driver.id + ',\'' + driverNameEsc + '\',\'' + peerId + '\')">🔴 Live</button>';
       }
       var incident    = incidentsByTrip[t.id];
       var incidentBtn = incident

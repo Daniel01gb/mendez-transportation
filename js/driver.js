@@ -287,7 +287,8 @@
   /* ── WebRTC peer streaming (dispatcher connects here) ── */
   function startPeerStreaming(stream) {
     if (typeof Peer === 'undefined') return;
-    currentPeerId = 'mz-drv-' + Math.random().toString(36).substr(2, 9);
+    var baseId = 'mz-drv-' + (driver && driver.id ? driver.id : '1');
+    currentPeerId = baseId;
     peer = new Peer(currentPeerId, { config: { iceServers: ICE_SERVERS } });
     peer.on('open', function (id) { currentPeerId = id; });
     peer.on('call', function (call) {
@@ -297,7 +298,15 @@
         peerCalls = peerCalls.filter(function (c) { return c !== call; });
       });
     });
-    peer.on('error', function () {});
+    peer.on('error', function (err) {
+      /* If peer ID already taken (driver refreshed quickly), retry with suffix */
+      if (err.type === 'unavailable-id' && peer) {
+        try { peer.destroy(); } catch (_) {}
+        peer = null;
+        currentPeerId = baseId + '-' + Date.now().toString(36).slice(-4);
+        startPeerStreaming(stream);
+      }
+    });
   }
 
   function stopPeerStreaming() {

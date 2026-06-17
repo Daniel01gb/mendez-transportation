@@ -40,6 +40,8 @@ const DEMO_TRIPS = [
     status: 'en_route',
     pickup: '601 E Rollins St, Orlando FL 32803',
     destination: 'Osceola Regional Medical Center, Kissimmee FL 34741',
+    pickup_coords: { lat: 28.5650, lng: -81.3799 },
+    dest_coords:   { lat: 28.3069, lng: -81.4073 },
     scheduled_at: makeTime(8, 30), notes: 'Patient uses wheelchair — needs ramp.'
   },
   {
@@ -48,6 +50,8 @@ const DEMO_TRIPS = [
     status: 'confirmed',
     pickup: '4500 S Orange Ave, Orlando FL 32806',
     destination: 'Florida Hospital Orlando, Orlando FL 32803',
+    pickup_coords: { lat: 28.5018, lng: -81.3736 },
+    dest_coords:   { lat: 28.5650, lng: -81.3799 },
     scheduled_at: makeTime(11, 0), notes: ''
   },
   {
@@ -56,6 +60,8 @@ const DEMO_TRIPS = [
     status: 'confirmed',
     pickup: '220 Palm Dr, Kissimmee FL 34743',
     destination: 'AdventHealth Kissimmee, 2450 N Orange Blossom Trail FL',
+    pickup_coords: { lat: 28.3200, lng: -81.4300 },
+    dest_coords:   { lat: 28.3478, lng: -81.4198 },
     scheduled_at: makeTime(15, 0), notes: 'Patient may need extra time boarding.'
   },
 ];
@@ -140,13 +146,15 @@ router.post('/incident', requireDriver, async (req, res) => {
   res.json({ ok: true });
 });
 
-/* PATCH /api/driver/trips/:id/status
-   Demo-only: ack the update, frontend keeps local state. */
+/* PATCH /api/driver/trips/:id/status — persists on DEMO_TRIPS for the session */
 router.patch('/trips/:id/status', requireDriver, (req, res) => {
   const { status } = req.body || {};
   const valid = ['en_route', 'completed'];
   if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status.' });
-  res.json({ ok: true, id: Number(req.params.id), status });
+  const trip = DEMO_TRIPS.find(t => t.id === Number(req.params.id));
+  if (!trip) return res.status(404).json({ error: 'Trip not found.' });
+  trip.status = status;
+  res.json({ ok: true, id: trip.id, status: trip.status });
 });
 
 module.exports = router;

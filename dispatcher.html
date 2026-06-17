@@ -30,11 +30,22 @@
         <span class="disp-admin-name" id="adminName">—</span>
         <span class="disp-admin-role">Operations Manager</span>
       </div>
+      <button class="disp-dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
       <button class="disp-logout-btn" onclick="dispLogout()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
-        Sign Out
+        <span class="logout-label">Sign Out</span>
       </button>
     </div>
   </nav>
@@ -98,8 +109,45 @@
     </div>
   </div>
 
+  <!-- ── TAB BAR ── -->
+  <div class="disp-tab-bar" id="dispTabBar">
+    <button class="disp-tab-toggle" id="dispTabToggle" aria-expanded="false" aria-controls="dispTabList">
+      <span class="disp-tab-toggle-label" id="dispTabToggleLabel">Dispatch Board</span>
+      <svg class="disp-tab-toggle-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="disp-tab-list" id="dispTabList">
+      <button class="disp-tab active" data-tab="board">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Dispatch Board
+      </button>
+      <button class="disp-tab" data-tab="requests">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        Insurance Requests
+        <span class="disp-tab-badge" id="requestsBadge" style="display:none">0</span>
+      </button>
+      <button class="disp-tab" data-tab="newtrip">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Trip
+      </button>
+      <button class="disp-tab" data-tab="drivers">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 8h4l3 5v4h-7V8z"/><rect x="1" y="3" width="15" height="13" rx="2"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+        Drivers
+      </button>
+    </div>
+  </div>
+
   <!-- ── MAIN ── -->
-  <main class="disp-main">
+  <main class="disp-main" id="tabBoard">
 
     <!-- Trips panel -->
     <div class="disp-panel">
@@ -110,12 +158,18 @@
           </svg>
           Today's Trips
         </h2>
-        <div class="disp-filters">
-          <button class="disp-filter active" data-filter="all">All</button>
-          <button class="disp-filter" data-filter="en_route">En Route</button>
-          <button class="disp-filter" data-filter="pending">Pending</button>
-          <button class="disp-filter" data-filter="confirmed">Confirmed</button>
-          <button class="disp-filter" data-filter="completed">Completed</button>
+        <div class="disp-board-controls">
+          <div class="disp-filters">
+            <button class="disp-filter active" data-filter="all">All</button>
+            <button class="disp-filter" data-filter="en_route">En Route</button>
+            <button class="disp-filter" data-filter="pending">Pending</button>
+            <button class="disp-filter" data-filter="confirmed">Confirmed</button>
+            <button class="disp-filter" data-filter="completed">Completed</button>
+            <button class="disp-filter" data-filter="abandoned">Abandoned</button>
+          </div>
+          <div class="disp-search-wrap">
+            <input type="search" id="tripSearch" placeholder="Search patient or trip #…" autocomplete="off">
+          </div>
         </div>
       </div>
       <div class="disp-table-wrap">
@@ -136,6 +190,8 @@
           </tbody>
         </table>
       </div>
+      <div id="tripDetailMount"></div>
+      <div id="tripsPagination"></div>
     </div>
 
     <!-- Map panel -->
@@ -152,7 +208,182 @@
       <div id="dispMap"></div>
     </div>
 
+    <!-- ── LIVE CABIN PANEL (inline) ── -->
+    <div id="livePanel" class="disp-panel disp-live-panel">
+      <div class="disp-panel-header">
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <h2>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:.35rem;opacity:.6">
+              <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+            </svg>
+            Cabin View
+          </h2>
+          <span id="cabinModalDriver" style="font-size:.82rem;color:var(--disp-muted);font-weight:600">—</span>
+        </div>
+        <div class="disp-live-controls">
+          <span class="disp-cabin-timestamp" id="cabinTimestamp"></span>
+          <button class="disp-cabin-speaker" id="cabinSpeaker" onclick="toggleCabinAudio()" style="display:none" title="Mute audio">
+            <svg class="spk-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+            <svg class="spk-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+          </button>
+          <button class="disp-btn-save" id="cabinRefreshBtn" onclick="refreshCabin()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:.3rem">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+            </svg>
+            Reconnect
+          </button>
+          <button class="disp-modal-close" onclick="closeCabin()">✕</button>
+        </div>
+      </div>
+      <div class="disp-cabin-body">
+        <div class="disp-cabin-loading" id="cabinLoading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+          </svg>
+          <span id="cabinLoadingMsg">Connecting…</span>
+        </div>
+        <video class="disp-cabin-live" id="cabinLiveVideo" autoplay playsinline style="display:none"></video>
+        <img class="disp-cabin-img" id="cabinImg" alt="Cabin snapshot" style="display:none">
+        <div class="disp-cabin-no-feed" id="cabinNoFeed" style="display:none">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+            <line x1="1" y1="1" x2="23" y2="23" stroke-width="2"/>
+          </svg>
+          <p>No cabin feed available</p>
+          <p id="cabinNoFeedMsg">Driver has not enabled the cabin camera yet.</p>
+        </div>
+        <div class="disp-cabin-live-badge" id="cabinLiveBadge" style="display:none">🔴 LIVE</div>
+      </div>
+    </div>
+
   </main>
+
+  <!-- ── INSURANCE REQUESTS TAB ── -->
+  <section id="tabRequests" class="disp-tab-pane" style="display:none">
+    <div class="disp-requests-grid" id="requestsList">
+      <div class="disp-req-empty"><p>Loading requests…</p></div>
+    </div>
+  </section>
+
+  <!-- ── NEW TRIP TAB ── -->
+  <section id="tabNewtrip" class="disp-tab-pane" style="display:none">
+    <div class="disp-new-trip-wrap">
+      <form id="newTripForm" class="disp-new-trip-form" onsubmit="submitNewTrip(event)">
+        <h3>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:.4rem;opacity:.6">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Create New Trip
+        </h3>
+        <div class="disp-form-grid">
+          <div class="disp-field">
+            <label for="ntPatient">Patient Name *</label>
+            <input type="text" id="ntPatient" placeholder="Full name" required>
+          </div>
+          <div class="disp-field">
+            <label for="ntInsurance">Insurance</label>
+            <select id="ntInsurance">
+              <option value="">— Select —</option>
+              <option value="Medicaid">Medicaid</option>
+              <option value="Medicare">Medicare</option>
+              <option value="UnitedHealth">UnitedHealth</option>
+              <option value="Humana">Humana</option>
+              <option value="Aetna">Aetna</option>
+              <option value="Florida Blue">Florida Blue</option>
+              <option value="Molina Healthcare">Molina Healthcare</option>
+              <option value="Sunshine Health">Sunshine Health</option>
+              <option value="Simply Healthcare">Simply Healthcare</option>
+              <option value="Other">Other / Self-Pay</option>
+            </select>
+          </div>
+          <div class="disp-field span2">
+            <label for="ntPickup">Pickup Address *</label>
+            <input type="text" id="ntPickup" placeholder="Full street address, City, FL ZIP" required>
+          </div>
+          <div class="disp-field span2">
+            <label for="ntDest">Destination *</label>
+            <input type="text" id="ntDest" placeholder="Hospital, clinic, or facility name + address" required>
+          </div>
+          <div class="disp-field">
+            <label for="ntDate">Scheduled Date *</label>
+            <input type="date" id="ntDate" required>
+          </div>
+          <div class="disp-field">
+            <label for="ntTime">Scheduled Time *</label>
+            <input type="time" id="ntTime" required>
+          </div>
+          <div class="disp-field">
+            <label for="ntDriver">Assign Driver</label>
+            <select id="ntDriver">
+              <option value="">— Unassigned —</option>
+            </select>
+          </div>
+          <div class="disp-field">
+            <label for="ntNotes">Notes</label>
+            <input type="text" id="ntNotes" placeholder="Accessibility needs, special requirements…">
+          </div>
+        </div>
+        <div class="disp-form-footer">
+          <span class="disp-form-msg" id="ntMsg"></span>
+          <button type="reset" class="disp-btn-cancel">Clear</button>
+          <button type="submit" class="disp-btn-save">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:.3rem">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Create Trip
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ── DRIVERS TAB ── -->
+  <section id="tabDrivers" class="disp-tab-pane" style="display:none">
+    <div class="disp-drivers-grid" id="driversGrid">
+      <div class="disp-empty"><p>Loading drivers…</p></div>
+    </div>
+    <div class="disp-driver-history" id="driverHistoryPanel" style="display:none">
+      <div class="disp-driver-history-header">
+        <button class="disp-btn-cancel" onclick="closeDriverHistory()">← Back to Drivers</button>
+        <div class="disp-driver-history-title">
+          <h3 id="dhName">—</h3>
+          <span id="dhVehicle" class="disp-driver-history-vehicle">—</span>
+        </div>
+      </div>
+      <div class="disp-driver-history-stats">
+        <div class="disp-dh-stat"><span class="disp-dh-stat-num" id="dhTotalTrips">—</span><span class="disp-dh-stat-label">Total Trips</span></div>
+        <div class="disp-dh-stat"><span class="disp-dh-stat-num" id="dhTotalMiles">—</span><span class="disp-dh-stat-label">Total Miles</span></div>
+        <div class="disp-dh-stat"><span class="disp-dh-stat-num" id="dhCompleted">—</span><span class="disp-dh-stat-label">Completed</span></div>
+        <div class="disp-dh-stat disp-dh-stat-warn"><span class="disp-dh-stat-num" id="dhAbandoned">—</span><span class="disp-dh-stat-label">Abandoned</span></div>
+      </div>
+      <div class="disp-table-wrap">
+        <table class="disp-table disp-dh-table">
+          <thead>
+            <tr><th>Trip #</th><th>Patient</th><th>Status</th><th>Date</th><th>Miles</th><th>Evidence / Notes</th></tr>
+          </thead>
+          <tbody id="dhHistoryBody"></tbody>
+        </table>
+      </div>
+      <div id="dhEvidenceMount"></div>
+    </div>
+  </section>
+
+  <!-- ── EVIDENCE PHOTO VIEWER ── -->
+  <div class="disp-modal-overlay" id="evidenceModal" onclick="if(event.target===this) closeEvidenceModal()">
+    <div class="disp-modal" style="max-width:520px">
+      <div class="disp-modal-header">
+        <h3>Evidence Photo</h3>
+        <button class="disp-modal-close" onclick="closeEvidenceModal()">✕</button>
+      </div>
+      <div class="disp-modal-body">
+        <img id="evidenceModalImg" style="width:100%;border-radius:8px" alt="Evidence">
+      </div>
+    </div>
+  </div>
 
   <!-- ── INCIDENT REPORT MODAL ── -->
   <div class="disp-modal-overlay" id="incidentModal">
@@ -188,57 +419,8 @@
         </div>
       </div>
       <div class="disp-modal-footer">
+        <button class="disp-btn-cancel" id="incidentReviewBtn" onclick="markIncidentReviewed()">Mark Reviewed</button>
         <button class="disp-btn-save" onclick="closeIncidentModal()">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── CABIN VIEW MODAL ── -->
-  <div class="disp-modal-overlay" id="cabinModal">
-    <div class="disp-modal disp-cabin-modal">
-      <div class="disp-modal-header">
-        <div>
-          <h3>Cabin View</h3>
-          <div class="disp-modal-trip-num" id="cabinModalDriver">—</div>
-        </div>
-        <button class="disp-modal-close" onclick="closeCabin()">✕</button>
-      </div>
-      <div class="disp-cabin-body">
-        <div class="disp-cabin-loading" id="cabinLoading">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12a9 9 0 11-6.219-8.56"/>
-          </svg>
-          <span id="cabinLoadingMsg">Connecting…</span>
-        </div>
-        <video class="disp-cabin-live" id="cabinLiveVideo" autoplay playsinline style="display:none"></video>
-        <img class="disp-cabin-img" id="cabinImg" alt="Cabin snapshot" style="display:none">
-        <div class="disp-cabin-no-feed" id="cabinNoFeed" style="display:none">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-            <line x1="1" y1="1" x2="23" y2="23" stroke-width="2"/>
-          </svg>
-          <p>No cabin feed available</p>
-          <p id="cabinNoFeedMsg">Driver has not enabled the cabin camera yet.</p>
-        </div>
-        <div class="disp-cabin-live-badge" id="cabinLiveBadge" style="display:none">🔴 LIVE</div>
-      </div>
-      <div class="disp-modal-footer">
-        <span class="disp-cabin-timestamp" id="cabinTimestamp"></span>
-        <button class="disp-cabin-speaker" id="cabinSpeaker" onclick="toggleCabinAudio()" style="display:none" title="Mute audio">
-          <svg class="spk-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-          </svg>
-          <svg class="spk-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-          </svg>
-        </button>
-        <button class="disp-btn-cancel" onclick="closeCabin()">Close</button>
-        <button class="disp-btn-save" id="cabinRefreshBtn" onclick="refreshCabin()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:.3rem">
-            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
-          </svg>
-          Reconnect
-        </button>
       </div>
     </div>
   </div>
@@ -260,12 +442,13 @@
       <div class="disp-modal-body">
         <div class="disp-form-group">
           <label>Status</label>
-          <select id="editStatus">
+          <select id="editStatus" onchange="onEditStatusChange()">
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="en_route">En Route</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
+            <option value="abandoned">Abandoned</option>
           </select>
         </div>
         <div class="disp-form-group">
@@ -278,10 +461,37 @@
           <label>Internal Notes</label>
           <textarea id="editNotes" placeholder="Add notes for this trip…"></textarea>
         </div>
+        <div class="disp-form-group disp-evidence-group" id="editAbandonedSection" style="display:none">
+          <label>⚠ Route Abandoned — Evidence <span class="disp-evidence-optional">(optional)</span></label>
+          <p class="disp-evidence-hint">Describe what happened. Attach a screenshot (chat, GPS, call log, etc.) if you have one — it's not required.</p>
+          <textarea id="editAbandonedNotes" placeholder="e.g. Driver stopped responding ~35 min into the route. GPS froze on Colonial Dr. Patient confirmed no-show."></textarea>
+          <input type="file" id="editAbandonedPhoto" accept="image/*" onchange="onAbandonedPhotoChange(this)">
+          <img id="editAbandonedPreview" class="disp-evidence-preview" style="display:none" alt="Evidence preview">
+        </div>
       </div>
       <div class="disp-modal-footer">
         <button class="disp-btn-cancel" onclick="closeEdit()">Cancel</button>
         <button class="disp-btn-save" id="saveEditBtn" onclick="saveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST CONTAINER ── -->
+  <div id="toastContainer" class="disp-toast-container" aria-live="polite"></div>
+
+  <!-- ── CONFIRM MODAL ── -->
+  <div class="disp-modal-overlay" id="confirmModal">
+    <div class="disp-modal disp-confirm-modal">
+      <div class="disp-modal-header">
+        <div>
+          <h3 id="confirmTitle">Confirm</h3>
+          <div class="disp-modal-trip-num" id="confirmBody"></div>
+        </div>
+        <button class="disp-modal-close" onclick="_confirmCancel()">✕</button>
+      </div>
+      <div class="disp-modal-footer">
+        <button class="disp-btn-cancel" onclick="_confirmCancel()">Cancel</button>
+        <button class="disp-btn-danger" onclick="_confirmOk()">Confirm</button>
       </div>
     </div>
   </div>

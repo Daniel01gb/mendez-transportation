@@ -1,5 +1,17 @@
 const router = require('express').Router();
 const jwt    = require('jsonwebtoken');
+const crypto = require('crypto');
+
+/* Constant-time string comparison — prevents timing attacks on credentials */
+function safeEqual(a, b) {
+  const ba = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  if (ba.length !== bb.length) {
+    crypto.timingSafeEqual(ba, ba); /* consume equal time regardless */
+    return false;
+  }
+  return crypto.timingSafeEqual(ba, bb);
+}
 const { sendTwoFaEmail }              = require('../utils/email');
 const { requireSession, issueSession, clearSession } = require('../middleware/auth');
 const { loginLimiter, twoFaLimiter }  = require('../middleware/rateLimit');
@@ -45,13 +57,13 @@ router.post('/login', loginLimiter, loginRules, handleValidation, async (req, re
   const normalizedEmail = email.toLowerCase().trim();
   let role, code;
 
-  if (normalizedEmail === DISPATCHER.email && password === DISPATCHER.pass) {
+  if (safeEqual(normalizedEmail, DISPATCHER.email) && safeEqual(password, DISPATCHER.pass)) {
     role = 'dispatcher';
     code = DISPATCHER.code;
-  } else if (normalizedEmail === DRIVER.email && password === DRIVER.pass) {
+  } else if (safeEqual(normalizedEmail, DRIVER.email) && safeEqual(password, DRIVER.pass)) {
     role = 'driver';
     code = DRIVER.code;
-  } else if (normalizedEmail === DEMO.email && password === DEMO.pass) {
+  } else if (safeEqual(normalizedEmail, DEMO.email) && safeEqual(password, DEMO.pass)) {
     role = 'patient';
     code = DEMO.code;
   } else {
@@ -75,24 +87,29 @@ router.post('/login', loginLimiter, loginRules, handleValidation, async (req, re
 
 /* ── POST /api/auth/resend-2fa ── */
 router.post('/resend-2fa', twoFaLimiter, async (req, res) => {
-  /* Pull email from existing pending cookie */
-  let email = '';
+  /* Pull email + role from existing pending cookie */
+  let email = '', role = '';
   const pending = req.cookies[PENDING_COOKIE];
   if (pending) {
-    try { email = jwt.verify(pending, secret()).email; } catch (_) {}
+    try {
+      const p = jwt.verify(pending, secret());
+      email = p.email || '';
+      role  = p.role  || '';
+    } catch (_) {}
   }
   if (!email) email = ((req.body || {}).email || '').toLowerCase().trim();
   if (!email) return res.status(400).json({ error: 'Session expired. Please sign in again.' });
 
-  let code = DEMO.code;
+  /* Use the correct fixed code for each role (or generate one if SMTP is live) */
+  let code = role === 'dispatcher' ? DISPATCHER.code : role === 'driver' ? DRIVER.code : DEMO.code;
   if (process.env.SMTP_HOST) {
     code = String(Math.floor(100000 + Math.random() * 900000));
     try { await sendTwoFaEmail(email, code); } catch (e) { console.error('[email]', e.message); }
   } else {
-    console.log(`[2FA RESEND] To: ${email}  |  Code: ${code}`);
+    console.log(`[2FA RESEND] To: ${email}  |  Code: ${code}  |  Role: ${role || 'patient'}`);
   }
 
-  const token = jwt.sign({ email, code }, secret(), { expiresIn: '10m' });
+  const token = jwt.sign({ email, code, role }, secret(), { expiresIn: '10m' });
   res.cookie(PENDING_COOKIE, token, cookieOpts(10 * 60 * 1000));
   res.json({ ok: true });
 });
@@ -107,7 +124,7 @@ router.post('/verify-2fa', twoFaLimiter, verify2faRules, handleValidation, (req,
   try { payload = jwt.verify(pending, secret()); }
   catch { return res.status(401).json({ error: 'Session expired. Please sign in again.' }); }
 
-  if (!code || payload.code !== code) {
+  if (!code || !safeEqual(payload.code, code)) {
     return res.status(401).json({ error: 'Incorrect or expired code.' });
   }
 

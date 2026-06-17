@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Broker Portal — Mendez Transportation LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Raleway:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/broker.css">
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="brk-header">
+  <div class="brk-header-inner">
+    <div class="brk-brand">
+      <span class="brk-logo">M</span>
+      <div>
+        <div class="brk-brand-name">Mendez Transportation LLC</div>
+        <div class="brk-brand-sub">Broker Trip Portal</div>
+      </div>
+    </div>
+    <div class="brk-header-right">
+      <div class="brk-key-status" id="keyStatus">
+        <span class="brk-key-dot"></span>
+        <span id="keyStatusText">Checking access…</span>
+      </div>
+      <div class="brk-contact">(407) 569-5275</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="brk-main">
+
+  <!-- Toolbar -->
+  <div class="brk-toolbar">
+    <div class="brk-toolbar-left">
+      <h1 class="brk-page-title">Trip Requests</h1>
+      <span class="brk-badge" id="rowBadge">0 trips</span>
+    </div>
+    <div class="brk-toolbar-right">
+      <label class="brk-btn brk-btn-ghost" title="Import trips from a CSV file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import CSV
+        <input type="file" accept=".csv,text/csv" id="csvInput" style="display:none" onchange="importCSV(event)">
+      </label>
+      <button class="brk-btn brk-btn-ghost" onclick="downloadTemplate()" title="Download a blank CSV template">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Template
+      </button>
+      <button class="brk-btn brk-btn-ghost brk-btn-danger" onclick="clearAll()" title="Remove all rows">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Access error bar -->
+  <div class="brk-info brk-info-error" id="accessError" hidden>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>Missing access code. Please use the link provided by Mendez Transportation or call <strong>(407) 569-5275</strong>.</span>
+  </div>
+
+  <!-- Table -->
+  <div class="brk-table-wrap">
+    <table class="brk-table" id="tripTable">
+      <thead>
+        <tr>
+          <th class="col-num">#</th>
+          <th class="col-patient">Patient Name <span class="req">*</span></th>
+          <th class="col-ins">Insurance <span class="req">*</span></th>
+          <th class="col-type">Type</th>
+          <th class="col-pickup">Pickup Address <span class="req">*</span></th>
+          <th class="col-dest">Destination <span class="req">*</span></th>
+          <th class="col-date">Date <span class="req">*</span></th>
+          <th class="col-time">Time <span class="req">*</span></th>
+          <th class="col-notes">Notes</th>
+          <th class="col-del"></th>
+        </tr>
+      </thead>
+      <tbody id="tripTbody"></tbody>
+    </table>
+    <button class="brk-add-row" onclick="addRow()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Trip Row
+    </button>
+  </div>
+
+  <!-- Validation errors -->
+  <div class="brk-validation" id="validationMsg" hidden></div>
+
+  <!-- Sticky submit bar -->
+  <div class="brk-submit-bar">
+    <div class="brk-submit-info">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      All submissions are reviewed by our dispatch team &nbsp;·&nbsp; For urgent trips call <strong>(407) 569-5275</strong>
+    </div>
+    <button class="brk-btn-submit" id="submitBtn" onclick="submitAll()">
+      <span id="submitLabel">Submit All Trips →</span>
+    </button>
+  </div>
+
+</main>
+
+<!-- ── Results Overlay ── -->
+<div class="brk-overlay" id="successOverlay" hidden onclick="overlayClick(event)">
+  <div class="brk-results-card">
+
+    <div class="brk-results-header">
+      <div class="brk-results-icon" id="resultsIcon">✓</div>
+      <div>
+        <h2 id="resultsTitle">Trips Submitted</h2>
+        <p id="resultsSubtitle">Our dispatch team will review and confirm shortly.</p>
+      </div>
+    </div>
+
+    <div class="brk-results-table-wrap">
+      <table class="brk-results-table">
+        <thead>
+          <tr>
+            <th>Request #</th>
+            <th>Patient</th>
+            <th>Date / Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="brk-results-footer">
+      <button class="brk-btn brk-btn-ghost" id="copyAllBtn" onclick="copyAllNumbers()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy All Numbers
+      </button>
+      <button class="brk-btn-submit" onclick="submitMore()">
+        Submit More Trips
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Constants ── */
+  var INSURANCES = [
+    'Medicaid','Medicare','Sunshine Health','Molina Healthcare',
+    'Simply Healthcare','Aetna Better Health',
+    'UnitedHealthcare Community Plan','Humana','WellCare',
+    'Staywell','HealthSun','Cigna','Blue Cross Blue Shield','Other'
+  ];
+  var TRIP_TYPES = [
+    { value: 'ambulatory', label: '🚶 Ambulatory' },
+    { value: 'wheelchair', label: '♿ Wheelchair' },
+    { value: 'stretcher',  label: '🛏 Stretcher'  }
+  ];
+
+  var _rowId   = 0;
+  var _brkKey  = '';
+  var _today   = new Date().toISOString().split('T')[0];
+  var _submittedNums = [];
+
+  /* ── Init — runs after all functions are defined ── */
+  function init() {
+    _brkKey = new URLSearchParams(location.search).get('key')
+           || sessionStorage.getItem('brokerKey')
+           || '';
+    /* If came from login page, don't expose key in URL */
+    if (!new URLSearchParams(location.search).get('key') && _brkKey) {
+      history.replaceState(null, '', '/broker.html');
+    }
+    /* If no key at all, send to login */
+    if (!_brkKey) {
+      window.location.href = '/broker-login.html';
+      return;
+    }
+
+    var statusEl = document.getElementById('keyStatus');
+    var textEl   = document.getElementById('keyStatusText');
+
+    if (!_brkKey) {
+      statusEl.className    = 'brk-key-status error';
+      textEl.textContent    = 'No access code';
+      document.getElementById('accessError').hidden = false;
+      document.getElementById('submitBtn').disabled = true;
+    } else {
+      statusEl.className = 'brk-key-status ok';
+      textEl.textContent = 'Access granted';
+    }
+
+    addRow(); addRow(); addRow();
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !document.getElementById('successOverlay').hidden) {
+        submitMore();
+      }
+    });
+  }
+
+  /* ── Row helpers ── */
+  function makeInsOpts(selected) {
+    return INSURANCES.map(function (ins) {
+      var s = ins === selected ? ' selected' : '';
+      return '<option value="' + escAttr(ins) + '"' + s + '>' + escHtml(ins) + '</option>';
+    }).join('');
+  }
+
+  function makeTypeOpts(selected) {
+    return TRIP_TYPES.map(function (t) {
+      var s = (t.value === selected || (!selected && t.value === 'ambulatory')) ? ' selected' : '';
+      return '<option value="' + t.value + '"' + s + '>' + escHtml(t.label) + '</option>';
+    }).join('');
+  }
+
+  /* ── Add row ── */
+  window.addRow = function (data) {
+    data = data || {};
+    var id    = ++_rowId;
+    var tbody = document.getElementById('tripTbody');
+    var num   = tbody.rows.length + 1;
+
+    var tr = document.createElement('tr');
+    tr.id          = 'row-' + id;
+    tr.dataset.rowId = id;
+
+    /* tab/enter helper — col index for keydown handler */
+    function kd(col) {
+      return ' onkeydown="rowKd(event,' + id + ',' + col + ')"';
+    }
+
+    tr.innerHTML =
+      '<td class="col-num">' + num + '</td>' +
+      '<td class="col-patient"><input type="text" placeholder="Patient full name" maxlength="100" value="' + escAttr(data.patientName || '') + '"' + kd(0) + '></td>' +
+      '<td class="col-ins"><select' + kd(1) + '><option value="">— Select —</option>' + makeInsOpts(data.insurance || '') + '</select></td>' +
+      '<td class="col-type"><select' + kd(2) + '>' + makeTypeOpts(data.tripType || '') + '</select></td>' +
+      '<td class="col-pickup"><input type="text" placeholder="Street, City FL ZIP" maxlength="200" value="' + escAttr(data.pickup || '') + '"' + kd(3) + '></td>' +
+      '<td class="col-dest"><input type="text" placeholder="Facility or full address" maxlength="200" value="' + escAttr(data.destination || '') + '"' + kd(4) + '></td>' +
+      '<td class="col-date"><input type="date" min="' + _today + '" value="' + escAttr(data.tripDate || _today) + '"' + kd(5) + '></td>' +
+      '<td class="col-time"><input type="time" value="' + escAttr(data.tripTime || '') + '"' + kd(6) + '></td>' +
+      '<td class="col-notes"><input type="text" placeholder="Optional" maxlength="300" value="' + escAttr(data.notes || '') + '"' + kd(7) + '></td>' +
+      '<td class="col-del"><button class="brk-del-btn" onclick="removeRow(' + id + ')" title="Remove row" tabindex="-1">×</button></td>';
+
+    tbody.appendChild(tr);
+    updateCount();
+    return tr;
+  };
+
+  window.removeRow = function (id) {
+    var row = document.getElementById('row-' + id);
+    if (row) row.remove();
+    renumber();
+    updateCount();
+  };
+
+  /* Enter on last column → new row; Tab just moves naturally */
+  window.rowKd = function (e, id, col) {
+    if (e.key === 'Enter' && col === 7) {
+      e.preventDefault();
+      var newRow = addRow();
+      var first  = newRow.querySelector('input');
+      if (first) first.focus();
+    }
+  };
+
+  function renumber() {
+    document.getElementById('tripTbody').querySelectorAll('tr').forEach(function (tr, i) {
+      var cell = tr.querySelector('.col-num');
+      if (cell) cell.textContent = i + 1;
+    });
+  }
+
+  function updateCount() {
+    var n   = document.getElementById('tripTbody').querySelectorAll('tr').length;
+    var txt = n + (n === 1 ? ' trip' : ' trips');
+    document.getElementById('rowBadge').textContent = txt;
+    if (!document.getElementById('submitBtn').disabled || _brkKey) {
+      document.getElementById('submitLabel').textContent =
+        'Submit ' + (n > 0 ? n + ' ' : 'All ') + 'Trip' + (n === 1 ? '' : 's') + ' →';
+    }
+  }
+
+  /* ── Collect row data ── */
+  function collectRows() {
+    return Array.from(document.getElementById('tripTbody').querySelectorAll('tr')).map(function (row) {
+      var els = row.querySelectorAll('input, select');
+      /* els[0]=patient, [1]=insurance, [2]=type, [3]=pickup, [4]=dest, [5]=date, [6]=time, [7]=notes */
+      return {
+        patientName: els[0].value.trim(),
+        insurance:   els[1].value,
+        tripType:    els[2].value,
+        pickup:      els[3].value.trim(),
+        destination: els[4].value.trim(),
+        tripDate:    els[5].value,
+        tripTime:    els[6].value,
+        notes:       els[7].value.trim(),
+        _els: els
+      };
+    });
+  }
+
+  /* ── Validate ── */
+  function validate(rows) {
+    /* Clear old error highlights */
+    document.querySelectorAll('.brk-table td.field-error').forEach(function (td) {
+      td.classList.remove('field-error');
+    });
+
+    var errors = [];
+
+    if (!rows.length) {
+      errors.push('Add at least one trip before submitting.');
+      return errors;
+    }
+
+    rows.forEach(function (r, i) {
+      var rowErrs = [];
+      function check(el, label) {
+        if (!el.value.trim && !el.value) { el.closest('td').classList.add('field-error'); rowErrs.push(label); return; }
+        if (!el.value.trim()) { el.closest('td').classList.add('field-error'); rowErrs.push(label); }
+      }
+      check(r._els[0], 'patient name');
+      if (!r._els[1].value) { r._els[1].closest('td').classList.add('field-error'); rowErrs.push('insurance'); }
+      check(r._els[3], 'pickup');
+      check(r._els[4], 'destination');
+      if (!r._els[5].value) { r._els[5].closest('td').classList.add('field-error'); rowErrs.push('date'); }
+      if (!r._els[6].value) { r._els[6].closest('td').classList.add('field-error'); rowErrs.push('time'); }
+      if (rowErrs.length) errors.push('Row ' + (i + 1) + ': missing ' + rowErrs.join(', ') + '.');
+    });
+
+    return errors;
+  }
+
+  /* ── Submit ── */
+  window.submitAll = function () {
+    document.getElementById('validationMsg').hidden = true;
+
+    var rows   = collectRows();
+    var errors = validate(rows);
+    if (errors.length) {
+      var vmsg = document.getElementById('validationMsg');
+      vmsg.innerHTML = '<strong>Please fix the following:</strong><ul>' +
+        errors.map(function (e) { return '<li>' + escHtml(e) + '</li>'; }).join('') + '</ul>';
+      vmsg.hidden = false;
+      vmsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    var trips = rows.map(function (r) {
+      return {
+        patientName: r.patientName,
+        insurance:   r.insurance,
+        tripType:    r.tripType,
+        pickup:      r.pickup,
+        destination: r.destination,
+        tripDate:    r.tripDate,
+        tripTime:    r.tripTime,
+        notes:       r.notes
+      };
+    });
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    document.getElementById('submitLabel').innerHTML =
+      '<span class="brk-spinner"></span> Submitting ' + trips.length + ' trip' + (trips.length === 1 ? '' : 's') + '…';
+
+    fetch('/api/broker/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brokerKey: _brkKey, trips: trips })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      btn.disabled = false;
+      updateCount();
+      if (!data.ok) {
+        showValidErr(data.error || 'Submission failed. Please try again or call (407) 569-5275.');
+        return;
+      }
+      showResults(data.results, trips);
+    })
+    .catch(function () {
+      btn.disabled = false;
+      updateCount();
+      showValidErr('Connection error. Please check your internet and try again, or call (407) 569-5275.');
+    });
+  };
+
+  function showValidErr(msg) {
+    var vmsg = document.getElementById('validationMsg');
+    vmsg.innerHTML = escHtml(msg);
+    vmsg.hidden = false;
+    vmsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ── Results overlay ── */
+  function showResults(results, trips) {
+    _submittedNums = [];
+    var tbody = document.getElementById('resultsBody');
+    tbody.innerHTML = '';
+    var okCount = 0;
+
+    results.forEach(function (r, i) {
+      if (r.ok) { okCount++; _submittedNums.push(r.requestNumber); }
+      var trip = trips[i] || {};
+      var tr = document.createElement('tr');
+      var dateStr = '';
+      if (trip.tripDate && trip.tripTime) dateStr = fmtDate(trip.tripDate) + ' ' + fmtTime(trip.tripTime);
+      else if (trip.tripDate)             dateStr = fmtDate(trip.tripDate);
+      tr.innerHTML =
+        '<td class="res-num">' + (r.ok ? escHtml(r.requestNumber) : '—') + '</td>' +
+        '<td>' + escHtml(r.patientName || trip.patientName || '') + '</td>' +
+        '<td>' + escHtml(dateStr) + '</td>' +
+        '<td class="res-status ' + (r.ok ? 'ok' : 'fail') + '">' +
+          (r.ok ? '✓ Received' : '✗ ' + escHtml(r.error || 'Error')) + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('resultsTitle').textContent =
+      okCount + ' of ' + results.length + ' Trip' + (results.length === 1 ? '' : 's') + ' Submitted';
+    document.getElementById('resultsSubtitle').textContent =
+      okCount === results.length
+        ? 'Our dispatch team will review and confirm shortly.'
+        : okCount > 0
+          ? 'Most trips submitted. Some rows had errors — see details below.'
+          : 'Submission failed — see errors below.';
+    document.getElementById('resultsIcon').textContent = okCount === results.length ? '✓' : '!';
+    document.getElementById('resultsIcon').className   = 'brk-results-icon' + (okCount === 0 ? ' warn' : '');
+
+    document.getElementById('successOverlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.copyAllNumbers = function () {
+    var text = _submittedNums.join('\n');
+    navigator.clipboard.writeText(text).then(function () {
+      var btn = document.getElementById('copyAllBtn');
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(function () { btn.innerHTML = orig; }, 2000);
+    }).catch(function () {});
+  };
+
+  window.submitMore = function () {
+    document.getElementById('successOverlay').hidden = true;
+    document.body.style.overflow = '';
+    document.getElementById('tripTbody').innerHTML = '';
+    document.getElementById('validationMsg').hidden = true;
+    addRow(); addRow(); addRow();
+  };
+
+  window.overlayClick = function (e) {
+    if (e.target === document.getElementById('successOverlay')) submitMore();
+  };
+
+  /* ── CSV Import ── */
+  window.importCSV = function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var rows = parseCSV(ev.target.result);
+      if (!rows.length) { alert('No valid trip rows found in CSV.\n\nDownload the template to see the expected format.'); return; }
+      document.getElementById('tripTbody').innerHTML = '';
+      rows.forEach(function (r) { addRow(r); });
+      e.target.value = '';
+      document.getElementById('validationMsg').hidden = true;
+    };
+    reader.readAsText(file, 'UTF-8');
+  };
+
+  function parseCSV(text) {
+    var lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+    if (lines.length < 2) return [];
+    var rows = [];
+    for (var i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      var c = splitCSVLine(lines[i]);
+      if (c.length < 4) continue;
+      var tripType = (c[6] || '').toLowerCase().trim();
+      if (!['ambulatory','wheelchair','stretcher'].includes(tripType)) tripType = 'ambulatory';
+      rows.push({
+        patientName: (c[0] || '').trim(),
+        insurance:   (c[1] || '').trim(),
+        pickup:      (c[2] || '').trim(),
+        destination: (c[3] || '').trim(),
+        tripDate:    normDate(c[4] || ''),
+        tripTime:    normTime(c[5] || ''),
+        tripType:    tripType,
+        notes:       (c[7] || '').trim()
+      });
+    }
+    return rows;
+  }
+
+  function splitCSVLine(line) {
+    var result = [], cur = '', inQ = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else { inQ = !inQ; } continue; }
+      if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; continue; }
+      cur += ch;
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  function normDate(s) {
+    s = s.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    var m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) return m[3] + '-' + pad2(m[1]) + '-' + pad2(m[2]);
+    return s;
+  }
+  function normTime(s) {
+    s = s.trim();
+    if (/^\d{2}:\d{2}$/.test(s)) return s;
+    var m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?$/i);
+    if (!m) return s;
+    var h = parseInt(m[1], 10), mn = m[2], ap = (m[4] || '').toLowerCase();
+    if (ap === 'pm' && h < 12) h += 12;
+    if (ap === 'am' && h === 12) h = 0;
+    return pad2(h) + ':' + mn;
+  }
+  function pad2(n) { return String(parseInt(n,10)).padStart(2,'0'); }
+
+  /* ── Template download ── */
+  window.downloadTemplate = function () {
+    var csv =
+      'Patient Name,Insurance,Pickup Address,Destination,Date (YYYY-MM-DD),Time (HH:MM),Trip Type,Notes\n' +
+      '"Ana Lopez",Medicaid,"500 W Colonial Dr Orlando FL 32804","AdventHealth Orlando",2026-06-20,10:30,ambulatory,Needs extra boarding time\n' +
+      '"Robert Smith","Sunshine Health","321 Oak St Kissimmee FL 34741","Osceola Regional Medical Center",2026-06-21,08:00,wheelchair,Spanish-speaking driver preferred\n';
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = 'mendez-trip-template.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  };
+
+  /* ── Clear all ── */
+  window.clearAll = function () {
+    var n = document.getElementById('tripTbody').querySelectorAll('tr').length;
+    if (!n || confirm('Remove all ' + n + ' trip row' + (n === 1 ? '' : 's') + '?')) {
+      document.getElementById('tripTbody').innerHTML = '';
+      document.getElementById('validationMsg').hidden = true;
+      addRow(); addRow(); addRow();
+    }
+  };
+
+  /* ── Helpers ── */
+  function escHtml(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function escAttr(s)  { return escHtml(s); }
+
+  function fmtDate(s) {
+    var d = new Date(s + 'T12:00:00');
+    return isNaN(d) ? s : d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  function fmtTime(s) {
+    if (!/^\d{2}:\d{2}/.test(s)) return s;
+    var parts = s.split(':');
+    var h = parseInt(parts[0], 10), m = parts[1];
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + m + ' ' + ampm;
+  }
+
+  /* ── Kick off ── */
+  init();
+
+}());
+</script>
+
+</body>
+</html>

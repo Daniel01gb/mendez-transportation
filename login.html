@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,7 +14,7 @@
 
   <div id="loginParticles"></div>
 
-  <a href="index.html" class="back-to-site">
+  <a href="index.html" class="back-to-site" id="backToSiteLink">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     Back to Site
   </a>
@@ -67,7 +67,7 @@
           </svg>
         </div>
         <h1>Sign In</h1>
-        <p>Welcome back. Enter your credentials<br>to check on your ride.</p>
+        <p id="loginSubtitle">Welcome back. Sign in to access your portal, panel or app.</p>
       </div>
 
       <div class="form-group">
@@ -127,8 +127,11 @@
         <a href="tel:+14075695275" class="help-link">Forgot your password? Call (407) 569-5275</a>
       </div>
 
-      <div class="demo-hint">
-        Demo &nbsp;·&nbsp; demo@mendeztransport.com &nbsp;/&nbsp; Mendez2026!
+      <div class="demo-hint" style="line-height:1.7;">
+        <strong>Demo accounts</strong><br>
+        Patient &nbsp;·&nbsp; demo@mendeztransport.com / Mendez2026!<br>
+        Dispatcher &nbsp;·&nbsp; dispatcher@mendeztransport.com / Dispatch2026!<br>
+        Driver &nbsp;·&nbsp; driver@mendeztransport.com / Driver2026!
       </div>
 
     </div>
@@ -197,6 +200,7 @@
 
   <script src="js/particles.js"></script>
   <script>initParticles('loginParticles', 22);</script>
+
   <script src="js/auth.js"></script>
 </body>
 </html>

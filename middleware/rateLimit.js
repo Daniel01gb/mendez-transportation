@@ -19,4 +19,18 @@ const twoFaLimiter = rateLimit({
   message: { error: 'Too many verification attempts. Try again in 10 minutes.' }
 });
 
-module.exports = { globalLimiter, loginLimiter, twoFaLimiter };
+/* Limits calls to backend proxy endpoints (/miles, /geocode) that make external HTTP requests */
+const dispatcherProxyLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: 'Too many requests. Please slow down.' }
+});
+
+/* Limits broker trip submissions — prevents spam from shared portal URL */
+const brokerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'Too many submissions. Please try again in 15 minutes.' }
+});
+
+module.exports = { globalLimiter, loginLimiter, twoFaLimiter, dispatcherProxyLimiter, brokerLimiter };

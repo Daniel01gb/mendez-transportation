@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Broker Access — Mendez Transportation LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg:       #0B0E1A;
+      --surface:  #111527;
+      --card:     #161B30;
+      --border:   #252A48;
+      --border2:  #313868;
+      --text:     #E4E8FF;
+      --text2:    #B0B8E8;
+      --muted:    #6B74A8;
+      --accent:   #7C83F7;
+      --accent-hv:#6970E8;
+      --green:    #34D399;
+      --red:      #F87171;
+      --font:     'Inter', system-ui, sans-serif;
+      --font-h:   'Raleway', var(--font);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      /* Subtle grid bg */
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,131,247,.12) 0%, transparent 70%),
+        linear-gradient(rgba(37,42,72,.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,42,72,.18) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+    }
+
+    /* ── Card ── */
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2.25rem;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.04) inset,
+        0 32px 80px rgba(0,0,0,.6),
+        0 0 60px rgba(124,131,247,.06);
+      animation: fadeUp .35s cubic-bezier(.22,.68,0,1.1);
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Logo + branding ── */
+    .login-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-logo {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #7C83F7 0%, #9B6FFE 100%);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-h);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 1.1rem;
+      box-shadow: 0 8px 28px rgba(124,131,247,.45);
+    }
+    .login-company {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      letter-spacing: -.01em;
+      margin-bottom: .25rem;
+    }
+    .login-subtitle {
+      color: var(--muted);
+      font-size: .81rem;
+      line-height: 1.5;
+    }
+
+    /* ── Divider ── */
+    .login-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 1.75rem;
+    }
+
+    /* ── Form ── */
+    .login-label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: .5rem;
+      letter-spacing: .02em;
+    }
+    .login-input-wrap {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+    .login-input {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: .75rem 3rem .75rem 1rem;
+      font-family: var(--font);
+      font-size: .92rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+      color-scheme: dark;
+      letter-spacing: .12em;
+    }
+    .login-input::placeholder { letter-spacing: .05em; color: var(--border2); font-size: .85rem; }
+    .login-input:hover  { border-color: var(--border2); background: rgba(255,255,255,.06); }
+    .login-input:focus  {
+      border-color: var(--accent);
+      background: rgba(124,131,247,.07);
+      box-shadow: 0 0 0 3px rgba(124,131,247,.18);
+    }
+    .login-input.error {
+      border-color: var(--red);
+      background: rgba(248,113,113,.07);
+      box-shadow: 0 0 0 3px rgba(248,113,113,.15);
+    }
+
+    /* Show/hide toggle */
+    .login-eye {
+      position: absolute;
+      right: .85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: .2rem;
+      transition: color .12s;
+      line-height: 0;
+    }
+    .login-eye:hover { color: var(--text2); }
+
+    /* ── Error message ── */
+    .login-error {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      background: rgba(248,113,113,.08);
+      border: 1px solid rgba(248,113,113,.22);
+      border-radius: 8px;
+      padding: .65rem .85rem;
+      color: #FCA5A5;
+      font-size: .81rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+      animation: shake .35s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+
+    /* ── Submit button ── */
+    .login-btn {
+      width: 100%;
+      padding: .82rem;
+      background: linear-gradient(135deg, #7C83F7 0%, #9B6FFE 100%);
+      border: none;
+      border-radius: 9px;
+      font-family: var(--font);
+      font-size: .95rem;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s, box-shadow .15s;
+      box-shadow: 0 4px 20px rgba(124,131,247,.4), inset 0 1px 0 rgba(255,255,255,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      letter-spacing: .01em;
+    }
+    .login-btn:hover  { opacity: .92; box-shadow: 0 6px 28px rgba(124,131,247,.55), inset 0 1px 0 rgba(255,255,255,.15); }
+    .login-btn:active { transform: scale(.98); }
+    .login-btn:disabled { background: #1C2240; color: var(--muted); box-shadow: none; cursor: not-allowed; border: 1px solid var(--border); }
+
+    /* ── Spinner ── */
+    .spin {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rot .65s linear infinite;
+    }
+    @keyframes rot { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    .login-footer {
+      margin-top: 1.75rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1.7;
+    }
+    .login-footer a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .12s;
+    }
+    .login-footer a:hover { color: var(--text2); }
+
+    /* ── "What is this?" info ── */
+    .login-info {
+      margin-top: 1.5rem;
+      padding: .9rem 1rem;
+      background: rgba(124,131,247,.06);
+      border: 1px solid rgba(124,131,247,.15);
+      border-radius: 9px;
+      font-size: .77rem;
+      color: var(--muted);
+      line-height: 1.6;
+      text-align: center;
+    }
+    .login-info strong { color: var(--text2); font-weight: 600; }
+
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+
+    <!-- Branding -->
+    <div class="login-brand">
+      <div class="login-logo">M</div>
+      <div class="login-company">Mendez Transportation LLC</div>
+      <div class="login-subtitle">Insurance &amp; Broker Portal</div>
+    </div>
+
+    <div class="login-divider"></div>
+
+    <!-- Form -->
+    <label class="login-label" for="codeInput">Access Code</label>
+    <div class="login-input-wrap">
+      <input
+        class="login-input"
+        id="codeInput"
+        type="password"
+        placeholder="Enter your access code"
+        autocomplete="off"
+        spellcheck="false"
+        maxlength="80"
+        onkeydown="if(event.key==='Enter') doLogin()"
+      >
+      <button class="login-eye" id="eyeBtn" onclick="toggleEye()" type="button" tabindex="-1" title="Show / hide">
+        <svg id="eyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Error -->
+    <div id="errBox" hidden>
+      <div class="login-error">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errText">Invalid access code.</span>
+      </div>
+    </div>
+
+    <!-- Button -->
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">
+      <span id="btnLabel">Enter Portal</span>
+    </button>
+
+    <!-- Info box -->
+    <div class="login-info">
+      <strong>Insurance coordinators only.</strong><br>
+      Your access code was provided by Mendez Transportation.<br>
+      Need help? Call <a href="tel:4075695275">(407) 569-5275</a>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="login-footer">
+    Mendez Transportation LLC &nbsp;·&nbsp; NEMT · Central Florida<br>
+    <a href="tel:4075695275">(407) 569-5275</a>
+    &nbsp;·&nbsp; <a href="login.html">← Staff login</a>
+  </div>
+
+<script>
+  /* ── Show/hide code ── */
+  var _showing = false;
+  function toggleEye() {
+    _showing = !_showing;
+    var inp = document.getElementById('codeInput');
+    inp.type = _showing ? 'text' : 'password';
+    document.getElementById('eyeIcon').innerHTML = _showing
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  /* ── Login ── */
+  function doLogin() {
+    var code = document.getElementById('codeInput').value.trim();
+    var btn  = document.getElementById('loginBtn');
+    var err  = document.getElementById('errBox');
+
+    err.hidden = true;
+    document.getElementById('codeInput').classList.remove('error');
+
+    if (!code) {
+      showError('Please enter your access code.');
+      return;
+    }
+
+    btn.disabled = true;
+    document.getElementById('btnLabel').innerHTML = '<span class="spin"></span>';
+
+    fetch('/api/broker/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brokerKey: code })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.ok) {
+        btn.disabled = false;
+        document.getElementById('btnLabel').textContent = 'Enter Portal';
+        showError(data.error || 'Invalid access code.');
+        return;
+      }
+      /* Store key and redirect */
+      sessionStorage.setItem('brokerKey', code);
+      window.location.href = '/broker.html';
+    })
+    .catch(function () {
+      btn.disabled = false;
+      document.getElementById('btnLabel').textContent = 'Enter Portal';
+      showError('Connection error. Please check your internet or call (407) 569-5275.');
+    });
+  }
+
+  function showError(msg) {
+    document.getElementById('errText').textContent = msg;
+    document.getElementById('errBox').hidden = false;
+    document.getElementById('codeInput').classList.add('error');
+    document.getElementById('codeInput').focus();
+  }
+
+  /* Auto-focus */
+  document.getElementById('codeInput').focus();
+</script>
+
+</body>
+</html>

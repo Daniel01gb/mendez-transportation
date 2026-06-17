@@ -3,10 +3,10 @@ const express      = require('express');
 const cookieParser = require('cookie-parser');
 const helmet       = require('helmet');
 const cors         = require('cors');
-const authRoutes        = require('./routes/auth');
-const tripRoutes        = require('./routes/trip');
-const dispatcherRoutes  = require('./routes/dispatcher');
-const driverRoutes      = require('./routes/driver');
+const authRoutes                              = require('./routes/auth');
+const tripRoutes                              = require('./routes/trip');
+const { router: dispatcherRoutes, brokerRouter } = require('./routes/dispatcher');
+const driverRoutes                            = require('./routes/driver');
 const { globalLimiter } = require('./middleware/rateLimit');
 
 /* Fail loudly in production if critical env vars are missing */
@@ -54,7 +54,7 @@ app.use(cors({
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PATCH'],
   allowedHeaders: ['Content-Type']
 }));
 
@@ -64,6 +64,7 @@ app.use(globalLimiter);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth',       authRoutes);
+app.use('/api/broker',     brokerRouter);
 app.use('/api/dispatcher', dispatcherRoutes);
 app.use('/api/driver',     driverRoutes);
 app.use('/api',            tripRoutes);
